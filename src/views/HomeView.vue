@@ -44,26 +44,6 @@ function previewAuthors(book: GoogleBookVolume) {
 
 <template>
   <main class="page">
-    <header class="page-header home-header">
-      <div class="page-header__row">
-        <div class="page-header__main">
-          <p class="section-eyebrow">Bienvenue</p>
-          <h2 class="page-header__title">Ta base pour suivre toutes tes lectures.</h2>
-          <p class="page-header__subtitle">
-            Retrouve ta progression, tes objectifs et ta prochaine lecture en un coup d'œil.
-          </p>
-        </div>
-        <div class="page-header__actions">
-          <RouterLink
-            to="/livres"
-            class="page-header__action page-header__action--primary"
-          >
-            Voir ma bibliothèque
-          </RouterLink>
-        </div>
-      </div>
-    </header>
-
     <HeroSection
       :hero-session="heroSession"
       :loading="explorerLoading"
@@ -161,21 +141,6 @@ function previewAuthors(book: GoogleBookVolume) {
 </template>
 
 <style scoped>
-.page-header.home-header {
-  position: static;
-  background: #ffffff;
-  box-shadow: none;
-}
-
-@media (min-width: 1024px) {
-  .page-header.home-header {
-    margin-left: calc(-50vw + 50%);
-    margin-right: calc(-50vw + 50%);
-    padding-left: calc(50vw - 50% + 1.5rem);
-    padding-right: calc(50vw - 50% + 1.5rem);
-  }
-}
-
 .home-block {
   background: #ffffff;
   border-radius: 1.5rem;
@@ -208,13 +173,13 @@ function previewAuthors(book: GoogleBookVolume) {
 .home-block__link {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #16a34a;
-  text-decoration: none;
+  color: #166534;
+  text-decoration: underline;
 }
 
 .home-block__link:hover {
   text-decoration: underline;
-  color: #166534;
+  color: #14532d;
 }
 
 .home-block__hint {
@@ -241,7 +206,7 @@ function previewAuthors(book: GoogleBookVolume) {
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.15em;
-  color: #16a34a;
+  color: #111827;
 }
 
 .home-goals-preview__value {

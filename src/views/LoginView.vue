@@ -50,25 +50,11 @@ watchEffect(() => {
 
 <template>
   <main class="page login-page">
-    <header class="page-header home-header">
-      <div class="page-header__row">
-        <div class="page-header__main">
-          <p class="section-eyebrow">VivviRead</p>
-          <h2 class="page-header__title">
-            {{ isLoginMode ? 'Ravi de te revoir' : 'Crée ton espace de lecture' }}
-          </h2>
-          <p class="page-header__subtitle">
-            Retrouve ta bibliothèque, tes objectifs et tes découvertes de lecture en un clin d'œil.
-          </p>
-        </div>
-      </div>
-    </header>
-
     <section class="login-layout">
       <section class="home-block login-card" aria-label="Connexion et inscription">
         <!-- Illustration au-dessus du formulaire -->
         <div class="login-illustration" aria-hidden="true">
-          <img :src="homeIllustration" alt="Illustration d'une personne en train de lire" />
+          <img :src="homeIllustration" alt="" />
         </div>
 
         <header class="login-tabs">
