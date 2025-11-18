@@ -1,0 +1,205 @@
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuth } from '../composables/useAuth'
+
+const router = useRouter()
+const { user, profile, role, updateProfileFullName, loading, errorMessage, signOut } = useAuth()
+
+const displayName = computed(() => profile.value?.full_name || user.value?.email || 'Utilisateur')
+
+const editableName = ref(displayName.value)
+
+watch(
+  () => displayName.value,
+  (value) => {
+    editableName.value = value
+  }
+)
+
+const avatarInitial = computed(() => displayName.value.charAt(0).toUpperCase())
+
+function stringToColor(input: string): string {
+  const colors = ['#F97316', '#F97373', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899', '#FBBF24']
+  let hash = 0
+  for (let i = 0; i < input.length; i += 1) {
+    hash = input.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  const index = Math.abs(hash) % colors.length
+  return colors[index]
+}
+
+const avatarColor = computed(() => stringToColor(displayName.value))
+
+async function onSaveName() {
+  await updateProfileFullName(editableName.value.trim())
+}
+
+async function onSignOut() {
+  await signOut()
+  router.push('/')
+}
+</script>
+
+<template>
+  <main class="page">
+    <header class="page-header home-header">
+      <div class="page-header__row">
+        <div class="page-header__main">
+          <p class="section-eyebrow">Profil</p>
+          <h2 class="page-header__title">Mon profil</h2>
+          <p class="page-header__subtitle">
+            Gère les informations de ton compte VivviRead.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <section class="home-block" aria-label="Informations du profil">
+      <header class="home-block__header">
+        <div class="home-block__header-main">
+          <h2>Informations du compte</h2>
+          <p class="home-block__subtitle">
+            Tu es connecté·e à VivviRead. Utilise les options ci-dessous pour gérer ton profil.
+          </p>
+        </div>
+      </header>
+
+      <div class="auth-block">
+        <div
+          class="profile-avatar"
+          :style="{ backgroundColor: avatarColor, color: '#ffffff' }"
+          aria-hidden="true"
+        >
+          {{ avatarInitial }}
+        </div>
+
+        <p class="auth-block__status">
+          <span class="auth-block__label">Nom affiché</span>
+          <input
+            v-model="editableName"
+            type="text"
+            class="profile-input"
+            autocomplete="name"
+          />
+          <button
+            type="button"
+            class="page-header__action page-header__action--primary"
+            :disabled="loading"
+            @click="onSaveName"
+          >
+            Enregistrer
+          </button>
+        </p>
+        <p class="auth-block__status">
+          <span class="auth-block__label">Email</span>
+          <strong>{{ user?.email }}</strong>
+        </p>
+        <p class="auth-block__status">
+          <span class="auth-block__label">Rôle</span>
+          <strong>{{ role }}</strong>
+        </p>
+        <div class="auth-block__actions">
+          <button
+            type="button"
+            class="page-header__action"
+            @click="onSignOut"
+          >
+            Se déconnecter
+          </button>
+        </div>
+        <p v-if="errorMessage" class="auth-block__error">
+          {{ errorMessage }}
+        </p>
+      </div>
+    </section>
+
+    <section class="danger-block" aria-label="Suppression du compte">
+      <header class="home-block__header">
+        <div class="home-block__header-main">
+          <p class="section-eyebrow">Zone sensible</p>
+          <h2>Supprimer mon compte</h2>
+          <p class="home-block__subtitle">
+            Cette fonctionnalité supprimera ton compte et tes données associées. Elle nécessite une étape
+            serveur supplémentaire et sera activée plus tard.
+          </p>
+        </div>
+      </header>
+
+      <div class="danger-block__content">
+        <p>
+          La suppression de compte n’est pas encore disponible dans cette version. Si tu souhaites supprimer ton
+          compte, tu pourras bientôt le faire depuis ici.
+        </p>
+        <button type="button" class="danger-block__button" disabled>
+          Supprimer définitivement mon compte (bientôt)
+        </button>
+      </div>
+    </section>
+  </main>
+</template>
+
+<style scoped>
+.profile-avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.profile-input {
+  display: block;
+  margin: 0.4rem 0 0.6rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  min-width: 0;
+}
+
+.auth-block__error {
+  margin-top: 0.5rem;
+  color: #b91c1c;
+  font-size: 0.85rem;
+}
+
+.auth-block__label {
+  display: block;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.danger-block {
+  margin-top: 1.5rem;
+  background: #fef2f2;
+  border-radius: 1.5rem;
+  padding: 1.6rem 1.5rem 1.4rem;
+  border: 1px solid #fecaca;
+}
+
+.danger-block__content {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: #7f1d1d;
+}
+
+.danger-block__button {
+  align-self: flex-start;
+  border-radius: 999px;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  background: #b91c1c;
+  color: #fee2e2;
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+</style>
