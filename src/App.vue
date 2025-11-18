@@ -12,7 +12,7 @@ provideAppContext()
     </div>
 
     <nav class="app-shell__nav" aria-label="Navigation principale">
-      <RouterLink to="/" class="app-shell__nav-link">Accueil</RouterLink>
+      <RouterLink to="/home" class="app-shell__nav-link">Accueil</RouterLink>
       <RouterLink to="/livres" class="app-shell__nav-link">Livres</RouterLink>
       <RouterLink to="/objectifs" class="app-shell__nav-link">Objectifs</RouterLink>
       <RouterLink to="/explorer" class="app-shell__nav-link">Explorer</RouterLink>
