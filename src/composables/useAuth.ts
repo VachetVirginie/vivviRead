@@ -52,6 +52,33 @@ async function loadCurrentUser() {
   }
 }
 
+async function updateProfileFullName(newFullName: string) {
+  loading.value = true
+  errorMessage.value = null
+
+  try {
+    const { data: userData, error: userError } = await supabase.auth.getUser()
+    if (userError || !userData.user) {
+      throw userError || new Error('Aucun utilisateur connecté')
+    }
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ full_name: newFullName || null })
+      .eq('id', userData.user.id)
+
+    if (error) {
+      throw error
+    }
+
+    await loadCurrentUser()
+  } catch (err) {
+    errorMessage.value = err instanceof Error ? err.message : String(err)
+  } finally {
+    loading.value = false
+  }
+}
+
 async function signUpWithEmail() {
   loading.value = true
   errorMessage.value = null
@@ -135,5 +162,6 @@ export function useAuth() {
     signUpWithEmail,
     signInWithEmail,
     signOut,
+    updateProfileFullName,
   }
 }

@@ -5,6 +5,7 @@ import LibraryView from '../views/LibraryView.vue'
 import GoalsView from '../views/GoalsView.vue'
 import ExplorerView from '../views/ExplorerView.vue'
 import LoginView from '../views/LoginView.vue'
+import ProfileView from '../views/ProfileView.vue'
 import { supabase } from '../lib/supabaseClient'
 
 const router = createRouter({
@@ -34,6 +35,11 @@ const router = createRouter({
       path: '/explorer',
       name: 'explorer',
       component: ExplorerView,
+    },
+    {
+      path: '/profil',
+      name: 'profile',
+      component: ProfileView,
     },
   ],
 })

@@ -1,4 +1,5 @@
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
+import { supabase } from '../lib/supabaseClient'
 
 export interface ReadingGoal {
   id: string
@@ -10,66 +11,98 @@ export interface ReadingGoal {
   updatedAt: string
 }
 
-const STORAGE_KEY = 'viviread-reading-goals'
-
-function loadInitialGoals(): ReadingGoal[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
-      const parsed = JSON.parse(raw) as ReadingGoal[]
-      if (Array.isArray(parsed)) {
-        return parsed.map((goal) => ({
-          ...goal,
-          updatedAt: goal.updatedAt ?? new Date().toISOString(),
-        }))
-      }
-    }
-  } catch (error) {
-    console.warn('Impossible de charger les objectifs :', error)
-  }
-
-  return [
-    {
-      id: 'goal-demo-1',
-      title: 'Lire 4 livres en novembre',
-      targetValue: 4,
-      currentValue: 2,
-      unit: 'livres',
-      deadline: new Date().toISOString().slice(0, 10),
-      updatedAt: new Date().toISOString(),
-    },
-  ]
-}
-
 export function useGoals() {
-  const goals = ref<ReadingGoal[]>(loadInitialGoals())
+  const goals = ref<ReadingGoal[]>([])
 
-  watch(
-    goals,
-    (value) => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
-    },
-    { deep: true }
-  )
-
-  function addGoal(goal: { title: string; targetValue: number; unit: ReadingGoal['unit']; deadline?: string }) {
-    const id = crypto.randomUUID ? crypto.randomUUID() : `goal-${Date.now()}`
-    goals.value = [
-      {
-        id,
-        title: goal.title,
-        targetValue: Math.max(1, Math.floor(goal.targetValue)),
-        currentValue: 0,
-        unit: goal.unit,
-        deadline: goal.deadline,
-        updatedAt: new Date().toISOString(),
-      },
-      ...goals.value,
-    ]
+  async function getCurrentUserId(): Promise<string> {
+    const { data, error } = await supabase.auth.getUser()
+    if (error || !data.user) {
+      throw new Error('Utilisateur non authentifié')
+    }
+    return data.user.id
   }
 
-  function updateGoalProgress(id: string, value: number) {
-    goals.value = goals.value.map((goal) =>
+  function mapRowToGoal(row: {
+    id: string
+    title: string
+    target_value: number
+    current_value: number
+    unit: string
+    deadline: string | null
+    updated_at: string
+  }): ReadingGoal {
+    return {
+      id: row.id,
+      title: row.title,
+      targetValue: row.target_value,
+      currentValue: row.current_value,
+      unit: row.unit as ReadingGoal['unit'],
+      deadline: row.deadline ?? undefined,
+      updatedAt: row.updated_at,
+    }
+  }
+
+  async function loadGoalsFromSupabase() {
+    try {
+      const userId = await getCurrentUserId()
+      const { data, error } = await supabase
+        .from('goals')
+        .select('*')
+        .eq('user_id', userId)
+        .order('updated_at', { ascending: false })
+
+      if (error) {
+        console.warn('Erreur lors du chargement des objectifs depuis Supabase :', error)
+        return
+      }
+
+      if (!data) {
+        goals.value = []
+        return
+      }
+
+      goals.value = data.map(mapRowToGoal)
+    } catch (error) {
+      console.warn('Impossible de charger les objectifs depuis Supabase :', error)
+    }
+  }
+
+  async function addGoal(goal: {
+    title: string
+    targetValue: number
+    unit: ReadingGoal['unit']
+    deadline?: string
+  }) {
+    const normalizedTarget = Math.max(1, Math.floor(goal.targetValue))
+
+    try {
+      const userId = await getCurrentUserId()
+      const { data, error } = await supabase
+        .from('goals')
+        .insert({
+          user_id: userId,
+          title: goal.title,
+          target_value: normalizedTarget,
+          current_value: 0,
+          unit: goal.unit,
+          deadline: goal.deadline ?? null,
+        })
+        .select('*')
+        .single()
+
+      if (error || !data) {
+        throw error
+      }
+
+      const readingGoal = mapRowToGoal(data)
+      goals.value = [readingGoal, ...goals.value]
+    } catch (error) {
+      console.warn('Erreur lors de la création de l’objectif dans Supabase :', error)
+    }
+  }
+
+  async function updateGoalProgress(id: string, value: number) {
+    const nextGoals = goals.value.map((goal) =>
       goal.id === id
         ? {
             ...goal,
@@ -78,11 +111,46 @@ export function useGoals() {
           }
         : goal
     )
+
+    goals.value = nextGoals
+
+    const updated = goals.value.find((g) => g.id === id)
+    if (!updated) return
+
+    try {
+      const { error } = await supabase
+        .from('goals')
+        .update({
+          current_value: updated.currentValue,
+          updated_at: updated.updatedAt,
+        })
+        .eq('id', id)
+
+      if (error) {
+        console.warn("Erreur lors de la mise à jour de l'objectif dans Supabase :", error)
+      }
+    } catch (error) {
+      console.warn("Erreur lors de la mise à jour de l'objectif dans Supabase :", error)
+    }
   }
 
-  function removeGoal(id: string) {
+  async function removeGoal(id: string) {
     goals.value = goals.value.filter((goal) => goal.id !== id)
+
+    try {
+      const { error } = await supabase.from('goals').delete().eq('id', id)
+      if (error) {
+        console.warn("Erreur lors de la suppression de l'objectif dans Supabase :", error)
+      }
+    } catch (error) {
+      console.warn("Erreur lors de la suppression de l'objectif dans Supabase :", error)
+    }
   }
+
+  // Chargement initial des objectifs pour l'utilisateur connecté
+  loadGoalsFromSupabase().catch((error) => {
+    console.warn('Erreur lors du chargement initial des objectifs :', error)
+  })
 
   const goalProgress = computed(() =>
     goals.value.map((goal) => ({

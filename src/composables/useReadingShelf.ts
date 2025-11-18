@@ -1,5 +1,5 @@
-import { computed, ref, watch } from 'vue'
-import { syncShelf } from '../services/shelfSync'
+import { computed, ref } from 'vue'
+import { supabase } from '../lib/supabaseClient'
 import type { StatCard } from '../types/dashboard'
 
 export type ReadingStatus = 'a_lire' | 'en_cours' | 'lu' | 'abandonne'
@@ -18,75 +18,143 @@ export interface ReadingBook {
   averageRating?: number
 }
 
-const STORAGE_KEY = 'viviread-reading-shelf'
-
-function loadInitialBooks(): ReadingBook[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
-      const parsed = JSON.parse(raw) as ReadingBook[]
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed.map((book) => ({
-          ...book,
-          updatedAt: book.updatedAt ?? new Date().toISOString(),
-        }))
-      }
-    }
-  } catch (error) {
-    console.warn('Impossible de charger les lectures en cours :', error)
-  }
-
-  return [
-    {
-      id: 'demo-1',
-      title: 'Demain et tous les autres jours',
-      author: 'Sophie Astrabie',
-      totalPages: 320,
-      currentPage: 128,
-      status: 'en_cours',
-      notes: 'Lecture du soir · focus ambiance automne',
-      updatedAt: new Date().toISOString(),
-      coverUrl: undefined,
-    },
-    {
-      id: 'demo-2',
-      title: 'Le chant des cavalières',
-      author: 'Jeanne Mariem Corrèze',
-      totalPages: 410,
-      currentPage: 76,
-      status: 'en_cours',
-      updatedAt: new Date().toISOString(),
-      coverUrl: undefined,
-    },
-    {
-      id: 'demo-3',
-      title: 'La somme de nos folies',
-      author: 'Shih-Li Kow',
-      totalPages: 280,
-      currentPage: 0,
-      status: 'a_lire',
-      updatedAt: new Date().toISOString(),
-      coverUrl: undefined,
-    },
-  ]
-}
-
 export function useReadingShelf() {
-  const books = ref<ReadingBook[]>(loadInitialBooks())
+  const books = ref<ReadingBook[]>([])
   const removalPromptId = ref<string | null>(null)
 
-  watch(
-    books,
-    (value) => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
-      syncShelf({ books: value, updatedAt: new Date().toISOString() }).catch((error) => {
-        console.warn('Synchronisation distante impossible :', error)
-      })
-    },
-    { deep: true }
-  )
+  async function getCurrentUserId(): Promise<string> {
+    const { data, error } = await supabase.auth.getUser()
+    if (error || !data.user) {
+      throw new Error('Utilisateur non authentifié')
+    }
+    return data.user.id
+  }
 
-  function addBook(book: {
+  function mapRowToReadingBook(row: {
+    id: string
+    status: ReadingStatus
+    total_pages: number
+    current_page: number
+    notes: string | null
+    updated_at: string
+    books: {
+      id: string
+      title: string
+      author: string
+      cover_url: string | null
+      average_rating: number | null
+      description: string | null
+    } | null
+  }): ReadingBook {
+    return {
+      id: row.id,
+      title: row.books?.title ?? 'Livre sans titre',
+      author: row.books?.author ?? 'Auteur inconnu',
+      totalPages: row.total_pages ?? 0,
+      currentPage: row.current_page ?? 0,
+      status: row.status,
+      notes: row.notes ?? undefined,
+      description: row.books?.description ?? undefined,
+      updatedAt: row.updated_at,
+      coverUrl: row.books?.cover_url ?? undefined,
+      averageRating: row.books?.average_rating ?? undefined,
+    }
+  }
+
+  async function loadShelfFromSupabase() {
+    try {
+      const userId = await getCurrentUserId()
+      const { data, error } = await supabase
+        .from('user_books')
+        .select(
+          `id, status, total_pages, current_page, notes, updated_at, books:book_id (id, title, author, cover_url, average_rating, description)`
+        )
+        .eq('user_id', userId)
+        .order('updated_at', { ascending: false })
+
+      if (error) {
+        console.warn('Erreur lors du chargement de la bibliothèque depuis Supabase :', error)
+        return
+      }
+
+      if (!data) {
+        books.value = []
+        return
+      }
+
+      books.value = data.map(mapRowToReadingBook)
+    } catch (error) {
+      console.warn('Impossible de charger la bibliothèque depuis Supabase :', error)
+    }
+  }
+
+  async function upsertBookRecord(bookInput: {
+    title: string
+    author: string
+    coverUrl?: string
+    averageRating?: number
+    description?: string
+  }) {
+    const { data: existing, error: existingError } = await supabase
+      .from('books')
+      .select('*')
+      .eq('title', bookInput.title)
+      .eq('author', bookInput.author)
+      .maybeSingle()
+
+    if (existingError && existingError.code !== 'PGRST116') {
+      throw existingError
+    }
+
+    if (existing) {
+      return existing
+    }
+
+    const { data: inserted, error: insertError } = await supabase
+      .from('books')
+      .insert({
+        title: bookInput.title,
+        author: bookInput.author,
+        cover_url: bookInput.coverUrl ?? null,
+        average_rating: bookInput.averageRating ?? null,
+        description: bookInput.description ?? null,
+      })
+      .select('*')
+      .single()
+
+    if (insertError) {
+      throw insertError
+    }
+
+    return inserted
+  }
+
+  async function syncUserBook(id: string) {
+    const book = books.value.find((b) => b.id === id)
+    if (!book) return
+
+    const { error } = await supabase
+      .from('user_books')
+      .update({
+        status: book.status,
+        total_pages: book.totalPages,
+        current_page: book.currentPage,
+        notes: book.notes ?? null,
+        updated_at: book.updatedAt,
+      })
+      .eq('id', id)
+
+    if (error) {
+      console.warn('Erreur lors de la synchronisation du livre vers Supabase :', error)
+    }
+  }
+
+  // Chargement initial de la bibliothèque pour l'utilisateur connecté
+  loadShelfFromSupabase().catch((error) => {
+    console.warn('Erreur lors du chargement initial de la bibliothèque :', error)
+  })
+
+  async function addBook(book: {
     title: string
     author: string
     totalPages?: number
@@ -100,25 +168,56 @@ export function useReadingShelf() {
       : 0
     const coverUrl = book.coverUrl?.trim() || undefined
     const averageRating = Number.isFinite(book.averageRating) ? book.averageRating : undefined
-    books.value = [
-      {
-        id,
+    const description = book.description
+
+    try {
+      const userId = await getCurrentUserId()
+      const bookRecord = await upsertBookRecord({
         title: book.title,
         author: book.author,
-        totalPages,
-        currentPage: 0,
-        status: 'a_lire',
-        updatedAt: new Date().toISOString(),
         coverUrl,
         averageRating,
-        description: book.description,
-      },
-      ...books.value,
-    ]
+        description,
+      })
+
+      const { data, error } = await supabase
+        .from('user_books')
+        .insert({
+          user_id: userId,
+          book_id: bookRecord.id,
+          status: 'a_lire',
+          total_pages: totalPages,
+          current_page: 0,
+          notes: null,
+        })
+        .select(
+          `id, status, total_pages, current_page, notes, updated_at, books:book_id (id, title, author, cover_url, average_rating, description)`
+        )
+        .single()
+
+      if (error || !data) {
+        throw error
+      }
+
+      const readingBook = mapRowToReadingBook(data)
+      books.value = [readingBook, ...books.value]
+    } catch (error) {
+      console.warn('Erreur lors de l’ajout du livre dans Supabase :', error)
+    }
   }
 
   function removeBook(id: string) {
     books.value = books.value.filter((book) => book.id !== id)
+
+    supabase
+      .from('user_books')
+      .delete()
+      .eq('id', id)
+      .then(({ error }) => {
+        if (error) {
+          console.warn('Erreur lors de la suppression du livre dans Supabase :', error)
+        }
+      })
   }
 
   function touch(book: ReadingBook, overrides?: Partial<ReadingBook>) {
@@ -149,6 +248,11 @@ export function useReadingShelf() {
         currentPage,
       })
     })
+
+    const updated = books.value.find((book) => book.id === id)
+    if (updated) {
+      syncUserBook(id)
+    }
   }
 
   function updateProgress(id: string, page: number) {
@@ -165,10 +269,20 @@ export function useReadingShelf() {
           })
         : book
     )
+
+    const updated = books.value.find((book) => book.id === id)
+    if (updated) {
+      syncUserBook(id)
+    }
   }
 
   function updateNotes(id: string, notes: string) {
     books.value = books.value.map((book) => (book.id === id ? touch(book, { notes }) : book))
+
+    const updated = books.value.find((book) => book.id === id)
+    if (updated) {
+      syncUserBook(id)
+    }
   }
 
   function updateTotalPages(id: string, totalPages: number) {
@@ -181,6 +295,11 @@ export function useReadingShelf() {
           })
         : book
     )
+
+    const updated = books.value.find((book) => book.id === id)
+    if (updated) {
+      syncUserBook(id)
+    }
   }
 
   function startReading(id: string) {

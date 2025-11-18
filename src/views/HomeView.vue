@@ -4,7 +4,6 @@ import { RouterLink } from 'vue-router'
 
 import { useAppContext } from '../composables/useAppContext'
 import { useSupabaseTest } from '../composables/useSupabaseTest'
-import { useAuth } from '../composables/useAuth'
 import type { GoogleBookVolume } from '../services/googleBooks'
 
 import HeroSection from '../components/sections/HeroSection.vue'
@@ -16,13 +15,6 @@ import ModalAddGoal from '../components/sections/modals/ModalAddGoal.vue'
 /* -------- GLOBAL STATE -------- */
 const { shelf, goals, explorer, modals } = useAppContext()
 useSupabaseTest()
-
-const {
-  user,
-  profile,
-  role,
-  signOut,
-} = useAuth()
 
 const goalsList = computed(() => goals.goals.value)
 const goalsPreview = computed(() => goalsList.value.slice(0, 2))
@@ -71,43 +63,6 @@ function previewAuthors(book: GoogleBookVolume) {
         </div>
       </div>
     </header>
-
-    <section class="home-block" aria-label="Profil">
-      <header class="home-block__header">
-        <div class="home-block__header-main">
-          <p class="section-eyebrow">Compte</p>
-          <h2>Profil et rôle</h2>
-          <p class="home-block__subtitle">
-            Tu es connecté·e à VivviRead. Utilise le bouton ci-dessous pour te déconnecter.
-          </p>
-        </div>
-      </header>
-
-      <div class="auth-block">
-        <div class="auth-block__status">
-          <p v-if="user">
-            Connecté en tant que
-            <strong>{{ profile?.full_name || user.email }}</strong>
-            <br />
-            Rôle : <strong>{{ role }}</strong>
-          </p>
-          <p v-else>
-            Non connecté.
-          </p>
-        </div>
-
-        <div class="auth-block__actions">
-          <button
-            v-if="user"
-            type="button"
-            class="page-header__action"
-            @click="signOut()"
-          >
-            Se déconnecter
-          </button>
-        </div>
-      </div>
-    </section>
 
     <HeroSection
       :hero-session="heroSession"
