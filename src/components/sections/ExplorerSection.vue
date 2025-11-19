@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import type { GoogleBookVolume } from '../../services/googleBooks'
 
 interface ExplorerPreset {
@@ -106,6 +106,43 @@ function handleResetFiltersClick() {
   activePresetLabel.value = null
   props.resetFilters()
 }
+
+const activeFiltersSummary = computed(() => {
+  const items: string[] = []
+
+  if (props.lengthFilter !== 'all') {
+    const labelMap: Record<'short' | 'medium' | 'long', string> = {
+      short: 'Courts',
+      medium: 'Moyens',
+      long: 'Pavés',
+    }
+    items.push(`Longueur : ${labelMap[props.lengthFilter as 'short' | 'medium' | 'long']}`)
+  }
+
+  if (props.periodFilter !== 'all') {
+    const labelMap: Record<'recent' | 'modern' | 'older', string> = {
+      recent: 'Récent',
+      modern: '1980–2014',
+      older: 'Avant 1980',
+    }
+    items.push(`Période : ${labelMap[props.periodFilter as 'recent' | 'modern' | 'older']}`)
+  }
+
+  if (props.moodFilter !== 'all') {
+    const labelMap: Record<'feelgood' | 'epic' | 'dark', string> = {
+      feelgood: 'Feel-good',
+      epic: 'Épique',
+      dark: 'Sombre / noir',
+    }
+    items.push(`Ambiance : ${labelMap[props.moodFilter as 'feelgood' | 'epic' | 'dark']}`)
+  }
+
+  if (props.hideInShelf) {
+    items.push('Masquer les livres déjà dans ta bibliothèque')
+  }
+
+  return items.join(' · ')
+})
 </script>
 
 <template>
@@ -278,9 +315,14 @@ function handleResetFiltersClick() {
         </div>
 
         <div v-if="props.hasActiveFilters" class="search__filters-footer">
-          <span class="search__filters-indicator">
-            {{ props.activeFiltersCount }} filtre{{ props.activeFiltersCount > 1 ? 's' : '' }} actif{{ props.activeFiltersCount > 1 ? 's' : '' }}
-          </span>
+          <div class="search__filters-info">
+            <span class="search__filters-indicator">
+              {{ props.activeFiltersCount }} filtre{{ props.activeFiltersCount > 1 ? 's' : '' }} actif{{ props.activeFiltersCount > 1 ? 's' : '' }}
+            </span>
+            <span v-if="activeFiltersSummary" class="search__filters-summary">
+              {{ activeFiltersSummary }}
+            </span>
+          </div>
           <button type="button" class="search__filters-reset" @click="handleResetFiltersClick">
             Réinitialiser les filtres
           </button>
@@ -482,6 +524,17 @@ function handleResetFiltersClick() {
   color: var(--color-neutral-800);
 }
 
+.search__filters-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.search__filters-summary {
+  font-size: var(--text-xs);
+  color: var(--color-neutral-700);
+}
+
 .search__filters-reset {
   border: 2px solid var(--color-black);
   border-radius: 0;
@@ -526,18 +579,20 @@ function handleResetFiltersClick() {
   border: 2px solid var(--color-black);
   border-radius: 0;
   padding: var(--space-1) var(--space-3);
-  background: var(--color-white);
+  background: var(--accent-tertiary);
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   cursor: pointer;
   transition: var(--transition-snap);
+  box-shadow: var(--shadow-subtle);
 }
 
 .search__filter-chip--active {
-  background: var(--accent-primary);
-  color: white;
-  box-shadow: var(--shadow-subtle);
+  background: var(--color-black);
+  color: var(--accent-tertiary);
+  box-shadow: var(--shadow-brutal);
+  transform: translateY(2px);
 }
 
 .search__checkbox input {
