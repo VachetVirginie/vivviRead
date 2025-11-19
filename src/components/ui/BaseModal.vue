@@ -88,8 +88,8 @@ defineEmits<{ (e: 'close'): void }>()
 .modal__form select:focus,
 .modal__form textarea:focus {
   outline: none;
-  border-color: #facc15;
-  box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.18);
+  border-color: var(--color-jaune-dore);
+  box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.18);
   background: #ffffff;
 }
 
@@ -108,7 +108,7 @@ defineEmits<{ (e: 'close'): void }>()
 }
 
 .modal__actions button:first-child {
-  background: #facc15;
+  background: var(--color-jaune-dore);
   color: #111827;
   box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2);
 }

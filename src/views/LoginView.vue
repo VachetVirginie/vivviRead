@@ -240,9 +240,9 @@ watchEffect(() => {
 }
 
 .auth-block__field input:focus {
-  outline: 2px solid #facc15;
+  outline: 2px solid var(--color-jaune-dore);
   outline-offset: 1px;
-  border-color: #facc15;
+  border-color: var(--color-jaune-dore);
 }
 
 .auth-block__actions {

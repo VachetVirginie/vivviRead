@@ -49,7 +49,7 @@ async function onSignOut() {
           <p class="section-eyebrow">Profil</p>
           <h2 class="page-header__title">Mon profil</h2>
           <p class="page-header__subtitle">
-            Gère les informations de ton compte BookNest.
+            Gère les informations de ton compte BoookNest.
           </p>
         </div>
       </div>
@@ -60,7 +60,7 @@ async function onSignOut() {
         <div class="home-block__header-main">
           <h2>Informations du compte</h2>
           <p class="home-block__subtitle">
-            Tu es connecté·e à BookNest. Utilise les options ci-dessous pour gérer ton profil.
+            Tu es connecté·e à BoookNest. Utilise les options ci-dessous pour gérer ton profil.
           </p>
         </div>
       </header>
@@ -163,7 +163,7 @@ async function onSignOut() {
 
 .auth-block__error {
   margin-top: 0.5rem;
-  color: #b91c1c;
+  color: var(--color-rouge-corail);
   font-size: 0.85rem;
 }
 
@@ -195,8 +195,8 @@ async function onSignOut() {
   border-radius: 999px;
   border: none;
   padding: 0.5rem 1.2rem;
-  background: #b91c1c;
-  color: #fee2e2;
+  background: var(--color-rouge-corail);
+  color: white;
   font-size: 0.85rem;
   font-weight: 600;
   opacity: 0.6;

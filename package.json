@@ -1,14 +1,18 @@
 {
-  "name": "booknest",
+  "name": "boooknest",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
+    "build:mobile": "vue-tsc -b && vite build && npx cap sync",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/cli": "^7.4.4",
+    "@capacitor/core": "^7.4.4",
+    "@capacitor/ios": "^7.4.4",
     "@supabase/supabase-js": "^2.83.0",
     "vue": "^3.5.24",
     "vue-router": "^4.6.3"

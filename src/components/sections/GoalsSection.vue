@@ -153,8 +153,8 @@ const emit = defineEmits<{
 
 .goals__input-group input:focus {
   outline: none;
-  border-color: #facc15;
-  box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.4);
+  border-color: var(--color-jaune-dore);
+  box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.4);
 }
 
 .goals__deadline {

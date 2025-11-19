@@ -435,9 +435,9 @@ function closeBookModal() {
 }
 
 .shelf__confirm-actions button:nth-child(3) {
-  background: #b91c1c;
-  color: #fef2f2;
-  border: 1px solid #991b1b;
+  background: var(--color-rouge-corail);
+  color: white;
+  border: 1px solid #FF5555;
 }
 
 .shelf__confirm-close {

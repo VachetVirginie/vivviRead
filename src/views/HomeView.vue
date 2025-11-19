@@ -51,11 +51,11 @@ function previewAuthors(book: GoogleBookVolume) {
       @fetch-books="explorer.submitSearch"
     />
 
-    <QuickNav :links="quickNavLinks" @open-modal="modals.open" />
+    <QuickNav class="quick-nav animate-fade-in-up" :links="quickNavLinks" @open-modal="modals.open" />
 
-    <StatsSection :stats="stats" />
+    <StatsSection class="stats-section animate-fade-in-up" :stats="stats" />
 
-    <section id="goals" class="home-block" aria-label="Aperçu de mes objectifs">
+    <section id="goals" class="home-block goals-section animate-fade-in-up" aria-label="Aperçu de mes objectifs">
       <header class="home-block__header">
         <div class="home-block__header-main">
           <p class="section-eyebrow">Objectifs</p>
@@ -69,11 +69,12 @@ function previewAuthors(book: GoogleBookVolume) {
         </RouterLink>
       </header>
 
-      <div v-if="goalsPreview.length" class="home-goals-preview__grid">
+      <div v-if="goalsPreview.length" class="home-goals-preview__grid stagger-children">
         <article
-          v-for="goal in goalsPreview"
+          v-for="(goal, index) in goalsPreview"
           :key="goal.id"
-          class="home-goals-preview__card"
+          class="home-goals-preview__card animate-fade-in-scale"
+          :style="{ '--stagger-delay': index }"
         >
           <p class="home-goals-preview__label">{{ goal.unit }}</p>
           <h3>{{ goal.title }}</h3>
@@ -94,7 +95,7 @@ function previewAuthors(book: GoogleBookVolume) {
       </p>
     </section>
 
-    <section id="explorer" class="home-block" aria-label="Découvrir de nouvelles lectures">
+    <section id="explorer" class="home-block explorer-section animate-fade-in-up" aria-label="Découvrir de nouvelles lectures">
       <header class="home-block__header">
         <div class="home-block__header-main">
           <p class="section-eyebrow">Découvertes</p>
@@ -108,11 +109,12 @@ function previewAuthors(book: GoogleBookVolume) {
         </RouterLink>
       </header>
 
-      <div v-if="hasExplorerResults" class="home-explorer-preview__list">
+      <div v-if="hasExplorerResults" class="home-explorer-preview__list stagger-children">
         <article
-          v-for="book in explorerPreviewResults"
+          v-for="(book, index) in explorerPreviewResults"
           :key="book.id"
-          class="home-explorer-preview__card"
+          class="home-explorer-preview__card animate-fade-in-scale"
+          :style="{ '--stagger-delay': index }"
         >
           <h3>{{ book.volumeInfo.title }}</h3>
           <p class="home-explorer-preview__meta">
@@ -141,14 +143,67 @@ function previewAuthors(book: GoogleBookVolume) {
 </template>
 
 <style scoped>
+.page {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4) var(--space-12);
+}
+
+@media (min-width: 1024px) {
+  .page {
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas: 
+      "hero hero"
+      "quicknav quicknav"
+      "stats goals"
+      "explorer explorer";
+    gap: var(--space-10) var(--space-8);
+    padding: var(--space-12) var(--space-6) var(--space-16);
+  }
+  
+  .hero { grid-area: hero; }
+  .quick-nav { grid-area: quicknav; }
+  .stats-section { grid-area: stats; }
+  .goals-section { grid-area: goals; }
+  .explorer-section { grid-area: explorer; }
+}
+
 .home-block {
-  background: #ffffff;
-  border-radius: 1.5rem;
-  padding: 1.6rem 1.5rem 1.4rem;
-  border: 1px solid #e5e7eb;
+  background: var(--color-surface);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8) var(--space-6);
+  border: 1px solid var(--color-neutral-200);
+  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: var(--space-6);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.home-block::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--color-jaune-dore);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.home-block:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+.home-block:hover::before {
+  opacity: 1;
 }
 
 .home-block__header {
@@ -156,30 +211,39 @@ function previewAuthors(book: GoogleBookVolume) {
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 0.75rem 1rem;
+  gap: var(--space-3) var(--space-4);
 }
 
 .home-block__header-main h2 {
-  margin: 0 0 0.4rem;
-  font-size: 1.2rem;
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-neutral-900);
 }
 
 .home-block__subtitle {
   margin: 0;
-  font-size: 0.9rem;
-  color: #4b5563;
+  font-size: var(--text-sm);
+  color: var(--color-neutral-600);
+  line-height: var(--leading-relaxed);
 }
 
 .home-block__link {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #166534;
-  text-decoration: underline;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-primary-green);
+  text-decoration: none;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--color-neutral-100);
+  transition: all var(--transition-normal);
 }
 
 .home-block__link:hover {
-  text-decoration: underline;
-  color: #14532d;
+  background: var(--color-primary-green);
+  color: var(--color-surface);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .home-block__hint {
@@ -190,70 +254,175 @@ function previewAuthors(book: GoogleBookVolume) {
 
 .home-goals-preview__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
 }
 
 .home-goals-preview__card {
-  border-radius: 1.25rem;
-  padding: 1.1rem;
-  background: #facc15;
-  border: 1px solid #eab308;
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  background: var(--color-jaune-dore);
+  border: 1px solid #E6C266;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.home-goals-preview__card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 50%);
+  pointer-events: none;
+}
+
+.home-goals-preview__card:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--shadow-lg);
 }
 
 .home-goals-preview__label {
-  margin: 0 0 0.35rem;
+  margin: 0 0 var(--space-2);
   text-transform: uppercase;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.15em;
-  color: #111827;
+  color: var(--color-neutral-800);
+  font-weight: var(--font-medium);
+  position: relative;
+  z-index: 1;
+}
+
+.home-goals-preview__card h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-neutral-900);
+  position: relative;
+  z-index: 1;
 }
 
 .home-goals-preview__value {
-  margin: 0.25rem 0;
-  font-weight: 600;
+  margin: var(--space-1) 0 var(--space-4);
+  font-weight: var(--font-semibold);
+  font-size: var(--text-base);
+  color: var(--color-neutral-800);
+  position: relative;
+  z-index: 1;
 }
 
 .home-goals-preview__progress {
   width: 100%;
-  height: 6px;
-  border-radius: 999px;
-  background: #e5e7eb;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
 }
 
 .home-goals-preview__progress span {
   display: block;
   height: 100%;
-  border-radius: 999px;
-  background: #111827;
+  border-radius: var(--radius-full);
+  background: var(--color-neutral-900);
+  transition: width var(--transition-slow);
 }
 
 .home-explorer-preview__list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
 }
 
 .home-explorer-preview__card {
-  border-radius: 1.1rem;
-  padding: 1rem;
-  background: #fefce8;
-  border: 1px solid rgba(202, 138, 4, 0.26);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-neutral-200);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.home-explorer-preview__card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-jaune-dore);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-normal);
+}
+
+.home-explorer-preview__card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.home-explorer-preview__card:hover::before {
+  transform: scaleX(1);
+}
+
+.home-explorer-preview__card h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-neutral-900);
+  line-height: var(--leading-tight);
 }
 
 .home-explorer-preview__meta {
-  margin: 0.35rem 0 0;
-  font-size: 0.9rem;
-  color: #4b5563;
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-neutral-600);
+  line-height: var(--leading-normal);
 }
 
 .home-block .state {
-  color: #4b5563;
+  color: var(--color-neutral-500);
+  font-size: var(--text-sm);
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  background: var(--color-neutral-50);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--color-neutral-200);
+}
+
+.home-block__hint {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-neutral-500);
+  text-align: center;
+  font-style: italic;
 }
 
 @media (min-width: 768px) {
   .home-block__header-main h2 {
-    font-size: 1.35rem;
+    font-size: var(--text-2xl);
+  }
+  
+  .home-goals-preview__grid,
+  .home-explorer-preview__list {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .home-block {
+    padding: var(--space-6) var(--space-4);
+  }
+  
+  .home-goals-preview__grid,
+  .home-explorer-preview__list {
+    grid-template-columns: 1fr;
   }
 }
 </style>

@@ -53,7 +53,7 @@ function goBackToLogin() {
 
         <header class="reset-header">
           <h1>Nouveau mot de passe</h1>
-          <p>Choisissez un nouveau mot de passe sécurisé pour votre compte BookNest.</p>
+          <p>Choisissez un nouveau mot de passe sécurisé pour votre compte BoookNest.</p>
         </header>
 
         <div v-if="isValidSession" class="auth-block">
@@ -205,8 +205,8 @@ function goBackToLogin() {
 
 .auth-block__field input:focus {
   outline: none;
-  border-color: #facc15;
-  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.1);
+  border-color: var(--color-jaune-dore);
+  box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.1);
 }
 
 .auth-block__actions {
@@ -238,7 +238,7 @@ function goBackToLogin() {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
   border-radius: 0.5rem;
-  color: #dc2626;
+  color: var(--color-rouge-corail);
   font-size: 0.85rem;
   line-height: 1.4;
 }

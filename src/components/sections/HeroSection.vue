@@ -66,34 +66,36 @@ const emit = defineEmits<{
 
 <style scoped>
 .hero {
-  background: #facc15;
+  background: var(--color-jaune-dore);
   border: none;
-  border-radius: 1.25rem;
+  border-radius: var(--radius-xl);
   padding: clamp(1.5rem, 4vw, 2.4rem);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  box-shadow: 0 18px 32px rgba(15, 23, 42, 0.22);
+  gap: var(--space-8);
+  box-shadow: var(--shadow-xl);
 }
 
 .hero__eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  font-size: 0.75rem;
-  color: #16a34a;
-  margin-bottom: 0.75rem;
+  font-size: var(--text-xs);
+  color: var(--color-primary-green);
+  margin-bottom: var(--space-3);
+  font-weight: var(--font-medium);
 }
 
 .hero h1 {
   font-size: clamp(2rem, 4vw, 3.1rem);
-  margin: 0 0 1rem;
-  color: #111827;
+  margin: 0 0 var(--space-4);
+  color: var(--color-neutral-900);
+  font-weight: var(--font-bold);
 }
 
 .hero p {
-  margin: 0 0 1rem;
-  color: #4b5563;
-  line-height: 1.6;
+  margin: 0 0 var(--space-4);
+  color: var(--color-neutral-600);
+  line-height: var(--leading-relaxed);
 }
 
 .hero__actions {
@@ -150,14 +152,20 @@ const emit = defineEmits<{
 }
 
 .quick-actions button {
-  border: none;
-  border-radius: 999px;
-  padding: 0.55rem 1.2rem;
-  background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.12);
-  color: #111827;
-  font-weight: 600;
+  border-radius: var(--radius-full);
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-surface);
+  color: var(--color-neutral-900);
+  font-weight: var(--font-semibold);
   cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.quick-actions button:hover {
+  background: var(--color-neutral-100);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 @media (max-width: 640px) {

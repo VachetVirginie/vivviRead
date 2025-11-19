@@ -96,7 +96,7 @@ function handleRemove(bookId: string) {
 
 .abandoned__label {
   margin: 0;
-  color: #b91c1c;
+  color: var(--color-rouge-corail);
   font-size: 0.9rem;
 }
 

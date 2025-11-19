@@ -313,13 +313,13 @@ function handleModalAction(action: 'start' | 'remove') {
 }
 
 .to-read__modal-actions button:first-child {
-  background: #facc15;
+  background: var(--color-jaune-dore);
   color: #111827;
 }
 
 .to-read__modal-actions button:last-child {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: #fef2f2;
+  color: var(--color-rouge-corail);
 }
 
 .to-read__modal-close {
