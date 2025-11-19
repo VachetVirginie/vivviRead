@@ -218,5 +218,6 @@ export function useAuth() {
     updateProfileFullName,
     resetPassword,
     updatePassword,
+    loadCurrentUser,
   }
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { provideAppContext } from './composables/useAppContext'
 import { useAuth } from './composables/useAuth'
@@ -7,7 +7,11 @@ import { useAuth } from './composables/useAuth'
 provideAppContext()
 
 const router = useRouter()
-const { user, profile } = useAuth()
+const { user, profile, loadCurrentUser } = useAuth()
+
+onMounted(() => {
+  loadCurrentUser()
+})
 
 const displayName = computed(() => profile.value?.full_name || user.value?.email || 'Utilisateur')
 

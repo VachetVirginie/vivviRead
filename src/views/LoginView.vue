@@ -2,7 +2,7 @@
 import { useRoute, useRouter } from 'vue-router'
 import { computed, ref, watchEffect } from 'vue'
 import { useAuth } from '../composables/useAuth'
-import homeIllustration from '../assets/2.svg'
+import homeIllustration from '../assets/4.svg'
 
 const route = useRoute()
 const router = useRouter()
