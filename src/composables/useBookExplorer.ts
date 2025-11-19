@@ -1,4 +1,4 @@
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive } from 'vue'
 import { searchBooks, type GoogleBookVolume } from '../services/googleBooks'
 
 interface ExplorerPreset {
@@ -142,7 +142,7 @@ export function useBookExplorer() {
     currentPage: state.currentPage,
     paginationLabel: paginationLabel.value,
     presets,
-    isResultInShelf: (book: GoogleBookVolume) => false,
+    isResultInShelf: (_book: GoogleBookVolume) => false,
     onSubmit: submitSearch,
   }))
 

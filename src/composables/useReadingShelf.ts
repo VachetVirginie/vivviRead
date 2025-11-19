@@ -30,22 +30,7 @@ export function useReadingShelf() {
     return data.user.id
   }
 
-  function mapRowToReadingBook(row: {
-    id: string
-    status: ReadingStatus
-    total_pages: number
-    current_page: number
-    notes: string | null
-    updated_at: string
-    books: {
-      id: string
-      title: string
-      author: string
-      cover_url: string | null
-      average_rating: number | null
-      description: string | null
-    } | null
-  }): ReadingBook {
+  function mapRowToReadingBook(row: any): ReadingBook {
     return {
       id: row.id,
       title: row.books?.title ?? 'Livre sans titre',
@@ -162,7 +147,6 @@ export function useReadingShelf() {
     averageRating?: number
     description?: string
   }) {
-    const id = crypto.randomUUID ? crypto.randomUUID() : `book-${Date.now()}`
     const totalPages = Number.isFinite(book.totalPages)
       ? Math.max(0, Math.floor(book.totalPages ?? 0))
       : 0
@@ -348,7 +332,7 @@ export function useReadingShelf() {
         meta: 'Ajoute un livre pour démarrer ta session.',
         status: 'Prêt à lire',
         percent: 0,
-        coverUrl: undefined as string | undefined,
+        coverUrl: undefined,
       }
     }
 

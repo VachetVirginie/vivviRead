@@ -32,7 +32,7 @@ async function loadCurrentUser() {
       return
     }
 
-    user.value = { id: userData.user.id, email: userData.user.email }
+    user.value = { id: userData.user.id, email: userData.user.email ?? null }
 
     const { data: profiles, error: profileError } = await supabase
       .from('profiles')

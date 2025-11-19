@@ -20,7 +20,7 @@ function stringToColor(input: string): string {
     hash = input.charCodeAt(i) + ((hash << 5) - hash)
   }
   const index = Math.abs(hash) % colors.length
-  return colors[index]
+  return colors[index] ?? '#111827'
 }
 
 const avatarColor = computed(() => stringToColor(displayName.value))
