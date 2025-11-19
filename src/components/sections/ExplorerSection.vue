@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import type { GoogleBookVolume } from '../../services/googleBooks'
 
 interface ExplorerPreset {
@@ -18,12 +17,23 @@ const props = defineProps<{
   currentPage: number
   paginationLabel: string
   presets: ExplorerPreset[]
+  lengthFilter: 'all' | 'short' | 'medium' | 'long'
+  periodFilter: 'all' | 'recent' | 'modern' | 'older'
+  hideInShelf: boolean
+  sortMode: 'relevance' | 'pages-asc' | 'pages-desc' | 'date-desc' | 'rating-desc'
   isResultInShelf: (book: GoogleBookVolume) => boolean
   onSubmit: () => void
   setQuery: (value: string) => void
   triggerPresetSearch: (value: string) => void
   goToPreviousPage: () => void
   goToNextPage: () => void
+  setLengthFilter: (value: 'all' | 'short' | 'medium' | 'long') => void
+  setPeriodFilter: (value: 'all' | 'recent' | 'modern' | 'older') => void
+  setHideInShelf: (value: boolean) => void
+  setSortMode: (value: 'relevance' | 'pages-asc' | 'pages-desc' | 'date-desc' | 'rating-desc') => void
+  filtersRemoveAll: boolean
+  totalFiltered: number
+  totalUnfiltered: number
 }>()
 
 const emit = defineEmits<{
@@ -62,83 +72,21 @@ function handleAdd(book: GoogleBookVolume) {
 }
 
 // Filtres locaux pour Explorer
-const lengthFilter = ref<'all' | 'short' | 'medium' | 'long'>('all')
-const periodFilter = ref<'all' | 'recent' | 'modern' | 'older'>('all')
-const hideInShelf = ref(false)
-const sortMode = ref<'relevance' | 'pages-asc' | 'pages-desc' | 'date-desc' | 'rating-desc'>('relevance')
 
-function matchesLengthFilter(book: GoogleBookVolume) {
-  const pages = book.volumeInfo.pageCount ?? 0
-  if (lengthFilter.value === 'short') return pages > 0 && pages < 200
-  if (lengthFilter.value === 'medium') return pages >= 200 && pages <= 400
-  if (lengthFilter.value === 'long') return pages > 400
-  return true
+function handleHideInShelfChange(event: Event) {
+  const checked = (event.target as HTMLInputElement).checked
+  props.setHideInShelf(checked)
 }
 
-function extractYear(date?: string) {
-  if (!date) return undefined
-  const year = parseInt(date.slice(0, 4), 10)
-  return Number.isNaN(year) ? undefined : year
+function handleSortChange(event: Event) {
+  const value = (event.target as HTMLSelectElement).value as
+    | 'relevance'
+    | 'pages-asc'
+    | 'pages-desc'
+    | 'date-desc'
+    | 'rating-desc'
+  props.setSortMode(value)
 }
-
-function matchesPeriodFilter(book: GoogleBookVolume) {
-  const year = extractYear(book.volumeInfo.publishedDate)
-  if (periodFilter.value === 'recent') return year !== undefined && year >= 2015
-  if (periodFilter.value === 'modern') return year !== undefined && year >= 1980 && year <= 2014
-  if (periodFilter.value === 'older') return year !== undefined && year < 1980
-  return true
-}
-
-const filteredResults = computed(() =>
-  props.results.filter((book) => {
-    if (!matchesLengthFilter(book)) return false
-    if (!matchesPeriodFilter(book)) return false
-    if (hideInShelf.value && props.isResultInShelf(book)) return false
-    return true
-  }),
-)
-
-const sortedResults = computed(() => {
-  const base = [...filteredResults.value]
-
-  switch (sortMode.value) {
-    case 'pages-asc':
-      base.sort(
-        (a, b) => (a.volumeInfo.pageCount ?? Number.POSITIVE_INFINITY) - (b.volumeInfo.pageCount ?? Number.POSITIVE_INFINITY),
-      )
-      break
-    case 'pages-desc':
-      base.sort((a, b) => (b.volumeInfo.pageCount ?? 0) - (a.volumeInfo.pageCount ?? 0))
-      break
-    case 'date-desc':
-      base.sort((a, b) => {
-        const ay = extractYear(a.volumeInfo.publishedDate) ?? 0
-        const by = extractYear(b.volumeInfo.publishedDate) ?? 0
-        return by - ay
-      })
-      break
-    case 'rating-desc':
-      base.sort((a, b) => (b.volumeInfo.averageRating ?? 0) - (a.volumeInfo.averageRating ?? 0))
-      break
-    case 'relevance':
-    default:
-      break
-  }
-
-  return base
-})
-
-const displayedPaginationLabel = computed(() => {
-  if (!props.results.length) return props.paginationLabel
-
-  const visibleOnPage = sortedResults.value.length
-  const totalOnPage = props.results.length
-
-  if (visibleOnPage === totalOnPage) return props.paginationLabel
-
-  const plural = visibleOnPage > 1 ? 'résultats' : 'résultat'
-  return `${props.paginationLabel} · ${visibleOnPage} ${plural} visibles (sur ${totalOnPage} sur cette page avec filtres)`
-})
 </script>
 
 <template>
@@ -182,32 +130,32 @@ const displayedPaginationLabel = computed(() => {
           <button
             type="button"
             class="search__filter-chip"
-            :class="{ 'search__filter-chip--active': lengthFilter === 'all' }"
-            @click="lengthFilter = 'all'"
+            :class="{ 'search__filter-chip--active': props.lengthFilter === 'all' }"
+            @click="props.setLengthFilter('all')"
           >
             Toutes
           </button>
           <button
             type="button"
             class="search__filter-chip"
-            :class="{ 'search__filter-chip--active': lengthFilter === 'short' }"
-            @click="lengthFilter = 'short'"
+            :class="{ 'search__filter-chip--active': props.lengthFilter === 'short' }"
+            @click="props.setLengthFilter('short')"
           >
             Courts
           </button>
           <button
             type="button"
             class="search__filter-chip"
-            :class="{ 'search__filter-chip--active': lengthFilter === 'medium' }"
-            @click="lengthFilter = 'medium'"
+            :class="{ 'search__filter-chip--active': props.lengthFilter === 'medium' }"
+            @click="props.setLengthFilter('medium')"
           >
             Moyens
           </button>
           <button
             type="button"
             class="search__filter-chip"
-            :class="{ 'search__filter-chip--active': lengthFilter === 'long' }"
-            @click="lengthFilter = 'long'"
+            :class="{ 'search__filter-chip--active': props.lengthFilter === 'long' }"
+            @click="props.setLengthFilter('long')"
           >
             Pavés
           </button>
@@ -218,32 +166,32 @@ const displayedPaginationLabel = computed(() => {
           <button
             type="button"
             class="search__filter-chip"
-            :class="{ 'search__filter-chip--active': periodFilter === 'all' }"
-            @click="periodFilter = 'all'"
+            :class="{ 'search__filter-chip--active': props.periodFilter === 'all' }"
+            @click="props.setPeriodFilter('all')"
           >
             Toutes
           </button>
           <button
             type="button"
             class="search__filter-chip"
-            :class="{ 'search__filter-chip--active': periodFilter === 'recent' }"
-            @click="periodFilter = 'recent'"
+            :class="{ 'search__filter-chip--active': props.periodFilter === 'recent' }"
+            @click="props.setPeriodFilter('recent')"
           >
             Récent
           </button>
           <button
             type="button"
             class="search__filter-chip"
-            :class="{ 'search__filter-chip--active': periodFilter === 'modern' }"
-            @click="periodFilter = 'modern'"
+            :class="{ 'search__filter-chip--active': props.periodFilter === 'modern' }"
+            @click="props.setPeriodFilter('modern')"
           >
             1980–2014
           </button>
           <button
             type="button"
             class="search__filter-chip"
-            :class="{ 'search__filter-chip--active': periodFilter === 'older' }"
-            @click="periodFilter = 'older'"
+            :class="{ 'search__filter-chip--active': props.periodFilter === 'older' }"
+            @click="props.setPeriodFilter('older')"
           >
             Avant 1980
           </button>
@@ -251,14 +199,19 @@ const displayedPaginationLabel = computed(() => {
 
         <div class="search__filter-group search__filter-group--inline">
           <label class="search__checkbox">
-            <input v-model="hideInShelf" type="checkbox" />
+            <input type="checkbox" :checked="props.hideInShelf" @change="handleHideInShelfChange" />
             <span>Masquer les livres déjà dans ta bibliothèque</span>
           </label>
         </div>
 
         <div class="search__filter-group search__filter-group--inline">
           <label class="search__filter-label" for="explorer-sort">Trier par</label>
-          <select id="explorer-sort" v-model="sortMode" class="search__sort-select">
+          <select
+            id="explorer-sort"
+            :value="props.sortMode"
+            class="search__sort-select"
+            @change="handleSortChange"
+          >
             <option value="relevance">Pertinence</option>
             <option value="pages-asc">Plus courts d'abord</option>
             <option value="pages-desc">Plus longs d'abord</option>
@@ -270,21 +223,21 @@ const displayedPaginationLabel = computed(() => {
 
       <p v-if="props.errorMessage" class="state state--error">{{ props.errorMessage }}</p>
       <p
-        v-else-if="props.hasSearched && !props.results.length"
+        v-else-if="props.hasSearched && !props.totalUnfiltered"
         class="state"
       >
         Aucun résultat pour cette recherche.
       </p>
       <p
-        v-else-if="props.hasSearched && props.results.length && !sortedResults.length"
+        v-else-if="props.hasSearched && props.filtersRemoveAll"
         class="state"
       >
         Aucun résultat ne correspond à ces filtres. Essaie de les assouplir.
       </p>
     </form>
 
-    <div v-if="sortedResults.length" class="results">
-      <article v-for="book in sortedResults" :key="book.id" class="results__card">
+    <div v-if="props.results.length" class="results">
+      <article v-for="book in props.results" :key="book.id" class="results__card">
         <img v-if="coverUrl(book)" :src="coverUrl(book)" :alt="`Couverture de ${book.volumeInfo.title}`" loading="lazy" />
         <div>
           <button
@@ -316,7 +269,7 @@ const displayedPaginationLabel = computed(() => {
       </article>
 
       <div class="results__pagination">
-        <span class="state">{{ displayedPaginationLabel }}</span>
+        <span class="state">{{ props.paginationLabel }}</span>
         <div>
           <button type="button" :disabled="!props.canGoPrevious" @click="props.goToPreviousPage">Précédent</button>
           <button type="button" :disabled="!props.canGoNext" @click="props.goToNextPage">Suivant</button>

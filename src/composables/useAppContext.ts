@@ -22,7 +22,9 @@ const AppContextKey: InjectionKey<AppContext> = Symbol('AppContext')
 export function provideAppContext() {
   const shelf = useReadingShelf()
   const goals = useGoals()
-  const explorer = useBookExplorer()
+  const explorer = useBookExplorer({
+    isInShelf: shelf.isInShelf,
+  })
   const modals = useModals()
 
   const context: AppContext = {
