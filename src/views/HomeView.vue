@@ -403,6 +403,10 @@ function previewAuthors(book: GoogleBookVolume) {
   font-style: italic;
 }
 
+#explorer {
+  margin-bottom: 2em;
+}
+
 @media (min-width: 768px) {
   .home-block__header-main h2 {
     font-size: var(--text-2xl);

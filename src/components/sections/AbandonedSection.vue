@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Carousel from '../ui/Carousel.vue'
+import BookCard from '../ui/BookCard.vue'
 import type { ReadingBook, ReadingStatus } from '../../composables/useReadingShelf'
 
 defineProps<{ books: ReadingBook[] }>()
@@ -35,12 +36,13 @@ function handleRemove(bookId: string) {
       :ariaLabel="'Livres abandonnés'"
       :items-per-page="3"
     >
-      <article v-for="book in books" :key="book.id" class="abandoned__card carousel__slide" role="group">
-        <div v-if="book.coverUrl" class="abandoned__cover-wrapper">
-          <img class="abandoned__cover" :src="book.coverUrl" :alt="`Couverture de ${book.title}`" />
-        </div>
-        <p class="abandoned__label">{{ book.author }}</p>
-        <h3 class="abandoned__title">{{ book.title }}</h3>
+      <article
+        v-for="book in books"
+        :key="book.id"
+        class="abandoned__card carousel__slide"
+        role="group"
+      >
+        <BookCard :book="book" :hide-actions="true" />
         <p class="abandoned__meta">Arrêté à la page {{ book.currentPage }} / {{ book.totalPages }}</p>
         <div class="abandoned__actions">
           <button type="button" @click="handleStatus(book.id, 'en_cours')">Reprendre</button>
@@ -56,7 +58,7 @@ function handleRemove(bookId: string) {
 .abandoned {
   background: var(--color-white);
   border-radius: 0;
-  padding: 1.75rem 1.5rem;
+  padding: 1.75rem 1.5rem 6rem;
   border: 3px solid var(--color-black);
   border-left: 8px solid var(--accent-primary);
   box-shadow: var(--shadow-brutal);
@@ -67,6 +69,7 @@ function handleRemove(bookId: string) {
   animation: var(--animation-slide-up);
   animation-delay: 0.4s;
   animation-fill-mode: both;
+  margin-bottom: 2em;
 }
 
 .abandoned::after {
@@ -194,5 +197,11 @@ function handleRemove(bookId: string) {
   cursor: pointer;
   background: #fee2e2;
   color: #7f1d1d;
+}
+.abandoned__carousel :deep(.carousel__controls) {
+  margin-top: 1.25rem;
+  position: sticky;
+  bottom: 1rem;
+  z-index: 2;
 }
 </style>

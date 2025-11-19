@@ -180,7 +180,7 @@ onBeforeUnmount(() => {
         <slot />
       </div>
     </div>
-    <div v-if="totalPages > 1" class="carousel__controls">
+    <div v-if="props.itemsCount > 0" class="carousel__controls">
       <button
         type="button"
         class="carousel__control carousel__control--prev"

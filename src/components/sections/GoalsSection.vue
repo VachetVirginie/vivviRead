@@ -66,6 +66,7 @@ const emit = defineEmits<{
   flex-direction: column;
   gap: 1.25rem;
   position: relative;
+  margin-bottom: 2em;
 }
 
 .goals::after {

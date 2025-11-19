@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Carousel from '../ui/Carousel.vue'
+import BookCard from '../ui/BookCard.vue'
 import type { ReadingBook, ReadingStatus } from '../../composables/useReadingShelf'
 
 defineProps<{ books: ReadingBook[] }>()
@@ -27,13 +28,13 @@ const emit = defineEmits<{
       :ariaLabel="'Livres lus'"
       :items-per-page="3"
     >
-      <article v-for="book in books" :key="book.id" class="completed__card carousel__slide" role="group">
-        <div v-if="book.coverUrl" class="completed__cover-wrapper">
-          <img class="completed__cover" :src="book.coverUrl" :alt="`Couverture de ${book.title}`" />
-        </div>
-        <p class="completed__label">{{ book.author }}</p>
-        <p class="completed__meta">{{ book.totalPages }} pages · Terminé</p>
-        <h3 class="completed__title">{{ book.title }}</h3>
+      <article
+        v-for="book in books"
+        :key="book.id"
+        class="completed__card carousel__slide"
+        role="group"
+      >
+        <BookCard :book="book" :hide-actions="true" />
         <p v-if="book.notes" class="completed__notes">{{ book.notes }}</p>
         <div class="completed__actions">
           <button type="button" @click="emit('status-change', { id: book.id, status: 'en_cours' })">Reprendre</button>
@@ -49,7 +50,7 @@ const emit = defineEmits<{
 .completed {
   background: var(--color-white);
   border-radius: 0;
-  padding: 1.75rem 1.5rem;
+  padding: 1.75rem 1.5rem 6rem;
   border: 3px solid var(--color-black);
   border-left: 8px solid #16a34a;
   box-shadow: var(--shadow-brutal);
@@ -112,7 +113,6 @@ const emit = defineEmits<{
 .completed__card:hover {
   transform: var(--transform-lift);
   box-shadow: var(--shadow-hover);
-  animation: celebration 1.2s ease-in-out infinite;
 }
 
 .completed__card::before {
@@ -207,5 +207,8 @@ const emit = defineEmits<{
   transform: var(--transform-press);
   box-shadow: var(--shadow-hover);
   animation: pulse-scale 0.6s ease-in-out infinite;
+}
+.completed__carousel :deep(.carousel__controls) {
+  margin-top: 1.25rem;
 }
 </style>

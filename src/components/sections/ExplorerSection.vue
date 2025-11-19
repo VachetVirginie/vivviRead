@@ -155,6 +155,7 @@ function handleAdd(book: GoogleBookVolume) {
   gap: var(--space-5);
   position: relative;
   transition: var(--transition-snap);
+  margin-bottom: 2em;
 }
 
 .explorer::after {
