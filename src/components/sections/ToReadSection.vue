@@ -49,7 +49,7 @@ function handleModalAction(action: 'start' | 'remove') {
       :items-count="props.books.length"
       aria-label="Parcourir les livres de la pile à lire"
       :ariaLabel="'Parcourir les livres de la pile à lire'"
-      :items-per-page="4"
+      :items-per-page="3"
     >
       <BookCard
         v-for="book in props.books"
@@ -127,15 +127,34 @@ function handleModalAction(action: 'start' | 'remove') {
 }
 
 .to-read__card {
-  border-radius: 1.25rem;
+  border-radius: 0;
   padding: 1.25rem;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+  background: var(--color-white);
+  border: 2px solid var(--color-black);
+  box-shadow: var(--shadow-subtle);
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
   min-height: 340px;
+  transition: var(--transition-snap);
+  cursor: pointer;
+  position: relative;
+}
+
+.to-read__card:hover {
+  transform: var(--transform-lift);
+  box-shadow: var(--shadow-hover);
+}
+
+.to-read__card::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background: var(--accent-primary);
+  border: 1px solid var(--color-black);
 }
 
 .to-read__main {

@@ -172,17 +172,16 @@ function previewAuthors(book: GoogleBookVolume) {
 }
 
 .home-block {
-  background: var(--color-surface);
-  border-radius: var(--radius-2xl);
+  background: var(--color-white);
+  border-radius: 0;
   padding: var(--space-8) var(--space-6);
-  border: 1px solid var(--color-neutral-200);
-  box-shadow: var(--shadow-md);
+  border: 3px solid var(--color-black);
+  box-shadow: var(--shadow-brutal);
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
-  transition: all var(--transition-normal);
+  transition: var(--transition-snap);
   position: relative;
-  overflow: hidden;
 }
 
 .home-block::before {

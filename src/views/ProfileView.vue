@@ -156,9 +156,20 @@ async function onSignOut() {
   display: block;
   margin: 0.4rem 0 0.6rem;
   padding: 0.4rem 0.6rem;
-  border-radius: 0.5rem;
-  border: 1px solid #d1d5db;
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  background: var(--color-white);
   min-width: 0;
+  font-weight: 500;
+  transition: var(--transition-snap);
+  box-shadow: var(--shadow-inset);
+}
+
+.profile-input:focus {
+  outline: none;
+  border-color: var(--accent-tertiary);
+  box-shadow: var(--shadow-brutal);
+  transform: var(--transform-float);
 }
 
 .auth-block__error {
@@ -175,10 +186,29 @@ async function onSignOut() {
 
 .danger-block {
   margin-top: 1.5rem;
-  background: #fef2f2;
-  border-radius: 1.5rem;
+  background: var(--color-white);
+  border-radius: 0;
   padding: 1.6rem 1.5rem 1.4rem;
-  border: 1px solid #fecaca;
+  border: 3px solid var(--color-black);
+  border-left: 6px solid var(--accent-primary);
+  box-shadow: var(--shadow-brutal);
+  position: relative;
+}
+
+.danger-block::after {
+  content: '⚠️';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 18px;
+  height: 18px;
+  background: var(--accent-primary);
+  color: white;
+  border: 2px solid var(--color-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
 }
 
 .danger-block__content {

@@ -66,14 +66,36 @@ const emit = defineEmits<{
 
 <style scoped>
 .hero {
-  background: var(--color-jaune-dore);
-  border: none;
-  border-radius: var(--radius-xl);
+  background: var(--accent-tertiary);
+  border: 4px solid var(--color-black);
+  border-radius: 0;
   padding: clamp(1.5rem, 4vw, 2.4rem);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-8);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-brutal);
+  position: relative;
+  transition: var(--transition-snap);
+  cursor: pointer;
+  animation: var(--animation-pop-in);
+  animation-delay: 0.3s;
+  animation-fill-mode: both;
+}
+
+.hero:hover {
+  transform: var(--transform-lift);
+  box-shadow: var(--shadow-hover);
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 20px;
+  height: 20px;
+  background: var(--accent-primary);
+  border: 2px solid var(--color-black);
 }
 
 .hero__eyebrow {

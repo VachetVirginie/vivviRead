@@ -4,6 +4,7 @@ import type { ReadingBook } from '../../composables/useReadingShelf'
 
 const props = defineProps<{
   book: ReadingBook
+  hideActions?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -54,7 +55,7 @@ const authorLabel = computed(() => {
           </p>
           <h3 class="book-card__title">{{ props.book.title }}</h3>
         </div>
-        <div class="book-card__actions">
+        <div v-if="!hideActions" class="book-card__actions">
           <button type="button" @click.stop="emit('start', props.book.id)">Commencer</button>
           <button type="button" class="book-card__remove" @click.stop="emit('remove', props.book.id)">Supprimer</button>
         </div>
@@ -65,23 +66,39 @@ const authorLabel = computed(() => {
 
 <style scoped>
 .book-card {
-  border-radius: var(--radius-2xl);
+  background: var(--color-white);
+  border: 2px solid var(--color-black);
+  border-radius: 0;
   padding: var(--space-6);
-  background: var(--color-surface);
-  border: 1px solid var(--color-neutral-200);
-  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  width: 100%;
-  box-sizing: border-box;
-  transition: all var(--transition-normal);
+  transition: var(--transition-snap);
+  box-shadow: var(--shadow-subtle);
+  position: relative;
   cursor: pointer;
+  animation: var(--animation-slide-up);
+  animation-fill-mode: both;
+  height: 100%;
+  min-height: 400px;
 }
 
 .book-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
+  transform: var(--transform-lift);
+  box-shadow: var(--shadow-hover);
+  animation: pulse-scale 1s ease-in-out infinite;
+}
+
+.book-card::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 12px;
+  height: 12px;
+  background: var(--accent-secondary);
+  border: 1px solid var(--color-black);
+  transition: var(--transition-snap);
 }
 
 .book-card__main {
@@ -282,13 +299,31 @@ const authorLabel = computed(() => {
 
 .book-card__label {
   margin: 0;
-  color: var(--color-neutral-500);
+  color: var(--color-black);
   font-size: var(--text-sm);
-  font-weight: var(--font-medium);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  position: relative;
+  padding: 0.25rem 0.5rem;
+  background: var(--color-gray-100);
+  border: 1px solid var(--color-black);
+  border-radius: 0;
+}
+
+.book-card__label::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  background: linear-gradient(to right, transparent, var(--color-gray-100));
+  pointer-events: none;
 }
 
 .book-card__meta {
@@ -305,16 +340,28 @@ const authorLabel = computed(() => {
 }
 
 .book-card__title {
-  margin: var(--space-2) 0 0;
+  margin: 0;
   font-size: var(--text-base);
   font-weight: var(--font-semibold);
-  color: var(--color-neutral-900);
-  line-height: var(--leading-tight);
+  line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   line-clamp: 2;
+  color: var(--color-black);
+  position: relative;
+}
+
+.book-card__title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 1.3em;
+  background: linear-gradient(to right, transparent, var(--color-white));
+  pointer-events: none;
 }
 
 .book-card__actions {
@@ -337,15 +384,25 @@ const authorLabel = computed(() => {
 }
 
 .book-card__actions button:first-child {
-  background: var(--color-jaune-dore);
-  color: var(--color-neutral-900);
-  box-shadow: var(--shadow-sm);
+  background: var(--accent-primary);
+  color: var(--color-white);
+  border: 2px solid var(--color-black);
+  box-shadow: var(--shadow-brutal);
+  position: relative;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .book-card__actions button:first-child:hover {
-  background: #FFD966;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  transform: var(--transform-press);
+  box-shadow: var(--shadow-hover);
+  animation: pulse-scale 0.8s ease-in-out infinite;
+}
+
+.book-card__actions button:first-child:active {
+  transform: translateY(4px);
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
 }
 
 .book-card__remove {

@@ -33,7 +33,7 @@ function handleRemove(bookId: string) {
       :items-count="books.length"
       aria-label="Livres abandonnés"
       :ariaLabel="'Livres abandonnés'"
-      :items-per-page="4"
+      :items-per-page="3"
     >
       <article v-for="book in books" :key="book.id" class="abandoned__card carousel__slide" role="group">
         <div v-if="book.coverUrl" class="abandoned__cover-wrapper">
@@ -54,13 +54,36 @@ function handleRemove(bookId: string) {
 
 <style scoped>
 .abandoned {
-  background: #ffffff;
-  border-radius: 1.5rem;
+  background: var(--color-white);
+  border-radius: 0;
   padding: 1.75rem 1.5rem;
-  border: 1px solid #e5e7eb;
+  border: 3px solid var(--color-black);
+  border-left: 8px solid var(--accent-primary);
+  box-shadow: var(--shadow-brutal);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  position: relative;
+  animation: var(--animation-slide-up);
+  animation-delay: 0.4s;
+  animation-fill-mode: both;
+}
+
+.abandoned::after {
+  content: '⏸';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 20px;
+  height: 20px;
+  background: var(--accent-primary);
+  color: white;
+  border: 2px solid var(--color-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 12px;
 }
 
 .abandoned__grid {
@@ -70,16 +93,46 @@ function handleRemove(bookId: string) {
 }
 
 .abandoned__card {
-  border-radius: 1.25rem;
+  border-radius: 0;
   padding: 1.25rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+  background: var(--color-white);
+  border: 2px solid var(--color-black);
+  border-left: 6px solid var(--accent-primary);
+  box-shadow: var(--shadow-subtle);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  width: 100%;
-  box-sizing: border-box;
+  gap: 0.75rem;
+  min-height: 340px;
+  transition: var(--transition-snap);
+  cursor: pointer;
+  position: relative;
+}
+
+.abandoned__card:hover {
+  transform: var(--transform-lift);
+  box-shadow: var(--shadow-hover);
+  animation: sad-wobble 0.8s ease-in-out infinite;
+}
+
+.abandoned__card:nth-child(1) { animation-delay: 0s; }
+.abandoned__card:nth-child(2) { animation-delay: 0.1s; }
+.abandoned__card:nth-child(3) { animation-delay: 0.2s; }
+.abandoned__card:nth-child(4) { animation-delay: 0.3s; }
+
+.abandoned__card::before {
+  content: '💔';
+  position: absolute;
+  bottom: -2px;
+  left: -2px;
+  width: 16px;
+  height: 16px;
+  background: var(--accent-primary);
+  color: white;
+  border: 1px solid var(--color-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
 }
 
 .abandoned__cover-wrapper {
@@ -96,8 +149,20 @@ function handleRemove(bookId: string) {
 
 .abandoned__label {
   margin: 0;
-  color: var(--color-rouge-corail);
+  color: var(--color-black);
   font-size: 0.9rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0.2rem 0.4rem;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid var(--accent-primary);
+  border-radius: 0;
+  display: inline-block;
 }
 
 .abandoned__meta {

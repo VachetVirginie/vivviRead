@@ -171,38 +171,60 @@ watchEffect(() => {
 .login-card {
   max-width: 420px;
   margin: 0 auto;
-  background: #ffffff;
-  border-radius: 1.75rem;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
+  background: var(--color-white);
+  border-radius: 0;
+  border: 3px solid var(--color-black);
+  box-shadow: var(--shadow-brutal);
   padding: 1.5rem 1.5rem 1.4rem;
+  position: relative;
+  animation: var(--animation-bounce-in);
+}
+
+.login-card::after {
+  content: '🔐';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 20px;
+  height: 20px;
+  background: var(--accent-tertiary);
+  color: var(--color-black);
+  border: 2px solid var(--color-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
 }
 
 /* Onglets login / signup */
 .login-tabs {
   display: flex;
-  gap: 0.5rem;
-  background: #f3f4f6;
-  border-radius: 999px;
-  padding: 0.2rem;
+  gap: 2px;
+  background: var(--color-black);
+  border-radius: 0;
+  padding: 2px;
   margin-bottom: 1.3rem;
 }
 
 .login-tab {
   flex: 1;
   border: none;
-  border-radius: 999px;
-  background: transparent;
+  border-radius: 0;
+  background: var(--color-white);
   padding: 0.4rem 0.8rem;
   font-size: 0.85rem;
-  font-weight: 500;
-  color: #4b5563;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--color-black);
   cursor: pointer;
+  transition: var(--transition-snap);
 }
 
 .login-tab--active {
-  background: #111827;
-  color: #f9fafb;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.35);
+  background: var(--color-black);
+  color: var(--color-white);
+  box-shadow: var(--shadow-brutal);
+  transform: var(--transform-float);
 }
 
 /* Bloc formulaire */

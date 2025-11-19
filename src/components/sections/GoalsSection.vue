@@ -57,13 +57,26 @@ const emit = defineEmits<{
 
 <style scoped>
 .goals {
-  background: #ffffff;
-  border-radius: 1.5rem;
+  background: var(--color-white);
+  border-radius: 0;
   padding: 1.75rem 1.5rem;
-  border: 1px solid #e5e7eb;
+  border: 3px solid var(--color-black);
+  box-shadow: var(--shadow-brutal);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  position: relative;
+}
+
+.goals::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 14px;
+  height: 14px;
+  background: var(--accent-tertiary);
+  border: 2px solid var(--color-black);
 }
 
 .goals__grid {
@@ -73,14 +86,22 @@ const emit = defineEmits<{
 }
 
 .goals__card {
-  border-radius: 1.25rem;
+  border-radius: 0;
   padding: 1.25rem;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  background: var(--color-white);
+  border: 2px solid var(--color-black);
+  box-shadow: var(--shadow-subtle);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  transition: var(--transition-snap);
+  cursor: pointer;
+  position: relative;
+}
+
+.goals__card:hover {
+  transform: var(--transform-lift);
+  box-shadow: var(--shadow-hover);
 }
 
 .goals__card--completed {

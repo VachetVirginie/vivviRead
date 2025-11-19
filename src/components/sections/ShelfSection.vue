@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import Carousel from '../ui/Carousel.vue'
+import BookCard from '../ui/BookCard.vue'
 import type { ReadingBook, ReadingStatus } from '../../composables/useReadingShelf'
 
 const props = defineProps<{
@@ -17,6 +18,9 @@ const emit = defineEmits<{
   (e: 'change-percent', payload: { id: string; value: number }): void
   (e: 'change-notes', payload: { id: string; value: string }): void
   (e: 'removal-choice', payload: { id: string; choice: 'to_read' | 'abandon' | 'delete' | 'cancel' }): void
+  (e: 'status-change', payload: { id: string; status: ReadingStatus }): void
+  (e: 'remove', id: string): void
+  (e: 'open-modal', id: string): void
 }>()
 
 function progressPercent(book: ReadingBook) {
@@ -39,6 +43,14 @@ function openBookModal(id: string) {
 function closeBookModal() {
   activeBookId.value = null
 }
+
+function handleStatusChange(id: string) {
+  emit('status-change', { id, status: 'en_cours' })
+}
+
+function handleRemove(id: string) {
+  emit('remove', id)
+}
 </script>
 
 <template>
@@ -55,32 +67,17 @@ function closeBookModal() {
       :items-count="books.length"
       aria-label="Lectures en cours"
       :ariaLabel="'Lectures en cours'"
-      :items-per-page="4"
+      :items-per-page="3"
     >
-      <article
+      <BookCard
         v-for="book in books"
         :key="book.id"
-        class="shelf__card carousel__slide"
-        role="group"
-        :aria-label="`${book.title} de ${book.author}`"
-        @click="openBookModal(book.id)"
-      >
-        <div v-if="book.coverUrl" class="shelf__cover-wrapper">
-          <img class="shelf__cover" :src="book.coverUrl" :alt="`Couverture de ${book.title}`" />
-        </div>
-        <div class="shelf__header">
-          <div class="shelf__title-block">
-            <p class="shelf__label">{{ book.author }}</p>
-            <h3>{{ book.title }}</h3>
-          </div>
-          <div class="shelf__meta">
-            <p class="shelf__pages">{{ book.currentPage }} / {{ book.totalPages > 0 ? book.totalPages : '–' }}</p>
-            <p class="shelf__progress" v-if="book.totalPages > 0">
-              {{ progressPercent(book) }} %
-            </p>
-          </div>
-        </div>
-      </article>
+        :book="book"
+        :hide-actions="true"
+        @open="openBookModal"
+        @start="handleStatusChange"
+        @remove="handleRemove"
+      />
     </Carousel>
 
     <div
@@ -228,26 +225,34 @@ function closeBookModal() {
 
 <style scoped>
 .shelf {
-  background: #ffffff;
-  border-radius: 1.5rem;
+  background: var(--color-white);
+  border-radius: 0;
   padding: 1.75rem 1.5rem;
-  border: 1px solid #e5e7eb;
+  border: 3px solid var(--color-black);
+  border-left: 8px solid var(--accent-secondary);
+  box-shadow: var(--shadow-brutal);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  position: relative;
+  animation: var(--animation-slide-up);
+  animation-fill-mode: both;
 }
 
-.shelf__card {
-  background: #ffffff;
-  border-radius: 1.25rem;
-  padding: 1.25rem;
-  border: 1px solid #e5e7eb;
+.shelf::after {
+  content: '📖';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 20px;
+  height: 20px;
+  background: var(--accent-secondary);
+  color: white;
+  border: 2px solid var(--color-black);
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-  width: 100%;
-  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
 }
 
 .shelf__header {
@@ -263,8 +268,20 @@ function closeBookModal() {
 
 .shelf__label {
   margin: 0 0 0.35rem;
-  color: #6b7280;
+  color: var(--color-black);
   font-size: 0.9rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0.2rem 0.4rem;
+  background: var(--color-gray-100);
+  border: 1px solid var(--color-black);
+  border-radius: 0;
+  display: inline-block;
 }
 
 .shelf__pages {

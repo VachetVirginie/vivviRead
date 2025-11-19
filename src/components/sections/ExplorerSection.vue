@@ -145,14 +145,27 @@ function handleAdd(book: GoogleBookVolume) {
 
 <style scoped>
 .explorer {
-  background: var(--color-surface);
-  border-radius: var(--radius-2xl);
+  background: var(--color-white);
+  border-radius: 0;
   padding: var(--space-5) var(--space-4);
-  border: 1px solid var(--color-neutral-200);
-  box-shadow: var(--shadow-lg);
+  border: 3px solid var(--color-black);
+  box-shadow: var(--shadow-brutal);
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
+  position: relative;
+  transition: var(--transition-snap);
+}
+
+.explorer::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 16px;
+  height: 16px;
+  background: var(--accent-secondary);
+  border: 2px solid var(--color-black);
 }
 
 @media (min-width: 768px) {
@@ -209,62 +222,65 @@ function handleAdd(book: GoogleBookVolume) {
 }
 
 .search__presets button {
-  border-radius: var(--radius-full);
+  border: 2px solid var(--color-black);
+  border-radius: 0;
   padding: var(--space-2) var(--space-4);
-  background: var(--color-surface);
-  color: var(--color-neutral-600);
-  border: 1px solid var(--color-neutral-200);
-  font-size: var(--text-xs);
-  font-weight: var(--font-medium);
+  background: var(--color-white);
+  color: var(--color-black);
+  font-size: var(--text-sm);
+  font-weight: bold;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all var(--transition-normal);
+  transition: var(--transition-snap);
+  box-shadow: var(--shadow-subtle);
 }
 
 .search__presets button:hover,
 .search__presets button:focus-visible {
   outline: none;
-  background: var(--color-rouge-corail);
-  border-color: var(--color-rouge-corail);
+  background: var(--accent-primary);
   color: white;
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  transform: var(--transform-press);
+  box-shadow: var(--shadow-hover);
 }
 
 .search input {
   flex: 1;
   padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-neutral-200);
-  background: var(--color-surface);
-  color: var(--color-neutral-900);
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  background: var(--color-white);
+  color: var(--color-black);
   font-size: var(--text-base);
-  transition: all var(--transition-normal);
+  font-weight: 500;
+  transition: var(--transition-snap);
+  box-shadow: var(--shadow-inset);
 }
 
 .search input:focus {
   outline: none;
-  border-color: var(--color-jaune-dore);
-  box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.1);
+  border-color: var(--accent-tertiary);
+  box-shadow: var(--shadow-brutal);
+  transform: var(--transform-float);
 }
 
 .search button {
-  border: none;
-  border-radius: var(--radius-lg);
-  background: var(--color-jaune-dore);
-  color: var(--color-neutral-900);
+  border: 2px solid var(--color-black);
+  border-radius: 0;
+  background: var(--accent-tertiary);
+  color: var(--color-black);
   padding: var(--space-3) var(--space-6);
-  font-weight: var(--font-semibold);
+  font-weight: bold;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all var(--transition-normal);
-  box-shadow: var(--shadow-sm);
+  transition: var(--transition-snap);
+  box-shadow: var(--shadow-brutal);
 }
 
 .search button:hover:not(:disabled) {
-  background: #FFD966;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  transform: var(--transform-press);
+  box-shadow: var(--shadow-hover);
 }
 
 .search button:disabled {
@@ -282,17 +298,37 @@ function handleAdd(book: GoogleBookVolume) {
   display: grid;
   grid-template-columns: 128px 1fr;
   gap: var(--space-4);
-  background: var(--color-surface);
-  border-radius: var(--radius-xl);
+  background: var(--color-white);
+  border-radius: 0;
   padding: var(--space-4);
-  border: 1px solid var(--color-neutral-200);
-  box-shadow: var(--shadow-md);
-  transition: all var(--transition-normal);
+  border: 2px solid var(--color-black);
+  box-shadow: var(--shadow-subtle);
+  transition: var(--transition-snap);
+  position: relative;
+  animation: var(--animation-slide-up);
+  animation-fill-mode: both;
 }
 
+.results__card:nth-child(1) { animation-delay: 0s; }
+.results__card:nth-child(2) { animation-delay: 0.1s; }
+.results__card:nth-child(3) { animation-delay: 0.2s; }
+.results__card:nth-child(4) { animation-delay: 0.3s; }
+.results__card:nth-child(5) { animation-delay: 0.4s; }
+
 .results__card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  transform: var(--transform-lift);
+  box-shadow: var(--shadow-hover);
+}
+
+.results__card::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: -2px;
+  width: 10px;
+  height: 10px;
+  background: var(--accent-secondary);
+  border: 1px solid var(--color-black);
 }
 
 .results__card img {
@@ -356,21 +392,21 @@ function handleAdd(book: GoogleBookVolume) {
 }
 
 .results__pagination button {
-  border: none;
-  border-radius: var(--radius-full);
+  border: 2px solid var(--color-black);
+  border-radius: 0;
   padding: var(--space-2) var(--space-5);
-  font-weight: var(--font-semibold);
-  background: var(--color-turquoise);
-  color: var(--color-neutral-900);
+  font-weight: bold;
+  text-transform: uppercase;
+  background: var(--accent-secondary);
+  color: var(--color-black);
   cursor: pointer;
-  transition: all var(--transition-normal);
-  box-shadow: var(--shadow-sm);
+  transition: var(--transition-snap);
+  box-shadow: var(--shadow-brutal);
 }
 
 .results__pagination button:hover:not(:disabled) {
-  background: #4AC4BD;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  transform: var(--transform-press);
+  box-shadow: var(--shadow-hover);
 }
 
 .results__pagination button:disabled {
@@ -380,23 +416,23 @@ function handleAdd(book: GoogleBookVolume) {
 }
 
 .results__add {
-  border: none;
-  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-black);
+  border-radius: 0;
   padding: var(--space-3) var(--space-4);
-  background: var(--color-turquoise);
-  color: var(--color-neutral-900);
-  font-weight: var(--font-semibold);
+  background: var(--accent-secondary);
+  color: var(--color-black);
+  font-weight: bold;
+  text-transform: uppercase;
   cursor: pointer;
   margin-bottom: var(--space-3);
-  transition: all var(--transition-normal);
-  box-shadow: var(--shadow-sm);
+  transition: var(--transition-snap);
+  box-shadow: var(--shadow-brutal);
   font-size: var(--text-sm);
 }
 
 .results__add:hover:not(:disabled) {
-  background: #4AC4BD;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  transform: var(--transform-press);
+  box-shadow: var(--shadow-hover);
 }
 
 .results__add:disabled {

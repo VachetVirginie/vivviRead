@@ -25,7 +25,7 @@ const emit = defineEmits<{
       :items-count="books.length"
       aria-label="Livres lus"
       :ariaLabel="'Livres lus'"
-      :items-per-page="4"
+      :items-per-page="3"
     >
       <article v-for="book in books" :key="book.id" class="completed__card carousel__slide" role="group">
         <div v-if="book.coverUrl" class="completed__cover-wrapper">
@@ -47,13 +47,36 @@ const emit = defineEmits<{
 
 <style scoped>
 .completed {
-  background: #ffffff;
-  border-radius: 1.5rem;
+  background: var(--color-white);
+  border-radius: 0;
   padding: 1.75rem 1.5rem;
-  border: 1px solid #e5e7eb;
+  border: 3px solid var(--color-black);
+  border-left: 8px solid #16a34a;
+  box-shadow: var(--shadow-brutal);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  position: relative;
+  animation: var(--animation-slide-up);
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
+.completed::after {
+  content: '✓';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 20px;
+  height: 20px;
+  background: #16a34a;
+  color: white;
+  border: 2px solid var(--color-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 12px;
 }
 
 .completed__grid {
@@ -63,16 +86,49 @@ const emit = defineEmits<{
 }
 
 .completed__card {
-  border-radius: 1.25rem;
+  border-radius: 0;
   padding: 1.25rem;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+  background: var(--color-white);
+  border: 2px solid var(--color-black);
+  border-top: 4px solid #16a34a;
+  box-shadow: var(--shadow-subtle);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
   box-sizing: border-box;
+  transition: var(--transition-snap);
+  cursor: pointer;
+  position: relative;
+  animation: var(--animation-pop-in);
+  animation-fill-mode: both;
+}
+
+.completed__card:nth-child(1) { animation-delay: 0s; }
+.completed__card:nth-child(2) { animation-delay: 0.1s; }
+.completed__card:nth-child(3) { animation-delay: 0.2s; }
+.completed__card:nth-child(4) { animation-delay: 0.3s; }
+
+.completed__card:hover {
+  transform: var(--transform-lift);
+  box-shadow: var(--shadow-hover);
+  animation: celebration 1.2s ease-in-out infinite;
+}
+
+.completed__card::before {
+  content: '📚';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 16px;
+  height: 16px;
+  background: #16a34a;
+  color: white;
+  border: 1px solid var(--color-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
 }
 
 .completed__cover-wrapper {
@@ -89,8 +145,20 @@ const emit = defineEmits<{
 
 .completed__label {
   margin: 0;
-  color: #6b7280;
+  color: var(--color-black);
   font-size: 0.9rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0.2rem 0.4rem;
+  background: rgba(22, 163, 74, 0.1);
+  border: 1px solid #16a34a;
+  border-radius: 0;
+  display: inline-block;
 }
 
 .completed__meta {
@@ -122,13 +190,22 @@ const emit = defineEmits<{
 }
 
 .completed__actions button {
-  border: none;
-  border-radius: 0.75rem;
+  border: 2px solid var(--color-black);
+  border-radius: 0;
   padding: 0.4rem 0.9rem;
-  font-weight: 600;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.75rem;
   cursor: pointer;
-  background: #fef3c7;
-  color: #92400e;
-  border: 1px solid #facc15;
+  background: #16a34a;
+  color: white;
+  transition: var(--transition-snap);
+  box-shadow: var(--shadow-subtle);
+}
+
+.completed__actions button:hover {
+  transform: var(--transform-press);
+  box-shadow: var(--shadow-hover);
+  animation: pulse-scale 0.6s ease-in-out infinite;
 }
 </style>

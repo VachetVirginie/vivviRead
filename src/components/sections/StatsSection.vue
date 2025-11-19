@@ -56,43 +56,49 @@ function getGradientClass(index: number): string {
 }
 
 .stats__card {
-  border-radius: var(--radius-2xl);
-  padding: var(--space-8);
-  border: none;
-  box-shadow: var(--shadow-md);
-  transition: all var(--transition-normal);
+  background: var(--color-white);
+  border: 3px solid var(--color-black);
+  border-radius: 0;
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
   position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  color: white;
+  transition: var(--transition-snap);
+  box-shadow: var(--shadow-brutal);
+  cursor: pointer;
+  animation: var(--animation-pop-in);
+  animation-fill-mode: both;
 }
 
-/* Texte sombre sur les cards pour meilleure lisibilité */
 .stats__card:nth-child(1) {
-  color: var(--color-neutral-900);
+  animation-delay: 0s;
 }
 
 .stats__card:nth-child(2) {
-  color: var(--color-neutral-900);
+  animation-delay: 0.1s;
 }
 
 .stats__card:nth-child(3) {
-  color: white;
+  animation-delay: 0.2s;
 }
 
-/* Version couleurs équilibre dynamique */
+/* Texte sombre sur toutes les cards pour meilleure lisibilité */
+.stats__card:nth-child(1),
+.stats__card:nth-child(2),
+.stats__card:nth-child(3) {
+  color: var(--color-black);
+}
+
+/* === DYNAMIC MINIMALISM 2025 === */
 .stats__card:nth-child(1) {
-  background: var(--color-jaune-dore);
+  border-left: 8px solid var(--accent-tertiary);
 }
 
 .stats__card:nth-child(2) {
-  background: var(--color-turquoise);
+  border-left: 8px solid var(--accent-secondary);
 }
 
 .stats__card:nth-child(3) {
-  background: var(--color-rouge-corail);
+  border-left: 8px solid var(--accent-primary);
 }
 
 /* Version couleurs solides premium - décommentez pour tester */
@@ -144,13 +150,31 @@ function getGradientClass(index: number): string {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 50%);
-  pointer-events: none;
+  background: var(--color-black);
+  opacity: 0;
+  transition: var(--transition-snap);
+  z-index: 1;
+}
+
+.stats__card:hover::before {
+  opacity: 0.9;
 }
 
 .stats__card:hover {
-  transform: translateY(-6px) scale(1.03);
-  box-shadow: var(--shadow-xl);
+  color: var(--color-white);
+  transform: var(--transform-lift);
+  box-shadow: var(--shadow-hover);
+  animation: pulse-scale 0.6s ease-in-out infinite;
+}
+
+.stats__card:hover * {
+  position: relative;
+  z-index: 2;
+}
+
+.stats__card:active {
+  transform: var(--transform-press);
+  animation: shake 0.5s ease-in-out;
 }
 
 .stats__icon {
