@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { GoogleBookVolume } from '../../services/googleBooks'
 
 interface ExplorerPreset {
@@ -34,6 +35,11 @@ const props = defineProps<{
   filtersRemoveAll: boolean
   totalFiltered: number
   totalUnfiltered: number
+  moodFilter: 'all' | 'feelgood' | 'epic' | 'dark'
+  hasActiveFilters: boolean
+  activeFiltersCount: number
+  setMoodFilter: (value: 'all' | 'feelgood' | 'epic' | 'dark') => void
+  resetFilters: () => void
 }>()
 
 const emit = defineEmits<{
@@ -49,6 +55,7 @@ const emit = defineEmits<{
 
 function handleQueryInput(event: Event) {
   const value = (event.target as HTMLInputElement).value
+  activePresetLabel.value = null
   props.setQuery(value)
 }
 
@@ -73,6 +80,8 @@ function handleAdd(book: GoogleBookVolume) {
 
 // Filtres locaux pour Explorer
 
+const activePresetLabel = ref<string | null>(null)
+
 function handleHideInShelfChange(event: Event) {
   const checked = (event.target as HTMLInputElement).checked
   props.setHideInShelf(checked)
@@ -86,6 +95,16 @@ function handleSortChange(event: Event) {
     | 'date-desc'
     | 'rating-desc'
   props.setSortMode(value)
+}
+
+function handlePresetClick(preset: ExplorerPreset) {
+  activePresetLabel.value = preset.label
+  props.triggerPresetSearch(preset.value)
+}
+
+function handleResetFiltersClick() {
+  activePresetLabel.value = null
+  props.resetFilters()
 }
 </script>
 
@@ -118,7 +137,9 @@ function handleSortChange(event: Event) {
           v-for="preset in props.presets"
           :key="preset.value"
           type="button"
-          @click="props.triggerPresetSearch(preset.value)"
+          :class="{ 'search__presets-button--active': activePresetLabel === preset.label }"
+          :disabled="activePresetLabel === preset.label"
+          @click="handlePresetClick(preset)"
         >
           {{ preset.label }}
         </button>
@@ -197,6 +218,42 @@ function handleSortChange(event: Event) {
           </button>
         </div>
 
+        <div class="search__filter-group">
+          <span class="search__filter-label">Ambiance</span>
+          <button
+            type="button"
+            class="search__filter-chip"
+            :class="{ 'search__filter-chip--active': props.moodFilter === 'all' }"
+            @click="props.setMoodFilter('all')"
+          >
+            Toutes
+          </button>
+          <button
+            type="button"
+            class="search__filter-chip"
+            :class="{ 'search__filter-chip--active': props.moodFilter === 'feelgood' }"
+            @click="props.setMoodFilter('feelgood')"
+          >
+            Feel-good
+          </button>
+          <button
+            type="button"
+            class="search__filter-chip"
+            :class="{ 'search__filter-chip--active': props.moodFilter === 'epic' }"
+            @click="props.setMoodFilter('epic')"
+          >
+            Épique
+          </button>
+          <button
+            type="button"
+            class="search__filter-chip"
+            :class="{ 'search__filter-chip--active': props.moodFilter === 'dark' }"
+            @click="props.setMoodFilter('dark')"
+          >
+            Sombre / noir
+          </button>
+        </div>
+
         <div class="search__filter-group search__filter-group--inline">
           <label class="search__checkbox">
             <input type="checkbox" :checked="props.hideInShelf" @change="handleHideInShelfChange" />
@@ -218,6 +275,15 @@ function handleSortChange(event: Event) {
             <option value="date-desc">Les plus récents</option>
             <option value="rating-desc">Mieux notés</option>
           </select>
+        </div>
+
+        <div v-if="props.hasActiveFilters" class="search__filters-footer">
+          <span class="search__filters-indicator">
+            {{ props.activeFiltersCount }} filtre{{ props.activeFiltersCount > 1 ? 's' : '' }} actif{{ props.activeFiltersCount > 1 ? 's' : '' }}
+          </span>
+          <button type="button" class="search__filters-reset" @click="handleResetFiltersClick">
+            Réinitialiser les filtres
+          </button>
         </div>
       </div>
 
@@ -253,6 +319,10 @@ function handleSortChange(event: Event) {
             {{ formatAuthors(book) }}
             <template v-if="book.volumeInfo.pageCount"> · {{ book.volumeInfo.pageCount }} pages</template>
             <template v-if="book.volumeInfo.publishedDate"> · {{ book.volumeInfo.publishedDate }}</template>
+            <template v-if="book.volumeInfo.averageRating">
+              · ⭐ {{ book.volumeInfo.averageRating.toFixed(1) }}
+              <span v-if="book.volumeInfo.ratingsCount"> ({{ book.volumeInfo.ratingsCount }})</span>
+            </template>
           </p>
           <p class="results__description">
             {{ book.volumeInfo.description ?? 'Pas de description disponible.' }}
@@ -373,6 +443,13 @@ function handleSortChange(event: Event) {
   box-shadow: var(--shadow-subtle);
 }
 
+.search__presets-button--active {
+  background: var(--accent-tertiary);
+  color: var(--color-black);
+  box-shadow: var(--shadow-brutal);
+  cursor: default;
+}
+
 .search__presets button:hover,
 .search__presets button:focus-visible {
   outline: none;
@@ -387,6 +464,43 @@ function handleSortChange(event: Event) {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+}
+
+.search__filters-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.search__filters-indicator {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-neutral-800);
+}
+
+.search__filters-reset {
+  border: 2px solid var(--color-black);
+  border-radius: 0;
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-white);
+  color: var(--color-black);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  box-shadow: var(--shadow-subtle);
+  transition: var(--transition-snap);
+}
+
+.search__filters-reset:hover {
+  background: var(--accent-secondary);
+  transform: var(--transform-press);
+  box-shadow: var(--shadow-hover);
 }
 
 .search__filter-group {

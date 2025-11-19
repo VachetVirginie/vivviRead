@@ -62,6 +62,9 @@ function handleExplorerQuery(value: string) {
       :filters-remove-all="explorerState.filtersRemoveAll"
       :total-filtered="explorerState.totalFiltered"
       :total-unfiltered="explorerState.totalUnfiltered"
+      :mood-filter="explorerRawState.moodFilter"
+      :has-active-filters="explorerState.hasActiveFilters"
+      :active-filters-count="explorerState.activeFiltersCount"
       :is-result-in-shelf="isResultInShelf"
       :on-submit="explorer.submitSearch"
       :set-query="handleExplorerQuery"
@@ -72,6 +75,8 @@ function handleExplorerQuery(value: string) {
       :set-period-filter="explorer.setPeriodFilter"
       :set-hide-in-shelf="explorer.setHideInShelf"
       :set-sort-mode="explorer.setSortMode"
+      :set-mood-filter="explorer.setMoodFilter"
+      :reset-filters="explorer.resetFilters"
       @add="shelf.addFromSearch"
     />
 
