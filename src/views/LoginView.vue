@@ -2,7 +2,7 @@
 import { useRoute, useRouter } from 'vue-router'
 import { computed, ref, watchEffect } from 'vue'
 import { useAuth } from '../composables/useAuth'
-import homeIllustration from '../assets/home.svg'
+import homeIllustration from '../assets/2.svg'
 
 const route = useRoute()
 const router = useRouter()
@@ -117,6 +117,12 @@ watchEffect(() => {
               >
                 {{ isLoginMode ? 'Se connecter' : 'Créer un compte' }}
               </button>
+            </div>
+
+            <div v-if="isLoginMode" class="auth-block__forgot">
+              <router-link to="/forgot-password" class="forgot-link">
+                Mot de passe oublié ?
+              </router-link>
             </div>
 
             <p v-if="authError" class="auth-block__error">
@@ -247,6 +253,25 @@ watchEffect(() => {
   margin-top: 0.8rem;
   font-size: 0.8rem;
   color: #6b7280;
+}
+
+.auth-block__forgot {
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+.forgot-link {
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.forgot-link:hover {
+  color: #111827;
+  background-color: #f9fafb;
 }
 
 .auth-block__error {

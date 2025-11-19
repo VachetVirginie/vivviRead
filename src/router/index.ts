@@ -6,6 +6,8 @@ import GoalsView from '../views/GoalsView.vue'
 import ExplorerView from '../views/ExplorerView.vue'
 import LoginView from '../views/LoginView.vue'
 import ProfileView from '../views/ProfileView.vue'
+import ForgotPasswordView from '../views/ForgotPasswordView.vue'
+import ResetPasswordView from '../views/ResetPasswordView.vue'
 import { supabase } from '../lib/supabaseClient'
 
 const router = createRouter({
@@ -41,11 +43,29 @@ const router = createRouter({
       name: 'profile',
       component: ProfileView,
     },
+    {
+      path: '/login',
+      name: 'loginPage',
+      component: LoginView,
+    },
+    {
+      path: '/forgot-password',
+      name: 'forgotPassword',
+      component: ForgotPasswordView,
+    },
+    {
+      path: '/reset-password',
+      name: 'resetPassword',
+      component: ResetPasswordView,
+    },
   ],
 })
 
 router.beforeEach(async (to, _from, next) => {
-  if (to.name === 'login') {
+  // Pages publiques qui ne nécessitent pas d'authentification
+  const publicPages = ['login', 'loginPage', 'forgotPassword', 'resetPassword']
+  
+  if (publicPages.includes(to.name as string)) {
     return next()
   }
 

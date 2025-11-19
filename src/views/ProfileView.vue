@@ -49,7 +49,7 @@ async function onSignOut() {
           <p class="section-eyebrow">Profil</p>
           <h2 class="page-header__title">Mon profil</h2>
           <p class="page-header__subtitle">
-            Gère les informations de ton compte VivviRead.
+            Gère les informations de ton compte BookNest.
           </p>
         </div>
       </div>
@@ -60,7 +60,7 @@ async function onSignOut() {
         <div class="home-block__header-main">
           <h2>Informations du compte</h2>
           <p class="home-block__subtitle">
-            Tu es connecté·e à VivviRead. Utilise les options ci-dessous pour gérer ton profil.
+            Tu es connecté·e à BookNest. Utilise les options ci-dessous pour gérer ton profil.
           </p>
         </div>
       </header>

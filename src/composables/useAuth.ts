@@ -16,6 +16,9 @@ const errorMessage = ref<string | null>(null)
 const email = ref('')
 const password = ref('')
 const fullName = ref('')
+const resetEmail = ref('')
+const newPassword = ref('')
+const confirmPassword = ref('')
 
 const role = computed(() => profile.value?.role ?? 'anonymous')
 
@@ -141,6 +144,53 @@ async function signOut() {
   }
 }
 
+async function resetPassword() {
+  loading.value = true
+  errorMessage.value = null
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail.value, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+    if (error) throw error
+    return { success: true }
+  } catch (err) {
+    errorMessage.value = err instanceof Error ? err.message : String(err)
+    return { success: false }
+  } finally {
+    loading.value = false
+  }
+}
+
+async function updatePassword() {
+  loading.value = true
+  errorMessage.value = null
+  
+  if (newPassword.value !== confirmPassword.value) {
+    errorMessage.value = 'Les mots de passe ne correspondent pas'
+    loading.value = false
+    return { success: false }
+  }
+
+  if (newPassword.value.length < 6) {
+    errorMessage.value = 'Le mot de passe doit contenir au moins 6 caractères'
+    loading.value = false
+    return { success: false }
+  }
+
+  try {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword.value
+    })
+    if (error) throw error
+    return { success: true }
+  } catch (err) {
+    errorMessage.value = err instanceof Error ? err.message : String(err)
+    return { success: false }
+  } finally {
+    loading.value = false
+  }
+}
+
 onMounted(() => {
   loadCurrentUser()
 
@@ -159,9 +209,14 @@ export function useAuth() {
     email,
     password,
     fullName,
+    resetEmail,
+    newPassword,
+    confirmPassword,
     signUpWithEmail,
     signInWithEmail,
     signOut,
     updateProfileFullName,
+    resetPassword,
+    updatePassword,
   }
 }
