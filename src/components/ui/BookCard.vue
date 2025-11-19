@@ -81,6 +81,12 @@ const authorLabel = computed(() => {
   animation-fill-mode: both;
   height: 100%;
   min-height: 400px;
+  min-width: 350px;
+  max-width: 400px;
+   @media (max-width: 640px) {
+    min-width: 300px;
+    max-width: 300px;
+  }
 }
 
 .book-card:hover {
