@@ -33,6 +33,8 @@ export interface SearchBooksParams {
   query: string
   maxResults?: number
   startIndex?: number
+  langRestrict?: string
+  orderBy?: 'relevance' | 'newest'
 }
 
 export interface SearchBooksResponse {
@@ -40,11 +42,19 @@ export interface SearchBooksResponse {
   items: GoogleBookVolume[]
 }
 
-function buildSearchUrl({ query, maxResults = 10, startIndex = 0 }: SearchBooksParams) {
+function buildSearchUrl({ query, maxResults = 10, startIndex = 0, langRestrict, orderBy }: SearchBooksParams) {
   const url = new URL(GOOGLE_BOOKS_API_BASE_URL)
   url.searchParams.set('q', query)
   url.searchParams.set('maxResults', String(Math.min(maxResults, 40)))
   url.searchParams.set('startIndex', String(startIndex))
+
+  if (langRestrict) {
+    url.searchParams.set('langRestrict', langRestrict)
+  }
+
+  if (orderBy) {
+    url.searchParams.set('orderBy', orderBy)
+  }
 
   if (API_KEY) {
     url.searchParams.set('key', API_KEY)

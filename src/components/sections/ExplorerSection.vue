@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import type { GoogleBookVolume } from '../../services/googleBooks'
 
 interface ExplorerPreset {
@@ -59,6 +60,85 @@ function handleAdd(book: GoogleBookVolume) {
     description: book.volumeInfo.description,
   })
 }
+
+// Filtres locaux pour Explorer
+const lengthFilter = ref<'all' | 'short' | 'medium' | 'long'>('all')
+const periodFilter = ref<'all' | 'recent' | 'modern' | 'older'>('all')
+const hideInShelf = ref(false)
+const sortMode = ref<'relevance' | 'pages-asc' | 'pages-desc' | 'date-desc' | 'rating-desc'>('relevance')
+
+function matchesLengthFilter(book: GoogleBookVolume) {
+  const pages = book.volumeInfo.pageCount ?? 0
+  if (lengthFilter.value === 'short') return pages > 0 && pages < 200
+  if (lengthFilter.value === 'medium') return pages >= 200 && pages <= 400
+  if (lengthFilter.value === 'long') return pages > 400
+  return true
+}
+
+function extractYear(date?: string) {
+  if (!date) return undefined
+  const year = parseInt(date.slice(0, 4), 10)
+  return Number.isNaN(year) ? undefined : year
+}
+
+function matchesPeriodFilter(book: GoogleBookVolume) {
+  const year = extractYear(book.volumeInfo.publishedDate)
+  if (periodFilter.value === 'recent') return year !== undefined && year >= 2015
+  if (periodFilter.value === 'modern') return year !== undefined && year >= 1980 && year <= 2014
+  if (periodFilter.value === 'older') return year !== undefined && year < 1980
+  return true
+}
+
+const filteredResults = computed(() =>
+  props.results.filter((book) => {
+    if (!matchesLengthFilter(book)) return false
+    if (!matchesPeriodFilter(book)) return false
+    if (hideInShelf.value && props.isResultInShelf(book)) return false
+    return true
+  }),
+)
+
+const sortedResults = computed(() => {
+  const base = [...filteredResults.value]
+
+  switch (sortMode.value) {
+    case 'pages-asc':
+      base.sort(
+        (a, b) => (a.volumeInfo.pageCount ?? Number.POSITIVE_INFINITY) - (b.volumeInfo.pageCount ?? Number.POSITIVE_INFINITY),
+      )
+      break
+    case 'pages-desc':
+      base.sort((a, b) => (b.volumeInfo.pageCount ?? 0) - (a.volumeInfo.pageCount ?? 0))
+      break
+    case 'date-desc':
+      base.sort((a, b) => {
+        const ay = extractYear(a.volumeInfo.publishedDate) ?? 0
+        const by = extractYear(b.volumeInfo.publishedDate) ?? 0
+        return by - ay
+      })
+      break
+    case 'rating-desc':
+      base.sort((a, b) => (b.volumeInfo.averageRating ?? 0) - (a.volumeInfo.averageRating ?? 0))
+      break
+    case 'relevance':
+    default:
+      break
+  }
+
+  return base
+})
+
+const displayedPaginationLabel = computed(() => {
+  if (!props.results.length) return props.paginationLabel
+
+  const visibleOnPage = sortedResults.value.length
+  const totalOnPage = props.results.length
+
+  if (visibleOnPage === totalOnPage) return props.paginationLabel
+
+  const plural = visibleOnPage > 1 ? 'résultats' : 'résultat'
+  return `${props.paginationLabel} · ${visibleOnPage} ${plural} visibles (sur ${totalOnPage} sur cette page avec filtres)`
+})
 </script>
 
 <template>
@@ -96,12 +176,115 @@ function handleAdd(book: GoogleBookVolume) {
         </button>
       </div>
 
+      <div class="search__filters">
+        <div class="search__filter-group">
+          <span class="search__filter-label">Longueur</span>
+          <button
+            type="button"
+            class="search__filter-chip"
+            :class="{ 'search__filter-chip--active': lengthFilter === 'all' }"
+            @click="lengthFilter = 'all'"
+          >
+            Toutes
+          </button>
+          <button
+            type="button"
+            class="search__filter-chip"
+            :class="{ 'search__filter-chip--active': lengthFilter === 'short' }"
+            @click="lengthFilter = 'short'"
+          >
+            Courts
+          </button>
+          <button
+            type="button"
+            class="search__filter-chip"
+            :class="{ 'search__filter-chip--active': lengthFilter === 'medium' }"
+            @click="lengthFilter = 'medium'"
+          >
+            Moyens
+          </button>
+          <button
+            type="button"
+            class="search__filter-chip"
+            :class="{ 'search__filter-chip--active': lengthFilter === 'long' }"
+            @click="lengthFilter = 'long'"
+          >
+            Pavés
+          </button>
+        </div>
+
+        <div class="search__filter-group">
+          <span class="search__filter-label">Période</span>
+          <button
+            type="button"
+            class="search__filter-chip"
+            :class="{ 'search__filter-chip--active': periodFilter === 'all' }"
+            @click="periodFilter = 'all'"
+          >
+            Toutes
+          </button>
+          <button
+            type="button"
+            class="search__filter-chip"
+            :class="{ 'search__filter-chip--active': periodFilter === 'recent' }"
+            @click="periodFilter = 'recent'"
+          >
+            Récent
+          </button>
+          <button
+            type="button"
+            class="search__filter-chip"
+            :class="{ 'search__filter-chip--active': periodFilter === 'modern' }"
+            @click="periodFilter = 'modern'"
+          >
+            1980–2014
+          </button>
+          <button
+            type="button"
+            class="search__filter-chip"
+            :class="{ 'search__filter-chip--active': periodFilter === 'older' }"
+            @click="periodFilter = 'older'"
+          >
+            Avant 1980
+          </button>
+        </div>
+
+        <div class="search__filter-group search__filter-group--inline">
+          <label class="search__checkbox">
+            <input v-model="hideInShelf" type="checkbox" />
+            <span>Masquer les livres déjà dans ta bibliothèque</span>
+          </label>
+        </div>
+
+        <div class="search__filter-group search__filter-group--inline">
+          <label class="search__filter-label" for="explorer-sort">Trier par</label>
+          <select id="explorer-sort" v-model="sortMode" class="search__sort-select">
+            <option value="relevance">Pertinence</option>
+            <option value="pages-asc">Plus courts d'abord</option>
+            <option value="pages-desc">Plus longs d'abord</option>
+            <option value="date-desc">Les plus récents</option>
+            <option value="rating-desc">Mieux notés</option>
+          </select>
+        </div>
+      </div>
+
       <p v-if="props.errorMessage" class="state state--error">{{ props.errorMessage }}</p>
-      <p v-else-if="props.hasSearched && !props.results.length" class="state">Aucun résultat pour cette recherche.</p>
+      <p
+        v-else-if="props.hasSearched && !props.results.length"
+        class="state"
+      >
+        Aucun résultat pour cette recherche.
+      </p>
+      <p
+        v-else-if="props.hasSearched && props.results.length && !sortedResults.length"
+        class="state"
+      >
+        Aucun résultat ne correspond à ces filtres. Essaie de les assouplir.
+      </p>
     </form>
 
-    <div v-if="props.results.length" class="results">
-      <article v-for="book in props.results" :key="book.id" class="results__card">
+    <div v-if="sortedResults.length" class="results">
+      <article v-for="book in sortedResults" :key="book.id" class="results__card">
         <img v-if="coverUrl(book)" :src="coverUrl(book)" :alt="`Couverture de ${book.volumeInfo.title}`" loading="lazy" />
         <div>
           <button
@@ -133,7 +316,7 @@ function handleAdd(book: GoogleBookVolume) {
       </article>
 
       <div class="results__pagination">
-        <span class="state">{{ props.paginationLabel }}</span>
+        <span class="state">{{ displayedPaginationLabel }}</span>
         <div>
           <button type="button" :disabled="!props.canGoPrevious" @click="props.goToPreviousPage">Précédent</button>
           <button type="button" :disabled="!props.canGoNext" @click="props.goToNextPage">Suivant</button>
@@ -246,6 +429,62 @@ function handleAdd(book: GoogleBookVolume) {
   box-shadow: var(--shadow-hover);
 }
 
+.search__filters {
+  margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.search__filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.search__filter-group--inline {
+  align-items: center;
+}
+
+.search__filter-label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-neutral-700);
+}
+
+.search__filter-chip {
+  border: 2px solid var(--color-black);
+  border-radius: 0;
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-white);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: var(--transition-snap);
+}
+
+.search__filter-chip--active {
+  background: var(--accent-primary);
+  color: white;
+  box-shadow: var(--shadow-subtle);
+}
+
+.search__checkbox input {
+  margin-right: var(--space-2);
+}
+
+.search__sort-select {
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-white);
+  font-size: var(--text-sm);
+}
+
 .search input {
   flex: 1;
   padding: var(--space-3) var(--space-4);
@@ -287,6 +526,51 @@ function handleAdd(book: GoogleBookVolume) {
 .search button:disabled {
   opacity: 0.6;
   cursor: progress;
+}
+
+@media (max-width: 640px) {
+  .search {
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .search__controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search button {
+    width: 100%;
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .search__presets {
+    margin-top: var(--space-3);
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: var(--space-1);
+  }
+
+  .search__presets button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: var(--text-xs);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .search__filters {
+    margin-top: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .search__filter-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search__filter-chip {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+  }
 }
 
 .results {

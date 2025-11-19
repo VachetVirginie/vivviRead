@@ -150,31 +150,24 @@ function getGradientClass(index: number): string {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--color-black);
+  background: transparent;
   opacity: 0;
   transition: var(--transition-snap);
   z-index: 1;
 }
 
 .stats__card:hover::before {
-  opacity: 0.9;
+  opacity: 0;
 }
 
 .stats__card:hover {
-  color: var(--color-white);
   transform: var(--transform-lift);
   box-shadow: var(--shadow-hover);
-  animation: pulse-scale 0.6s ease-in-out infinite;
 }
 
 .stats__card:hover * {
   position: relative;
   z-index: 2;
-}
-
-.stats__card:active {
-  transform: var(--transform-press);
-  animation: shake 0.5s ease-in-out;
 }
 
 .stats__icon {
@@ -185,40 +178,34 @@ function getGradientClass(index: number): string {
   width: 56px;
   height: 56px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--color-white);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--color-black);
   position: relative;
   transition: all var(--transition-normal);
 }
 
 .stats__card:hover .stats__icon-circle {
   transform: rotate(5deg) scale(1.1);
-  background: rgba(255, 255, 255, 0.3);
 }
 
 /* Icônes spécifiques pour les cards équilibre dynamique */
-.stats__card:nth-child(1) .stats__icon-circle,
-.stats__card:nth-child(2) .stats__icon-circle {
-  background: rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(0, 0, 0, 0.15);
+.stats__card:nth-child(1) .stats__icon-circle {
+  background: var(--accent-tertiary);
+  border-color: var(--color-black);
 }
 
-.stats__card:nth-child(1):hover .stats__icon-circle,
-.stats__card:nth-child(2):hover .stats__icon-circle {
-  background: rgba(0, 0, 0, 0.15);
+.stats__card:nth-child(2) .stats__icon-circle {
+  background: var(--accent-secondary);
+  border-color: var(--color-black);
 }
 
 .stats__card:nth-child(3) .stats__icon-circle {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.stats__card:nth-child(3):hover .stats__icon-circle {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--accent-primary);
+  border-color: var(--color-black);
 }
 
 .stats__icon-circle::before {
@@ -246,9 +233,8 @@ function getGradientClass(index: number): string {
   margin: 0 0 var(--space-1);
   font-size: var(--text-3xl);
   font-weight: var(--font-bold);
-  color: white;
+  color: var(--color-black);
   line-height: var(--leading-tight);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all var(--transition-normal);
 }
 
@@ -261,43 +247,41 @@ function getGradientClass(index: number): string {
   margin: 0 0 var(--space-1);
   font-size: var(--text-base);
   font-weight: var(--font-semibold);
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--color-black);
   line-height: var(--leading-normal);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .stats__sub {
   margin: 0;
   font-size: var(--text-sm);
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--color-black);
   line-height: var(--leading-normal);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Styles spécifiques pour les cards équilibre dynamique */
 .stats__card:nth-child(1) .stats__value,
 .stats__card:nth-child(2) .stats__value {
-  color: var(--color-neutral-900);
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4);
+  color: var(--color-black);
+  text-shadow: none;
 }
 
 .stats__card:nth-child(1) .stats__label,
 .stats__card:nth-child(2) .stats__label {
-  color: var(--color-neutral-800);
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+  color: var(--color-black);
+  text-shadow: none;
 }
 
 .stats__card:nth-child(1) .stats__sub,
 .stats__card:nth-child(2) .stats__sub {
-  color: var(--color-neutral-700);
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+  color: var(--color-black);
+  text-shadow: none;
 }
 
 .stats__card:nth-child(3) .stats__value,
 .stats__card:nth-child(3) .stats__label,
 .stats__card:nth-child(3) .stats__sub {
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  color: var(--color-black);
+  text-shadow: none;
 }
 
 .stats__decoration {

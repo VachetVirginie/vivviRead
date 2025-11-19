@@ -38,13 +38,30 @@ export function useBookExplorer() {
   })
 
   async function fetchBooks(customQuery?: string) {
-    const searchQuery = (customQuery ?? state.query).trim()
+    const rawQuery = (customQuery ?? state.query).trim()
 
-    if (!searchQuery) {
+    if (!rawQuery) {
       state.fetchedResults = []
       state.hasSearched = false
       state.errorMessage = null
       return
+    }
+
+    let searchQuery = rawQuery
+    let langRestrict: string | undefined
+    let orderBy: 'relevance' | 'newest' | undefined
+
+    // Support d'indices inline dans la requête, ex: "subject:fantasy language:fr orderBy=newest"
+    const languageMatch = searchQuery.match(/language:([a-z]{2})/i)
+    if (languageMatch && languageMatch[1]) {
+      langRestrict = languageMatch[1].toLowerCase()
+      searchQuery = searchQuery.replace(languageMatch[0], '').trim()
+    }
+
+    const orderByMatch = searchQuery.match(/orderBy=(newest|relevance)/i)
+    if (orderByMatch && orderByMatch[1]) {
+      orderBy = orderByMatch[1].toLowerCase() as 'relevance' | 'newest'
+      searchQuery = searchQuery.replace(orderByMatch[0], '').trim()
     }
 
     state.loading = true
@@ -62,6 +79,8 @@ export function useBookExplorer() {
           query: searchQuery,
           maxResults: batchSize,
           startIndex,
+          langRestrict,
+          orderBy,
         })
 
         state.totalItems = response.totalItems
