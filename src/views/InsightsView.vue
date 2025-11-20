@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 import { useAppContext } from '../composables/useAppContext'
 
@@ -44,6 +44,8 @@ const enrichedGoals = computed(() =>
 
 const topGoals = computed(() => enrichedGoals.value.slice(0, 3))
 
+const timelineFilter = ref<'all' | 'books' | 'goals'>('all')
+
 const timelineEvents = computed(() => {
   const bookEvents = books.value.map((book) => ({
     id: `book-${book.id}`,
@@ -74,7 +76,14 @@ const timelineEvents = computed(() => {
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   )
 
-  return all.slice(0, 8)
+  let filtered = all
+  if (timelineFilter.value === 'books') {
+    filtered = all.filter((event) => event.type === 'book')
+  } else if (timelineFilter.value === 'goals') {
+    filtered = all.filter((event) => event.type === 'goal')
+  }
+
+  return filtered.slice(0, 8)
 })
 </script>
 
@@ -175,6 +184,29 @@ const timelineEvents = computed(() => {
 
       <section class="insights-card insights-card--timeline" aria-label="Dernières activités">
         <h2 class="insights-card__title">Dernières activités</h2>
+        <div class="insights-timeline-filters" aria-label="Filtrer la timeline">
+          <button
+            type="button"
+            :class="['insights-timeline-filter', { 'insights-timeline-filter--active': timelineFilter === 'all' }]"
+            @click="timelineFilter = 'all'"
+          >
+            Tout
+          </button>
+          <button
+            type="button"
+            :class="['insights-timeline-filter', { 'insights-timeline-filter--active': timelineFilter === 'books' }]"
+            @click="timelineFilter = 'books'"
+          >
+            Livres
+          </button>
+          <button
+            type="button"
+            :class="['insights-timeline-filter', { 'insights-timeline-filter--active': timelineFilter === 'goals' }]"
+            @click="timelineFilter = 'goals'"
+          >
+            Objectifs
+          </button>
+        </div>
         <ul v-if="timelineEvents.length" class="insights-timeline">
           <li v-for="event in timelineEvents" :key="event.id" class="insights-timeline__item">
             <div class="insights-timeline__marker" />
@@ -413,5 +445,30 @@ const timelineEvents = computed(() => {
   margin: 0;
   font-size: var(--text-sm);
   color: var(--color-neutral-600);
+}
+
+.insights-timeline-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: var(--space-3);
+}
+
+.insights-timeline-filter {
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  background: var(--color-white);
+  color: var(--color-black);
+  padding: 0.3rem 0.8rem;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  box-shadow: var(--shadow-subtle);
+}
+
+.insights-timeline-filter--active {
+  background: var(--color-jaune-dore);
+  box-shadow: 3px 3px 0 var(--color-black);
 }
 </style>
