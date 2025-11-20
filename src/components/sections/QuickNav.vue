@@ -64,4 +64,27 @@ function handleOpen(type: 'book' | 'goal') {
   background: #f9fafb;
   color: #020617;
 }
+
+@media (max-width: 640px) {
+  .quick-nav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.4rem;
+    padding: 0.75rem 0.9rem 0.9rem;
+    border-radius: 1.25rem;
+  }
+
+  .quick-nav__separator {
+    display: none;
+  }
+
+  .quick-nav a {
+    font-size: 0.85rem;
+  }
+
+  .quick-nav button {
+    width: 100%;
+    text-align: center;
+  }
+}
 </style>

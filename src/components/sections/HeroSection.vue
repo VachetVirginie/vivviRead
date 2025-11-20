@@ -245,6 +245,7 @@ const emit = defineEmits<{
   aspect-ratio: 3 / 4;
   object-fit: cover;
   align-self: center;
+  height: 400px;
 }
 
 .hero__cover-slot {

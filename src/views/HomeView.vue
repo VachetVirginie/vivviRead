@@ -8,7 +8,6 @@ import type { GoogleBookVolume } from '../services/googleBooks'
 
 import HeroSection from '../components/sections/HeroSection.vue'
 import StatsSection from '../components/sections/StatsSection.vue'
-import QuickNav from '../components/sections/QuickNav.vue'
 import ModalAddGoal from '../components/sections/modals/ModalAddGoal.vue'
 
 /* -------- GLOBAL STATE -------- */
@@ -67,12 +66,6 @@ const explorerPreviewResults = computed(() => explorerState.value.results.slice(
 /* -------- COMPUTED -------- */
 const heroSession = computed(() => shelf.computeHeroSession())
 const stats = computed(() => shelf.computeStats())
-const quickNavLinks = [
-  { id: 'stats', label: 'Statistiques' },
-  { id: 'goals', label: 'Objectifs' },
-  { id: 'insights', label: 'Insights' },
-  { id: 'explorer', label: 'Explorateur' },
-]
 
 const isGoalModalOpen = computed(() => modals.active.value === 'goal')
 
@@ -97,8 +90,6 @@ function handleOpenModal(type: 'book' | 'goal') {
       @open-modal="handleOpenModal"
       @fetch-books="explorer.submitSearch"
     />
-
-    <QuickNav class="quick-nav animate-fade-in-up" :links="quickNavLinks" @open-modal="handleOpenModal" />
 
     <StatsSection class="stats-section animate-fade-in-up" :stats="stats" />
 
@@ -242,7 +233,6 @@ function handleOpenModal(type: 'book' | 'goal') {
     grid-template-columns: 2fr 1fr;
     grid-template-areas: 
       "hero hero"
-      "quicknav quicknav"
       "stats stats"
       "insights goals"
       "explorer explorer";
@@ -251,7 +241,6 @@ function handleOpenModal(type: 'book' | 'goal') {
   }
   
   .hero { grid-area: hero; }
-  .quick-nav { grid-area: quicknav; }
   .stats-section { grid-area: stats; }
   .insights-section { grid-area: insights; }
   .goals-section { grid-area: goals; }
