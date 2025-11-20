@@ -59,11 +59,11 @@ onMounted(() => {
       <section class="friends-card friends-card--feed" aria-label="Activités détaillées des amis">
         <h2 class="friends-card__title">Activités récentes</h2>
 
-        <p v-if="friendsFeed.loading" class="friends-empty">
+        <p v-if="friendsFeed.loading && !hasActivities" class="friends-empty">
           Chargement des lectures de tes amis…
         </p>
 
-        <ul v-else-if="hasActivities" class="friends-feed">
+        <ul v-if="hasActivities" class="friends-feed">
           <li v-for="activity in activities" :key="activity.id" class="friends-feed__item">
             <div class="friends-feed__header">
               <span class="friends-feed__name">{{ activity.userName }}</span>
@@ -84,7 +84,7 @@ onMounted(() => {
           </li>
         </ul>
 
-        <p v-else class="friends-empty">
+        <p v-else-if="!friendsFeed.loading" class="friends-empty">
           Aucune activité pour le moment. Tes propres lectures et objectifs, ainsi que ceux de tes amis suivis,
           apparaîtront ici.
         </p>
