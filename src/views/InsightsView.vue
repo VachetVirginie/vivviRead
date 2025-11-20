@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 import { useAppContext } from '../composables/useAppContext'
 
-const { shelf, goals } = useAppContext()
+const { shelf, goals, explorer } = useAppContext()
+const router = useRouter()
 
 const books = computed(() => shelf.books.value)
 const completedBooks = computed(() => shelf.completedBooks.value)
@@ -32,6 +34,122 @@ const lastCompletedBook = computed(() => {
 const avgPagesPerBookRead = computed(() =>
   completedCount.value > 0 ? Math.round(totalPagesRead.value / completedCount.value) : 0
 )
+
+const shortBooksCount = computed(() =>
+  books.value.filter((book) => {
+    const pages = book.totalPages ?? 0
+    return pages > 0 && pages < 200
+  }).length
+)
+
+const mediumBooksCount = computed(() =>
+  books.value.filter((book) => {
+    const pages = book.totalPages ?? 0
+    return pages >= 200 && pages <= 400
+  }).length
+)
+
+const longBooksCount = computed(() =>
+  books.value.filter((book) => {
+    const pages = book.totalPages ?? 0
+    return pages > 400
+  }).length
+)
+
+const startedBooksCount = computed(() =>
+  books.value.filter((book) => book.status !== 'a_lire').length
+)
+
+const completionRate = computed(() =>
+  startedBooksCount.value > 0
+    ? Math.round((completedCount.value / startedBooksCount.value) * 100)
+    : 0
+)
+
+interface GenreStat {
+  key: string
+  label: string
+  count: number
+}
+
+const genreBuckets = [
+  {
+    key: 'sfff',
+    label: 'SFFF',
+    keywords: ['science-fiction', 'science fiction', 'sf', 'fantasy', 'space opera', 'magicien', 'dragon'],
+  },
+  {
+    key: 'polar',
+    label: 'Polars & thrillers',
+    keywords: ['polar', 'thriller', 'enquête', 'crime', 'noir'],
+  },
+  {
+    key: 'romance',
+    label: 'Romance',
+    keywords: ['romance', 'amour', 'love'],
+  },
+  {
+    key: 'essai',
+    label: 'Essais & non-fiction',
+    keywords: ['essai', 'biographie', 'témoignage', 'développement personnel', 'histoire'],
+  },
+]
+
+const genreStats = computed<GenreStat[]>(() => {
+  const counts: Record<string, number> = {}
+  for (const bucket of genreBuckets) {
+    counts[bucket.key] = 0
+  }
+  let other = 0
+
+  books.value.forEach((book) => {
+    const text = `${book.title ?? ''} ${book.description ?? ''}`.toLowerCase()
+    const bucket = genreBuckets.find((b) => b.keywords.some((kw) => text.includes(kw)))
+    if (bucket) {
+      counts[bucket.key] += 1
+    } else {
+      other += 1
+    }
+  })
+
+  const stats: GenreStat[] = genreBuckets.map((bucket) => ({
+    key: bucket.key,
+    label: bucket.label,
+    count: counts[bucket.key] ?? 0,
+  }))
+
+  if (other > 0) {
+    stats.push({ key: 'other', label: 'Autres', count: other })
+  }
+
+  return stats.sort((a, b) => b.count - a.count)
+})
+
+const topGenres = computed(() => genreStats.value.filter((g) => g.count > 0).slice(0, 2))
+
+const lengthExploreHint = computed(() => {
+  const counts = [
+    { key: 'courts', label: 'livres courts', count: shortBooksCount.value },
+    { key: 'moyens', label: 'romans moyens', count: mediumBooksCount.value },
+    { key: 'longs', label: 'pavés', count: longBooksCount.value },
+  ]
+  const nonZero = counts.filter((c) => c.count > 0)
+  if (nonZero.length < 2) return ''
+  const sorted = [...nonZero].sort((a, b) => b.count - a.count)
+  const [first, ...rest] = sorted
+  if (!first) return ''
+  const least = rest.length ? rest[rest.length - 1] : first
+  return `Tu lis surtout des ${first.label}, mais très peu de ${least.label}.`
+})
+
+const exploreHint = computed(() => {
+  const stats = genreStats.value.filter((g) => g.key !== 'other' && g.count > 0)
+  if (stats.length < 2) return ''
+  const [first, ...rest] = stats
+  if (!first) return ''
+  const least = rest.length ? rest[rest.length - 1] : first
+  return `Tu lis surtout ${first.label.toLowerCase()}, mais très peu de ${least.label.toLowerCase()}.`
+})
 
 const baseGoals = computed(() => goals.goals.value)
 
@@ -85,6 +203,23 @@ const timelineEvents = computed(() => {
 
   return filtered.slice(0, 8)
 })
+
+const explorerRawState = explorer.state
+
+function buildSimilarQuery() {
+  const book = lastCompletedBook.value
+  if (!book) return 'subject:fiction lang=fr'
+  const author = book.author?.split(',')[0] ?? ''
+  if (!author) return 'subject:fiction lang=fr'
+  return `inauthor:"${author}" lang=fr`
+}
+
+function handleFindSimilarBooks() {
+  const query = buildSimilarQuery()
+  explorerRawState.query = query
+  explorer.submitSearch()
+  router.push({ name: 'explorer' })
+}
 </script>
 
 <template>
@@ -125,6 +260,36 @@ const timelineEvents = computed(() => {
         </div>
       </section>
 
+      <section class="insights-card" aria-label="Profil de lecture">
+        <h2 class="insights-card__title">Profil de lecture</h2>
+        <ul class="insights-profile">
+          <li>
+            <span class="insights-profile__label">Longueur des livres</span>
+            <span class="insights-profile__value">
+              {{ shortBooksCount }} courts · {{ mediumBooksCount }} moyens · {{ longBooksCount }} pavés
+            </span>
+          </li>
+          <li>
+            <span class="insights-profile__label">Taux de complétion</span>
+            <span class="insights-profile__value">
+              {{ completionRate }} %
+            </span>
+          </li>
+          <li v-if="topGenres.length">
+            <span class="insights-profile__label">Genres dominants</span>
+            <span class="insights-profile__value">
+              {{ topGenres.map((g) => g.label).join(', ') }}
+            </span>
+          </li>
+          <li v-if="lengthExploreHint || exploreHint">
+            <span class="insights-profile__label">Zones à explorer</span>
+            <span class="insights-profile__value">
+              {{ [lengthExploreHint, exploreHint].filter(Boolean).join(' ') }}
+            </span>
+          </li>
+        </ul>
+      </section>
+
       <section class="insights-card" aria-label="Dernier livre terminé">
         <h2 class="insights-card__title">Dernier livre terminé</h2>
         <p v-if="lastCompletedBook" class="insights-highlight__title">
@@ -151,6 +316,14 @@ const timelineEvents = computed(() => {
             <span class="insights-statuses__value">{{ abandonedCount }}</span>
           </li>
         </ul>
+        <button
+          v-if="lastCompletedBook"
+          type="button"
+          class="insights-similar-btn"
+          @click="handleFindSimilarBooks"
+        >
+          Trouver des livres similaires
+        </button>
       </section>
 
       <section class="insights-card" aria-label="Objectifs en mouvement">
@@ -334,6 +507,27 @@ const timelineEvents = computed(() => {
   font-weight: var(--font-semibold);
 }
 
+.insights-profile {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.insights-profile__label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-neutral-600);
+}
+
+.insights-profile__value {
+  font-size: var(--text-sm);
+  color: var(--color-neutral-900);
+}
+
 .insights-goals {
   list-style: none;
   padding: 0;
@@ -470,5 +664,24 @@ const timelineEvents = computed(() => {
 .insights-timeline-filter--active {
   background: var(--color-jaune-dore);
   box-shadow: 3px 3px 0 var(--color-black);
+}
+
+.insights-similar-btn {
+  margin-top: var(--space-3);
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  background: var(--color-jaune-dore);
+  color: var(--color-black);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  box-shadow: var(--shadow-brutal);
+}
+
+.insights-similar-btn:hover {
+  transform: var(--transform-press);
+  box-shadow: var(--shadow-hover);
 }
 </style>
