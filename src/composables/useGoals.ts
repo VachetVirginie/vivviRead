@@ -9,6 +9,8 @@ export interface ReadingGoal {
   unit: 'livres' | 'pages' | 'heures'
   deadline?: string
   updatedAt: string
+  trackingMode: 'manual' | 'auto_completed_books' | 'auto_pages_read'
+  displayCurrentValue?: number
 }
 
 export function useGoals() {
@@ -30,6 +32,7 @@ export function useGoals() {
     unit: string
     deadline: string | null
     updated_at: string
+    tracking_mode?: string | null
   }): ReadingGoal {
     return {
       id: row.id,
@@ -39,6 +42,10 @@ export function useGoals() {
       unit: row.unit as ReadingGoal['unit'],
       deadline: row.deadline ?? undefined,
       updatedAt: row.updated_at,
+      trackingMode:
+        row.tracking_mode === 'auto_completed_books' || row.tracking_mode === 'auto_pages_read'
+          ? row.tracking_mode
+          : 'manual',
     }
   }
 
@@ -72,6 +79,7 @@ export function useGoals() {
     targetValue: number
     unit: ReadingGoal['unit']
     deadline?: string
+    trackingMode?: ReadingGoal['trackingMode']
   }) {
     const normalizedTarget = Math.max(1, Math.floor(goal.targetValue))
 
@@ -86,6 +94,7 @@ export function useGoals() {
           current_value: 0,
           unit: goal.unit,
           deadline: goal.deadline ?? null,
+          tracking_mode: goal.trackingMode ?? 'manual',
         })
         .select('*')
         .single()
@@ -102,6 +111,13 @@ export function useGoals() {
   }
 
   async function updateGoalProgress(id: string, value: number) {
+    const targetGoal = goals.value.find((goal) => goal.id === id)
+    if (!targetGoal) return
+
+    if (targetGoal.trackingMode !== 'manual') {
+      return
+    }
+
     const nextGoals = goals.value.map((goal) =>
       goal.id === id
         ? {

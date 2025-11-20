@@ -8,6 +8,7 @@ import CompletedBooksView from '../views/CompletedBooksView.vue'
 import AbandonedBooksView from '../views/AbandonedBooksView.vue'
 import GoalsView from '../views/GoalsView.vue'
 import ExplorerView from '../views/ExplorerView.vue'
+import InsightsView from '../views/InsightsView.vue'
 import LoginView from '../views/LoginView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import ForgotPasswordView from '../views/ForgotPasswordView.vue'
@@ -56,6 +57,11 @@ const router = createRouter({
       path: '/objectifs',
       name: 'goals',
       component: GoalsView,
+    },
+    {
+      path: '/insights',
+      name: 'insights',
+      component: InsightsView,
     },
     {
       path: '/explorer',

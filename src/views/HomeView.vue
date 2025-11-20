@@ -16,9 +16,48 @@ const { shelf, goals, explorer, modals } = useAppContext()
 const router = useRouter()
 useSupabaseTest()
 
-const goalsList = computed(() => goals.goals.value)
+const goalsList = computed(() => {
+  const baseGoals = goals.goals.value
+  const books = shelf.books.value
+  const completedCount = shelf.completedBooks.value.length
+  const totalPagesRead = books.reduce(
+    (sum, book) => sum + Math.min(book.currentPage, book.totalPages ?? 0),
+    0
+  )
+
+  return baseGoals.map((goal) => {
+    if (goal.trackingMode === 'auto_completed_books') {
+      const display = Math.min(completedCount, goal.targetValue)
+      return { ...goal, displayCurrentValue: display }
+    }
+
+    if (goal.trackingMode === 'auto_pages_read') {
+      const display = Math.min(totalPagesRead, goal.targetValue)
+      return { ...goal, displayCurrentValue: display }
+    }
+
+    return { ...goal, displayCurrentValue: goal.currentValue }
+  })
+})
 const goalsPreview = computed(() => goalsList.value.slice(0, 2))
 const goalsCount = computed(() => goalsList.value.length)
+const completedCount = computed(() => shelf.completedBooks.value.length)
+const totalPagesRead = computed(() =>
+  shelf.books.value.reduce(
+    (sum, book) => sum + Math.min(book.currentPage, book.totalPages ?? 0),
+    0
+  )
+)
+const lastCompletedBook = computed(() => {
+  const list = shelf.completedBooks.value
+  if (!list.length) return null
+
+  const sorted = [...list].sort(
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+  )
+
+  return sorted[0]
+})
 const explorerState = explorer.publicState
 const explorerRawState = explorer.state
 const explorerLoading = computed(() => explorerRawState.loading)
@@ -29,8 +68,9 @@ const explorerPreviewResults = computed(() => explorerState.value.results.slice(
 const heroSession = computed(() => shelf.computeHeroSession())
 const stats = computed(() => shelf.computeStats())
 const quickNavLinks = [
-  { id: 'goals', label: 'Objectifs' },
   { id: 'stats', label: 'Statistiques' },
+  { id: 'goals', label: 'Objectifs' },
+  { id: 'insights', label: 'Insights' },
   { id: 'explorer', label: 'Explorateur' },
 ]
 
@@ -62,6 +102,42 @@ function handleOpenModal(type: 'book' | 'goal') {
 
     <StatsSection class="stats-section animate-fade-in-up" :stats="stats" />
 
+    <section
+      id="insights"
+      class="home-block insights-section animate-fade-in-up"
+      aria-label="Aperçu de mes insights de lecture"
+    >
+      <header class="home-block__header">
+        <div class="home-block__header-main">
+          <p class="section-eyebrow">Insights</p>
+          <h2>Moments forts de ta lecture</h2>
+          <p class="home-block__subtitle">
+            Un résumé rapide de tes habitudes de lecture. Retrouve plus de détails dans la page Insights.
+          </p>
+        </div>
+        <RouterLink to="/insights" class="home-block__link">
+          Voir Insights
+        </RouterLink>
+      </header>
+
+      <div class="insights-summary">
+        <div class="insights-summary__item">
+          <p class="insights-summary__label">Dernier livre terminé</p>
+          <p class="insights-summary__value">
+            {{ lastCompletedBook ? lastCompletedBook.title : 'Pas encore de livre terminé' }}
+          </p>
+        </div>
+        <div class="insights-summary__item">
+          <p class="insights-summary__label">Livres lus au total</p>
+          <p class="insights-summary__value">{{ completedCount }}</p>
+        </div>
+        <div class="insights-summary__item">
+          <p class="insights-summary__label">Pages lues</p>
+          <p class="insights-summary__value">{{ totalPagesRead }}</p>
+        </div>
+      </div>
+    </section>
+
     <section id="goals" class="home-block goals-section animate-fade-in-up" aria-label="Aperçu de mes objectifs">
       <header class="home-block__header">
         <div class="home-block__header-main">
@@ -86,10 +162,17 @@ function handleOpenModal(type: 'book' | 'goal') {
           <p class="home-goals-preview__label">{{ goal.unit }}</p>
           <h3>{{ goal.title }}</h3>
           <p class="home-goals-preview__value">
-            {{ goal.currentValue }} / {{ goal.targetValue }} {{ goal.unit }}
+            {{ goal.displayCurrentValue ?? goal.currentValue }} / {{ goal.targetValue }} {{ goal.unit }}
           </p>
           <div class="home-goals-preview__progress">
-            <span :style="{ width: `${Math.min(100, Math.round((goal.currentValue / goal.targetValue) * 100))}%` }" />
+            <span
+              :style="{
+                width: `${Math.min(
+                  100,
+                  Math.round(((goal.displayCurrentValue ?? goal.currentValue) / goal.targetValue) * 100),
+                )}%`,
+              }"
+            />
           </div>
         </article>
       </div>
@@ -159,7 +242,8 @@ function handleOpenModal(type: 'book' | 'goal') {
     grid-template-areas: 
       "hero hero"
       "quicknav quicknav"
-      "stats goals"
+      "stats stats"
+      "insights goals"
       "explorer explorer";
     gap: var(--space-10) var(--space-8);
     padding: var(--space-12) var(--space-6) var(--space-16);
@@ -168,6 +252,7 @@ function handleOpenModal(type: 'book' | 'goal') {
   .hero { grid-area: hero; }
   .quick-nav { grid-area: quicknav; }
   .stats-section { grid-area: stats; }
+  .insights-section { grid-area: insights; }
   .goals-section { grid-area: goals; }
   .explorer-section { grid-area: explorer; }
 }
@@ -384,6 +469,33 @@ function handleOpenModal(type: 'book' | 'goal') {
   font-size: var(--text-sm);
   color: var(--color-neutral-600);
   line-height: var(--leading-normal);
+}
+
+.insights-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+}
+
+.insights-summary__item {
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  padding: var(--space-4);
+  background: var(--color-neutral-50);
+}
+
+.insights-summary__label {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-neutral-600);
+}
+
+.insights-summary__value {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
 }
 
 .home-block .state {

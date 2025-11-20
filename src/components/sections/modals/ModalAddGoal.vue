@@ -5,7 +5,13 @@ import type { GoalForm } from '@/types/forms'
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'add', payload: { title: string; targetValue: number; unit: GoalForm['unit']; deadline?: string }): void
+  (e: 'add', payload: {
+    title: string
+    targetValue: number
+    unit: GoalForm['unit']
+    deadline?: string
+    trackingMode: GoalForm['trackingMode']
+  }): void
 }>()
 
 const form = reactive<GoalForm>({
@@ -13,6 +19,7 @@ const form = reactive<GoalForm>({
   targetValue: 4,
   unit: 'livres',
   deadline: '',
+  trackingMode: 'manual',
 })
 
 const errorMessage = ref<string | null>(null)
@@ -22,6 +29,7 @@ function resetForm() {
   form.targetValue = 4
   form.unit = 'livres'
   form.deadline = ''
+   form.trackingMode = 'manual'
   errorMessage.value = null
 }
 
@@ -41,6 +49,7 @@ function handleSubmit() {
     targetValue: form.targetValue,
     unit: form.unit,
     deadline: form.deadline || undefined,
+    trackingMode: form.trackingMode,
   })
 
   resetForm()
@@ -80,6 +89,39 @@ onBeforeUnmount(() => {
           </div>
         </label>
       </div>
+
+      <label>
+        <span>Mode de suivi</span>
+        <div class="modal-add-goal__chips">
+          <button
+            type="button"
+            :class="['modal-add-goal__chip', { 'modal-add-goal__chip--active': form.trackingMode === 'manual' }]"
+            @click="form.trackingMode = 'manual'"
+          >
+            Manuel
+          </button>
+          <button
+            type="button"
+            :class="[
+              'modal-add-goal__chip',
+              { 'modal-add-goal__chip--active': form.trackingMode === 'auto_completed_books' },
+            ]"
+            @click="form.trackingMode = 'auto_completed_books'"
+          >
+            Livres terminés
+          </button>
+          <button
+            type="button"
+            :class="[
+              'modal-add-goal__chip',
+              { 'modal-add-goal__chip--active': form.trackingMode === 'auto_pages_read' },
+            ]"
+            @click="form.trackingMode = 'auto_pages_read'"
+          >
+            Pages lues
+          </button>
+        </div>
+      </label>
 
       <label>
         <span>Date limite (optionnel)</span>
@@ -130,6 +172,7 @@ onBeforeUnmount(() => {
 .modal-add-goal__chips {
   display: flex;
   gap: 0.4rem;
+  margin-bottom: 0.4rem;
 }
 
 .modal-add-goal__chip {
@@ -151,8 +194,8 @@ onBeforeUnmount(() => {
   background: var(--accent-tertiary);
   border-color: var(--color-black);
   color: var(--color-black);
-  box-shadow: var(--shadow-brutal);
-  transform: var(--transform-press);
+  box-shadow: 3px 3px 0 var(--color-black);
+  transform: translate(0, 0);
 }
 
 .modal-add-goal input::placeholder {

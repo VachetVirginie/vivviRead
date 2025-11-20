@@ -22,29 +22,40 @@ const emit = defineEmits<{
         v-for="goal in goals"
         :key="goal.id"
         class="goals__card"
-        :class="{ 'goals__card--completed': goal.currentValue >= goal.targetValue }"
+        :class="{ 'goals__card--completed': (goal.displayCurrentValue ?? goal.currentValue) >= goal.targetValue }"
       >
         <div class="goals__header">
           <div>
             <p class="goals__label">{{ goal.unit }}</p>
             <h3>{{ goal.title }}</h3>
           </div>
-          <span v-if="goal.currentValue >= goal.targetValue" class="goals__badge">Atteint</span>
+          <span
+            v-if="(goal.displayCurrentValue ?? goal.currentValue) >= goal.targetValue"
+            class="goals__badge"
+          >Atteint</span>
           <button class="shelf__remove" type="button" @click="emit('remove', goal.id)">Supprimer</button>
         </div>
         <p class="goals__value">
-          {{ goal.currentValue }} / {{ goal.targetValue }} {{ goal.unit }}
+          {{ goal.displayCurrentValue ?? goal.currentValue }} / {{ goal.targetValue }} {{ goal.unit }}
         </p>
         <div class="goals__progress">
-          <span :style="{ width: `${Math.min(100, Math.round((goal.currentValue / goal.targetValue) * 100))}%` }"></span>
+          <span
+            :style="{
+              width: `${Math.min(
+                100,
+                Math.round(((goal.displayCurrentValue ?? goal.currentValue) / goal.targetValue) * 100),
+              )}%`,
+            }"
+          ></span>
         </div>
         <label class="goals__input-group">
-          <span>Mise à jour</span>
+          <span>{{ goal.trackingMode === 'manual' ? 'Mise à jour' : 'Suivi automatique' }}</span>
           <input
             type="number"
             min="0"
             :max="goal.targetValue"
-            :value="goal.currentValue"
+            :value="goal.displayCurrentValue ?? goal.currentValue"
+            :disabled="goal.trackingMode !== 'manual'"
             @change="emit('update-progress', { id: goal.id, value: Number(($event.target as HTMLInputElement).value) })"
           />
         </label>

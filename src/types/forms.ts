@@ -9,4 +9,5 @@ export interface GoalForm {
   targetValue: number
   unit: 'livres' | 'pages' | 'heures'
   deadline: string
+  trackingMode: 'manual' | 'auto_completed_books' | 'auto_pages_read'
 }
