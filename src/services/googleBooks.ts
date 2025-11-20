@@ -42,7 +42,7 @@ export interface SearchBooksResponse {
   items: GoogleBookVolume[]
 }
 
-function buildSearchUrl({ query, maxResults = 10, startIndex = 0, langRestrict, orderBy }: SearchBooksParams) {
+function buildSearchUrl({ query, maxResults = 10, startIndex = 0, langRestrict = 'fr', orderBy }: SearchBooksParams) {
   const url = new URL(GOOGLE_BOOKS_API_BASE_URL)
   url.searchParams.set('q', query)
   url.searchParams.set('maxResults', String(Math.min(maxResults, 40)))
