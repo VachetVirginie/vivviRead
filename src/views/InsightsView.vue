@@ -242,7 +242,7 @@ function handleFindSimilarBooks() {
         <h2 class="insights-card__title">Chiffres clés</h2>
         <div class="insights-metrics">
           <div class="insights-metrics__item">
-            <p class="insights-metrics__label">Livres suivis</p>
+            <p class="insights-metrics__label">Pile à lire</p>
             <p class="insights-metrics__value">{{ totalBooks }}</p>
           </div>
           <div class="insights-metrics__item">

@@ -198,7 +198,7 @@ onMounted(() => {
           <p v-if="profile?.username" class="reader-username">@{{ profile.username }}</p>
           <div class="reader-stats">
             <div class="reader-stats__item">
-              <span class="reader-stats__label">Livres suivis</span>
+              <span class="reader-stats__label">Livres en attente de lecture</span>
               <span class="reader-stats__value">{{ stats?.totalBooks ?? 0 }}</span>
             </div>
             <div class="reader-stats__item">

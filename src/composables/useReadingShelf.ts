@@ -414,7 +414,7 @@ export function useReadingShelf() {
 
     return [
       {
-        label: 'Livres suivis',
+        label: 'Pile à lire',
         value: String(totalBooks),
         subLabel: 'Dans ta bibliothèque',
       },
