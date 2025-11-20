@@ -106,7 +106,7 @@ const genreStats = computed<GenreStat[]>(() => {
     const text = `${book.title ?? ''} ${book.description ?? ''}`.toLowerCase()
     const bucket = genreBuckets.find((b) => b.keywords.some((kw) => text.includes(kw)))
     if (bucket) {
-      counts[bucket.key] += 1
+      counts[bucket.key] = (counts[bucket.key] ?? 0) + 1
     } else {
       other += 1
     }
@@ -138,7 +138,7 @@ const lengthExploreHint = computed(() => {
   const sorted = [...nonZero].sort((a, b) => b.count - a.count)
   const [first, ...rest] = sorted
   if (!first) return ''
-  const least = rest.length ? rest[rest.length - 1] : first
+  const least = rest.length ? rest[rest.length - 1]! : first
   return `Tu lis surtout des ${first.label}, mais très peu de ${least.label}.`
 })
 
@@ -147,7 +147,7 @@ const exploreHint = computed(() => {
   if (stats.length < 2) return ''
   const [first, ...rest] = stats
   if (!first) return ''
-  const least = rest.length ? rest[rest.length - 1] : first
+  const least = rest.length ? rest[rest.length - 1]! : first
   return `Tu lis surtout ${first.label.toLowerCase()}, mais très peu de ${least.label.toLowerCase()}.`
 })
 
