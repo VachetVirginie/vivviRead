@@ -2,12 +2,16 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppContext } from '../composables/useAppContext'
+import { useAuth } from '../composables/useAuth'
 
 const router = useRouter()
 const { shelf, friendsFeed, friendsRelations } = useAppContext()
+const { user } = useAuth()
 
 const activities = computed(() => friendsFeed.activities.value)
 const hasActivities = computed(() => activities.value.length > 0)
+
+const currentUserId = computed(() => user.value?.id ?? null)
 
 const feedFilter = ref<'all' | 'books' | 'goals'>('all')
 
@@ -38,6 +42,26 @@ function formatDateLabel(dateString: string): string {
   return date.toLocaleDateString()
 }
 
+function stringToColor(input: string): string {
+  const colors = ['#F97316', '#F97373', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899', '#FBBF24']
+  let hash = 0
+  for (let i = 0; i < input.length; i += 1) {
+    hash = input.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  const index = Math.abs(hash) % colors.length
+  return colors[index] ?? '#111827'
+}
+
+function avatarInitialForName(name: string | null): string {
+  if (!name) return '?'
+  const trimmed = name.trim()
+  return trimmed.charAt(0).toUpperCase() || '?'
+}
+
+function avatarColorForName(name: string | null): string {
+  return stringToColor(name || '?')
+}
+
 function badgeForType(type: string): string {
   if (type === 'book_added') return 'LIVRE AJOUTÉ'
   if (type === 'book_finished') return 'LIVRE TERMINÉ'
@@ -48,7 +72,7 @@ function badgeForType(type: string): string {
 
 interface ActivityGroup {
   label: string
-  items: ReturnType<typeof activities.value> | any
+  items: typeof activities.value
 }
 
 const groupedActivities = computed(() => {
@@ -81,6 +105,10 @@ function handleSetFilter(filter: 'all' | 'books' | 'goals') {
 
 function handleAddToShelf(activity: (typeof activities.value)[number]) {
   if (!activity.bookTitle || !activity.bookAuthor) return
+
+  if (shelf.isInShelf(activity.bookTitle, activity.bookAuthor)) {
+    return
+  }
 
   shelf.addFromSearch({
     title: activity.bookTitle,
@@ -120,25 +148,22 @@ onMounted(() => {
     </header>
 
     <section class="friends-layout" aria-label="Flux d'activités des amis">
-      <section class="friends-card" aria-label="Résumé social">
-        <h2 class="friends-card__title">Ton réseau de lecture</h2>
-        <div class="friends-stats">
-          <div class="friends-stats__item">
-            <p class="friends-stats__label">Tu suis</p>
-            <p class="friends-stats__value">{{ friendsRelations.followingCount }}</p>
-          </div>
-          <div class="friends-stats__item">
-            <p class="friends-stats__label">Te suivent</p>
-            <p class="friends-stats__value">{{ friendsRelations.followersCount }}</p>
-          </div>
-        </div>
-        <p v-if="!friendsRelations.hasFollowing" class="friends-empty">
-          Tu ne suis encore personne. Dès que tu suivras des amis, leurs activités apparaîtront ici.
-        </p>
-      </section>
-
       <section class="friends-card friends-card--feed" aria-label="Activités détaillées des amis">
         <h2 class="friends-card__title">Activités récentes</h2>
+
+        <div class="friends-network-bar">
+          <div class="friends-network-bar__item">
+            <span class="friends-network-bar__label">Tu suis</span>
+            <span class="friends-network-bar__value">{{ friendsRelations.followingCount }}</span>
+          </div>
+          <div class="friends-network-bar__item">
+            <span class="friends-network-bar__label">Te suivent</span>
+            <span class="friends-network-bar__value">{{ friendsRelations.followersCount }}</span>
+          </div>
+          <p v-if="!friendsRelations.hasFollowing" class="friends-network-bar__hint">
+            Commence par suivre des amis depuis "Trouver des amis" pour voir leurs lectures ici.
+          </p>
+        </div>
 
         <div class="friends-feed-filters" aria-label="Filtrer les activités">
           <button
@@ -188,6 +213,13 @@ onMounted(() => {
               >
                 <div class="friends-feed__header">
                   <div class="friends-feed__header-main">
+                    <div
+                      class="friends-feed__avatar"
+                      :style="{ backgroundColor: avatarColorForName(activity.userName) }"
+                      aria-hidden="true"
+                    >
+                      {{ avatarInitialForName(activity.userName) }}
+                    </div>
                     <span class="friends-feed__name">{{ activity.userName }}</span>
                     <span class="friends-feed__badge">{{ badgeForType(activity.type) }}</span>
                   </div>
@@ -206,12 +238,17 @@ onMounted(() => {
                   Objectif : {{ activity.goalTitle }}
                 </p>
                 <button
-                  v-if="activity.bookTitle && activity.bookAuthor"
+                  v-if="activity.bookTitle && activity.bookAuthor && activity.userId !== currentUserId"
                   type="button"
                   class="friends-feed__action"
+                  :disabled="shelf.isInShelf(activity.bookTitle, activity.bookAuthor)"
                   @click="handleAddToShelf(activity)"
                 >
-                  Ajouter à ma liste
+                  {{
+                    shelf.isInShelf(activity.bookTitle, activity.bookAuthor)
+                      ? 'Déjà dans ta bibliothèque'
+                      : 'Ajouter à ma liste'
+                  }}
                 </button>
               </li>
             </ul>
@@ -238,15 +275,9 @@ onMounted(() => {
 }
 
 .friends-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  display: flex;
+  flex-direction: column;
   gap: var(--space-6);
-}
-
-@media (max-width: 900px) {
-  .friends-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 .friends-card {
@@ -268,6 +299,42 @@ onMounted(() => {
   margin: 0;
   font-size: var(--text-lg);
   font-weight: var(--font-semibold);
+}
+
+.friends-network-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  background: var(--color-neutral-50);
+  margin-bottom: var(--space-4);
+}
+
+.friends-network-bar__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.friends-network-bar__label {
+  font-size: var(--text-xxs, 0.65rem);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-neutral-600);
+}
+
+.friends-network-bar__value {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+}
+
+.friends-network-bar__hint {
+  margin: 0 0 0 auto;
+  font-size: var(--text-xs);
+  color: var(--color-neutral-600);
 }
 
 .friends-feed-filters {
@@ -380,6 +447,19 @@ onMounted(() => {
   gap: 0.5rem;
 }
 
+.friends-feed__avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  border: 2px solid var(--color-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-bold);
+  font-size: 0.9rem;
+  color: #ffffff;
+}
+
 .friends-feed__name {
   font-weight: var(--font-semibold);
 }
@@ -429,5 +509,17 @@ onMounted(() => {
 .friends-feed__action:hover {
   background: var(--color-jaune-dore);
   box-shadow: 3px 3px 0 var(--color-black);
+}
+
+@media (max-width: 640px) {
+  .friends-feed__header-main {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .friends-feed__badge {
+    align-self: center;
+    text-align: center;
+  }
 }
 </style>
