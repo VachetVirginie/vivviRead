@@ -18,6 +18,7 @@ const props = defineProps<{
   currentPage: number
   paginationLabel: string
   presets: ExplorerPreset[]
+  recommendedPresets: ExplorerPreset[]
   lengthFilter: 'all' | 'short' | 'medium' | 'long'
   periodFilter: 'all' | 'recent' | 'modern' | 'older'
   hideInShelf: boolean
@@ -167,6 +168,22 @@ const activeFiltersSummary = computed(() => {
         <button type="submit" :disabled="props.loading">
           {{ props.loading ? 'Recherche…' : 'Rechercher' }}
         </button>
+      </div>
+
+      <div v-if="props.recommendedPresets.length" class="search__recommended">
+        <p class="search__recommended-title">Recommandé pour toi</p>
+        <div class="search__presets">
+          <button
+            v-for="preset in props.recommendedPresets"
+            :key="preset.value"
+            type="button"
+            :class="{ 'search__presets-button--active': activePresetLabel === preset.label }"
+            :disabled="activePresetLabel === preset.label"
+            @click="handlePresetClick(preset)"
+          >
+            {{ preset.label }}
+          </button>
+        </div>
       </div>
 
       <div v-if="props.presets.length" class="search__presets">
@@ -468,6 +485,21 @@ const activeFiltersSummary = computed(() => {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+}
+
+.search__recommended {
+  margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.search__recommended-title {
+  margin: 0;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-neutral-700);
 }
 
 .search__presets button {
