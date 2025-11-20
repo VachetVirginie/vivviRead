@@ -1,14 +1,64 @@
 <script setup lang="ts">
-import Carousel from '../ui/Carousel.vue'
+import { computed, ref } from 'vue'
 import BookCard from '../ui/BookCard.vue'
 import type { ReadingBook, ReadingStatus } from '../../composables/useReadingShelf'
 
-defineProps<{ books: ReadingBook[] }>()
+const props = defineProps<{ books: ReadingBook[] }>()
 
 const emit = defineEmits<{
   (e: 'status-change', payload: { id: string; status: ReadingStatus }): void
   (e: 'remove', id: string): void
 }>()
+
+const searchQuery = ref('')
+const sortBy = ref<'recent' | 'title' | 'author' | 'rating'>('recent')
+const yearFilter = ref<'all' | 'this-year' | 'last-year' | 'older'>('all')
+
+function getYear(value: string): number | null {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return null
+  return date.getFullYear()
+}
+
+const currentYear = new Date().getFullYear()
+
+const filteredBooks = computed(() => {
+  const query = searchQuery.value.trim().toLowerCase()
+  let list = props.books
+
+  if (query) {
+    list = list.filter((book) => {
+      return (
+        book.title.toLowerCase().includes(query) ||
+        book.author.toLowerCase().includes(query)
+      )
+    })
+  }
+
+  if (yearFilter.value !== 'all') {
+    list = list.filter((book) => {
+      const year = getYear(book.updatedAt)
+      if (!year) return false
+      if (yearFilter.value === 'this-year') return year === currentYear
+      if (yearFilter.value === 'last-year') return year === currentYear - 1
+      if (yearFilter.value === 'older') return year < currentYear - 1
+      return true
+    })
+  }
+
+  const sorted = [...list]
+  if (sortBy.value === 'title') {
+    sorted.sort((a, b) => a.title.localeCompare(b.title))
+  } else if (sortBy.value === 'author') {
+    sorted.sort((a, b) => a.author.localeCompare(b.author))
+  } else if (sortBy.value === 'rating') {
+    sorted.sort((a, b) => (b.averageRating ?? 0) - (a.averageRating ?? 0))
+  } else {
+    sorted.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+  }
+
+  return sorted
+})
 </script>
 
 <template>
@@ -20,29 +70,106 @@ const emit = defineEmits<{
 
     <p v-if="!books.length" class="state">Tu n'as pas encore terminé de livre cette année.</p>
 
-    <Carousel
-      v-else
-      class="completed__carousel"
-      :items-count="books.length"
-      aria-label="Livres lus"
-      :ariaLabel="'Livres lus'"
-      :items-per-page="3"
-    >
-      <article
-        v-for="book in books"
-        :key="book.id"
-        class="completed__card carousel__slide"
-        role="group"
-      >
-        <BookCard :book="book" :hide-actions="true" />
-        <p v-if="book.notes" class="completed__notes">{{ book.notes }}</p>
-        <div class="completed__actions">
-          <button type="button" @click="emit('status-change', { id: book.id, status: 'en_cours' })">Reprendre</button>
-          <button type="button" @click="emit('status-change', { id: book.id, status: 'a_lire' })">Reclasser</button>
-          <button type="button" class="shelf__remove" @click="emit('remove', book.id)">Supprimer</button>
+    <div v-else>
+      <div class="completed__filters">
+        <div class="completed__filters-row">
+          <label class="completed__search">
+            <span class="completed__filters-label">Rechercher</span>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Titre ou auteur"
+            />
+          </label>
+          <div class="completed__sort">
+            <span class="completed__filters-label">Trier par</span>
+            <div class="completed__chips">
+              <button
+                type="button"
+                :class="['completed__chip', { 'completed__chip--active': sortBy === 'recent' }]"
+                @click="sortBy = 'recent'"
+              >
+                Récent
+              </button>
+              <button
+                type="button"
+                :class="['completed__chip', { 'completed__chip--active': sortBy === 'title' }]"
+                @click="sortBy = 'title'"
+              >
+                Titre
+              </button>
+              <button
+                type="button"
+                :class="['completed__chip', { 'completed__chip--active': sortBy === 'author' }]"
+                @click="sortBy = 'author'"
+              >
+                Auteur
+              </button>
+              <button
+                type="button"
+                :class="['completed__chip', { 'completed__chip--active': sortBy === 'rating' }]"
+                @click="sortBy = 'rating'"
+              >
+                Note
+              </button>
+            </div>
+          </div>
         </div>
-      </article>
-    </Carousel>
+
+        <div class="completed__filters-row completed__filters-row--secondary">
+          <span class="completed__filters-label">Année</span>
+          <div class="completed__chips">
+            <button
+              type="button"
+              :class="['completed__chip', { 'completed__chip--active': yearFilter === 'all' }]"
+              @click="yearFilter = 'all'"
+            >
+              Toutes
+            </button>
+            <button
+              type="button"
+              :class="['completed__chip', { 'completed__chip--active': yearFilter === 'this-year' }]"
+              @click="yearFilter = 'this-year'"
+            >
+              Cette année
+            </button>
+            <button
+              type="button"
+              :class="['completed__chip', { 'completed__chip--active': yearFilter === 'last-year' }]"
+              @click="yearFilter = 'last-year'"
+            >
+              Année dernière
+            </button>
+            <button
+              type="button"
+              :class="['completed__chip', { 'completed__chip--active': yearFilter === 'older' }]"
+              @click="yearFilter = 'older'"
+            >
+              Plus ancien
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <p v-if="books.length && !filteredBooks.length" class="state">Aucun résultat avec ces filtres.</p>
+
+      <div v-else class="completed__grid">
+        <article
+          v-for="book in filteredBooks"
+          :key="book.id"
+          class="completed__card"
+          role="group"
+        >
+          <BookCard :book="book" :hide-actions="true" />
+          <p v-if="book.notes" class="completed__notes">{{ book.notes }}</p>
+          <div class="completed__actions">
+            <button type="button" @click="emit('status-change', { id: book.id, status: 'en_cours' })">Reprendre</button>
+            <button type="button" @click="emit('status-change', { id: book.id, status: 'a_lire' })">Reclasser</button>
+            <button type="button" class="shelf__remove" @click="emit('remove', book.id)">Supprimer</button>
+          </div>
+        </article>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -82,8 +209,14 @@ const emit = defineEmits<{
 
 .completed__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .completed__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .completed__card {
@@ -207,8 +340,5 @@ const emit = defineEmits<{
   transform: var(--transform-press);
   box-shadow: var(--shadow-hover);
   animation: pulse-scale 0.6s ease-in-out infinite;
-}
-.completed__carousel :deep(.carousel__controls) {
-  margin-top: 1.25rem;
 }
 </style>

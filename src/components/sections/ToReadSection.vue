@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import Carousel from '../ui/Carousel.vue'
 import BookCard from '../ui/BookCard.vue'
 import type { ReadingBook } from '../../composables/useReadingShelf'
 
@@ -10,6 +9,46 @@ const emit = defineEmits<{
   (e: 'status-change', id: string): void
   (e: 'remove', id: string): void
 }>()
+
+const searchQuery = ref('')
+const sortBy = ref<'recent' | 'title' | 'author'>('recent')
+const sizeFilter = ref<'all' | 'short' | 'medium' | 'long'>('all')
+
+const filteredBooks = computed(() => {
+  const query = searchQuery.value.trim().toLowerCase()
+  let list = props.books
+
+  if (query) {
+    list = list.filter((book) => {
+      return (
+        book.title.toLowerCase().includes(query) ||
+        book.author.toLowerCase().includes(query)
+      )
+    })
+  }
+
+  if (sizeFilter.value !== 'all') {
+    list = list.filter((book) => {
+      const pages = book.totalPages || 0
+      if (!pages) return false
+      if (sizeFilter.value === 'short') return pages < 200
+      if (sizeFilter.value === 'medium') return pages >= 200 && pages <= 400
+      if (sizeFilter.value === 'long') return pages > 400
+      return true
+    })
+  }
+
+  const sorted = [...list]
+  if (sortBy.value === 'title') {
+    sorted.sort((a, b) => a.title.localeCompare(b.title))
+  } else if (sortBy.value === 'author') {
+    sorted.sort((a, b) => a.author.localeCompare(b.author))
+  } else {
+    sorted.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+  }
+
+  return sorted
+})
 
 const activeBookId = ref<string | null>(null)
 
@@ -35,7 +74,7 @@ function handleModalAction(action: 'start' | 'remove') {
 </script>
 
 <template>
-  <section id="to-read" class="to-read" role="region" aria-label="Pile à lire, carrousel de cartes accessible">
+  <section id="to-read" class="to-read" role="region" aria-label="Pile à lire, galerie de cartes accessible">
     <header>
       <p class="section-eyebrow">Pile à lire</p>
       <h2>Prépare tes prochaines découvertes en parcourant ta pile sous forme de cartes accessibles.</h2>
@@ -43,23 +82,91 @@ function handleModalAction(action: 'start' | 'remove') {
 
     <p v-if="!books.length" class="state">Ta pile à lire est vide pour l'instant.</p>
 
-    <Carousel
-      v-else
-      class="to-read__carousel"
-      :items-count="props.books.length"
-      aria-label="Parcourir les livres de la pile à lire"
-      :ariaLabel="'Parcourir les livres de la pile à lire'"
-      :items-per-page="3"
-    >
+    <div v-else class="to-read__filters">
+      <div class="to-read__filters-row">
+        <label class="to-read__search">
+          <span class="to-read__filters-label">Rechercher</span>
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Titre ou auteur"
+          />
+        </label>
+        <div class="to-read__sort">
+          <span class="to-read__filters-label">Trier par</span>
+          <div class="to-read__chips">
+            <button
+              type="button"
+              :class="['to-read__chip', { 'to-read__chip--active': sortBy === 'recent' }]"
+              @click="sortBy = 'recent'"
+            >
+              Récent
+            </button>
+            <button
+              type="button"
+              :class="['to-read__chip', { 'to-read__chip--active': sortBy === 'title' }]"
+              @click="sortBy = 'title'"
+            >
+              Titre
+            </button>
+            <button
+              type="button"
+              :class="['to-read__chip', { 'to-read__chip--active': sortBy === 'author' }]"
+              @click="sortBy = 'author'"
+            >
+              Auteur
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="to-read__filters-row to-read__filters-row--secondary">
+        <span class="to-read__filters-label">Taille</span>
+        <div class="to-read__chips">
+          <button
+            type="button"
+            :class="['to-read__chip', { 'to-read__chip--active': sizeFilter === 'all' }]"
+            @click="sizeFilter = 'all'"
+          >
+            Toutes
+          </button>
+          <button
+            type="button"
+            :class="['to-read__chip', { 'to-read__chip--active': sizeFilter === 'short' }]"
+            @click="sizeFilter = 'short'"
+          >
+            Courtes
+          </button>
+          <button
+            type="button"
+            :class="['to-read__chip', { 'to-read__chip--active': sizeFilter === 'medium' }]"
+            @click="sizeFilter = 'medium'"
+          >
+            Moyennes
+          </button>
+          <button
+            type="button"
+            :class="['to-read__chip', { 'to-read__chip--active': sizeFilter === 'long' }]"
+            @click="sizeFilter = 'long'"
+          >
+            Pavés
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <p v-if="books.length && !filteredBooks.length" class="state">Aucun résultat avec ces filtres.</p>
+
+    <div v-else-if="books.length && filteredBooks.length" class="to-read__grid">
       <BookCard
-        v-for="book in props.books"
+        v-for="book in filteredBooks"
         :key="book.id"
         :book="book"
         @open="openBookModal"
         @start="emit('status-change', $event)"
         @remove="emit('remove', $event)"
       />
-    </Carousel>
+    </div>
 
     <div
       v-if="activeBook"
@@ -112,6 +219,68 @@ function handleModalAction(action: 'start' | 'remove') {
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
+}
+
+.to-read__filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.to-read__filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.to-read__filters-row--secondary {
+  justify-content: flex-start;
+}
+
+.to-read__filters-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.to-read__search {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1 1 160px;
+}
+
+.to-read__search input {
+  border: 2px solid var(--color-black);
+  border-radius: 0;
+  padding: 0.4rem 0.6rem;
+  font: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.to-read__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.to-read__chip {
+  border: 2px solid var(--color-black);
+  border-radius: 0;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: var(--color-white);
+  cursor: pointer;
+}
+
+.to-read__chip--active {
+  background: var(--color-jaune-dore);
 }
 
 .to-read__grid {

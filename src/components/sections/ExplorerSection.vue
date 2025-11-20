@@ -696,9 +696,15 @@ const activeFiltersSummary = computed(() => {
 }
 
 .results {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .results {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .results__card {
@@ -796,6 +802,7 @@ const activeFiltersSummary = computed(() => {
   margin-top: var(--space-4);
   flex-wrap: wrap;
   gap: var(--space-3);
+  grid-column: 1 / -1;
 }
 
 .results__pagination button {

@@ -1,76 +1,22 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 import { useAppContext } from '../composables/useAppContext'
-import type { ReadingStatus } from '../composables/useReadingShelf'
-
-import ToReadSection from '../components/sections/ToReadSection.vue'
-import ShelfSection from '../components/sections/ShelfSection.vue'
-import CompletedSection from '../components/sections/CompletedSection.vue'
-import AbandonedSection from '../components/sections/AbandonedSection.vue'
+import LibrarySectionCard from '../components/sections/LibrarySectionCard.vue'
 import ModalAddBook from '../components/sections/modals/ModalAddBook.vue'
 
 const { shelf, modals } = useAppContext()
+const router = useRouter()
 
 const toReadBooks = computed(() => shelf.toReadBooks.value)
 const inProgressBooks = computed(() => shelf.inProgressBooks.value)
 const completedBooks = computed(() => shelf.completedBooks.value)
 const abandonedBooks = computed(() => shelf.abandonedBooks.value)
-const removalPromptId = shelf.removalPromptId
-const shelfBooks = shelf.books
 const isBookModalOpen = computed(() => modals.active.value === 'book')
 
-const statusOptions: { value: ReadingStatus; label: string }[] = [
-  { value: 'a_lire', label: 'À lire' },
-  { value: 'en_cours', label: 'En cours' },
-  { value: 'lu', label: 'Terminé' },
-  { value: 'abandonne', label: 'Abandonné' },
-]
-
-function handleToReadStart(id: string) {
-  shelf.startReading(id)
-}
-
-function handleShelfProgress(payload: { id: string; value: number }) {
-  shelf.updateProgress(payload.id, payload.value)
-}
-
-function handleShelfPercent(payload: { id: string; value: number }) {
-  const book = shelfBooks.value.find((b) => b.id === payload.id)
-  if (!book || !book.totalPages) {
-    return
-  }
-  const normalized = Math.max(0, Math.min(100, payload.value))
-  const page = Math.round((normalized / 100) * book.totalPages)
-  shelf.updateProgress(payload.id, page)
-}
-
-function handleShelfStatus(payload: { id: string; status: ReadingStatus }) {
-  shelf.setStatus(payload.id, payload.status)
-}
-
-function handleShelfNotes(payload: { id: string; value: string }) {
-  shelf.updateNotes(payload.id, payload.value)
-}
-
-function handleShelfTotalPages(payload: { id: string; value: number }) {
-  shelf.updateTotalPages(payload.id, payload.value)
-}
-
-function handleRemovalChoice(payload: { id: string; choice: 'to_read' | 'abandon' | 'delete' | 'cancel' }) {
-  if (payload.choice === 'cancel') {
-    shelf.closeRemovalPrompt()
-    return
-  }
-  shelf.confirmRemoval(payload.choice, payload.id)
-}
-
-function handleCompletedStatusChange(payload: { id: string; status: ReadingStatus }) {
-  shelf.setStatus(payload.id, payload.status)
-}
-
-function handleAbandonedStatusChange(id: string, status: ReadingStatus) {
-  shelf.setStatus(id, status)
+function goToExplorer() {
+  router.push({ name: 'explorer' })
 }
 </script>
 
@@ -88,7 +34,7 @@ function handleAbandonedStatusChange(id: string, status: ReadingStatus) {
           <button
             type="button"
             class="page-header__action page-header__action--primary"
-            @click="modals.open('book')"
+            @click="goToExplorer"
           >
             Ajouter un livre
           </button>
@@ -96,36 +42,43 @@ function handleAbandonedStatusChange(id: string, status: ReadingStatus) {
       </div>
     </header>
 
-    <ToReadSection
-      :books="toReadBooks"
-      @status-change="handleToReadStart"
-      @remove="shelf.removeBook"
-    />
+    <section class="library-sections">
+      <LibrarySectionCard
+        title="Pile à lire"
+        subtitle="Prépare tes prochaines découvertes en un coup d'œil."
+        :count="toReadBooks.length"
+        :books="toReadBooks"
+        route-name="libraryPal"
+        variant="to-read"
+      />
 
-    <ShelfSection
-      :books="inProgressBooks"
-      :status-options="statusOptions"
-      :removal-prompt-id="removalPromptId"
-      @change-progress="handleShelfProgress"
-      @change-percent="handleShelfPercent"
-      @change-status="handleShelfStatus"
-      @change-notes="handleShelfNotes"
-      @change-total-pages="handleShelfTotalPages"
-      @request-removal="shelf.requestRemoval"
-      @removal-choice="handleRemovalChoice"
-    />
+      <LibrarySectionCard
+        title="Lectures en cours"
+        subtitle="Visualise rapidement tes lectures actives."
+        :count="inProgressBooks.length"
+        :books="inProgressBooks"
+        route-name="libraryInProgress"
+        variant="in-progress"
+      />
 
-    <CompletedSection
-      :books="completedBooks"
-      @status-change="handleCompletedStatusChange"
-      @remove="shelf.removeBook"
-    />
+      <LibrarySectionCard
+        title="Livres lus"
+        subtitle="Replonge dans les livres que tu as terminés."
+        :count="completedBooks.length"
+        :books="completedBooks"
+        route-name="libraryCompleted"
+        variant="completed"
+      />
 
-    <AbandonedSection
-      :books="abandonedBooks"
-      @status-change="handleAbandonedStatusChange"
-      @remove="shelf.removeBook"
-    />
+      <LibrarySectionCard
+        title="Livres abandonnés"
+        subtitle="Garde une trace des lectures mises en pause."
+        :count="abandonedBooks.length"
+        :books="abandonedBooks"
+        route-name="libraryAbandoned"
+        variant="abandoned"
+      />
+    </section>
 
     <ModalAddBook
       v-if="isBookModalOpen"
@@ -134,3 +87,17 @@ function handleAbandonedStatusChange(id: string, status: ReadingStatus) {
     />
   </main>
 </template>
+
+<style scoped>
+.library-sections {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .library-sections {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+</style>

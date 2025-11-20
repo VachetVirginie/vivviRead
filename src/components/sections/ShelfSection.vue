@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import Carousel from '../ui/Carousel.vue'
 import BookCard from '../ui/BookCard.vue'
 import type { ReadingBook, ReadingStatus } from '../../composables/useReadingShelf'
 
@@ -23,6 +22,10 @@ const emit = defineEmits<{
   (e: 'open-modal', id: string): void
 }>()
 
+const searchQuery = ref('')
+const sortBy = ref<'recent' | 'title' | 'author'>('recent')
+const progressFilter = ref<'all' | '0-25' | '25-50' | '50-75' | '75-100'>('all')
+
 function progressPercent(book: ReadingBook) {
   if (!book.totalPages || book.totalPages <= 0) {
     return 0
@@ -31,6 +34,42 @@ function progressPercent(book: ReadingBook) {
 }
 
 const removalBook = computed(() => props.books.find((b) => b.id === props.removalPromptId) ?? null)
+
+const filteredBooks = computed(() => {
+  const query = searchQuery.value.trim().toLowerCase()
+  let list = props.books
+
+  if (query) {
+    list = list.filter((book) => {
+      return (
+        book.title.toLowerCase().includes(query) ||
+        book.author.toLowerCase().includes(query)
+      )
+    })
+  }
+
+  if (progressFilter.value !== 'all') {
+    list = list.filter((book) => {
+      const percent = progressPercent(book)
+      if (progressFilter.value === '0-25') return percent < 25
+      if (progressFilter.value === '25-50') return percent >= 25 && percent < 50
+      if (progressFilter.value === '50-75') return percent >= 50 && percent < 75
+      if (progressFilter.value === '75-100') return percent >= 75
+      return true
+    })
+  }
+
+  const sorted = [...list]
+  if (sortBy.value === 'title') {
+    sorted.sort((a, b) => a.title.localeCompare(b.title))
+  } else if (sortBy.value === 'author') {
+    sorted.sort((a, b) => a.author.localeCompare(b.author))
+  } else {
+    sorted.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+  }
+
+  return sorted
+})
 
 const activeBookId = ref<string | null>(null)
 
@@ -61,16 +100,91 @@ function handleRemove(id: string) {
     </header>
     <p class="state">Utilise les actions rapides pour ajouter un livre ou renseigner ses détails.</p>
 
-    <Carousel
-      v-if="books.length"
-      class="shelf__carousel"
-      :items-count="books.length"
-      aria-label="Lectures en cours"
-      :ariaLabel="'Lectures en cours'"
-      :items-per-page="3"
-    >
+    <div v-if="books.length" class="shelf__filters">
+      <div class="shelf__filters-row">
+        <label class="shelf__search">
+          <span class="shelf__filters-label">Rechercher</span>
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Titre ou auteur"
+          />
+        </label>
+        <div class="shelf__sort">
+          <span class="shelf__filters-label">Trier par</span>
+          <div class="shelf__chips">
+            <button
+              type="button"
+              :class="['shelf__chip', { 'shelf__chip--active': sortBy === 'recent' }]"
+              @click="sortBy = 'recent'"
+            >
+              Récent
+            </button>
+            <button
+              type="button"
+              :class="['shelf__chip', { 'shelf__chip--active': sortBy === 'title' }]"
+              @click="sortBy = 'title'"
+            >
+              Titre
+            </button>
+            <button
+              type="button"
+              :class="['shelf__chip', { 'shelf__chip--active': sortBy === 'author' }]"
+              @click="sortBy = 'author'"
+            >
+              Auteur
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="shelf__filters-row shelf__filters-row--secondary">
+        <span class="shelf__filters-label">Progression</span>
+        <div class="shelf__chips">
+          <button
+            type="button"
+            :class="['shelf__chip', { 'shelf__chip--active': progressFilter === 'all' }]"
+            @click="progressFilter = 'all'"
+          >
+            Toutes
+          </button>
+          <button
+            type="button"
+            :class="['shelf__chip', { 'shelf__chip--active': progressFilter === '0-25' }]"
+            @click="progressFilter = '0-25'"
+          >
+            0–25 %
+          </button>
+          <button
+            type="button"
+            :class="['shelf__chip', { 'shelf__chip--active': progressFilter === '25-50' }]"
+            @click="progressFilter = '25-50'"
+          >
+            25–50 %
+          </button>
+          <button
+            type="button"
+            :class="['shelf__chip', { 'shelf__chip--active': progressFilter === '50-75' }]"
+            @click="progressFilter = '50-75'"
+          >
+            50–75 %
+          </button>
+          <button
+            type="button"
+            :class="['shelf__chip', { 'shelf__chip--active': progressFilter === '75-100' }]"
+            @click="progressFilter = '75-100'"
+          >
+            75–100 %
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <p v-if="books.length && !filteredBooks.length" class="state">Aucun résultat avec ces filtres.</p>
+
+    <div v-else-if="books.length && filteredBooks.length" class="shelf__grid">
       <BookCard
-        v-for="book in books"
+        v-for="book in filteredBooks"
         :key="book.id"
         :book="book"
         :hide-actions="true"
@@ -78,7 +192,7 @@ function handleRemove(id: string) {
         @start="handleStatusChange"
         @remove="handleRemove"
       />
-    </Carousel>
+    </div>
 
     <div
       v-if="activeBook"
@@ -237,6 +351,81 @@ function handleRemove(id: string) {
   position: relative;
   animation: var(--animation-slide-up);
   animation-fill-mode: both;
+}
+
+.shelf__filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.shelf__filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.shelf__filters-row--secondary {
+  justify-content: flex-start;
+}
+
+.shelf__filters-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.shelf__search {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1 1 160px;
+}
+
+.shelf__search input {
+  border: 2px solid var(--color-black);
+  border-radius: 0;
+  padding: 0.4rem 0.6rem;
+  font: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.shelf__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.shelf__chip {
+  border: 2px solid var(--color-black);
+  border-radius: 0;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: var(--color-white);
+  cursor: pointer;
+}
+
+.shelf__chip--active {
+  background: var(--accent-secondary);
+  color: #ffffff;
+}
+
+.shelf__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .shelf__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .shelf::after {

@@ -2,6 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import HomeView from '../views/HomeView.vue'
 import LibraryView from '../views/LibraryView.vue'
+import PalBooksView from '../views/PalBooksView.vue'
+import InProgressBooksView from '../views/InProgressBooksView.vue'
+import CompletedBooksView from '../views/CompletedBooksView.vue'
+import AbandonedBooksView from '../views/AbandonedBooksView.vue'
 import GoalsView from '../views/GoalsView.vue'
 import ExplorerView from '../views/ExplorerView.vue'
 import LoginView from '../views/LoginView.vue'
@@ -27,6 +31,26 @@ const router = createRouter({
       path: '/livres',
       name: 'library',
       component: LibraryView,
+    },
+    {
+      path: '/livres/pal',
+      name: 'libraryPal',
+      component: PalBooksView,
+    },
+    {
+      path: '/livres/en-cours',
+      name: 'libraryInProgress',
+      component: InProgressBooksView,
+    },
+    {
+      path: '/livres/lus',
+      name: 'libraryCompleted',
+      component: CompletedBooksView,
+    },
+    {
+      path: '/livres/abandonnes',
+      name: 'libraryAbandoned',
+      component: AbandonedBooksView,
     },
     {
       path: '/objectifs',

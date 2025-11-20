@@ -1,14 +1,54 @@
 <script setup lang="ts">
-import Carousel from '../ui/Carousel.vue'
+import { computed, ref } from 'vue'
 import BookCard from '../ui/BookCard.vue'
 import type { ReadingBook, ReadingStatus } from '../../composables/useReadingShelf'
 
-defineProps<{ books: ReadingBook[] }>()
+const props = defineProps<{ books: ReadingBook[] }>()
 
 const emit = defineEmits<{
   (e: 'status-change', id: string, status: ReadingStatus): void
   (e: 'remove', id: string): void
 }>()
+
+const searchQuery = ref('')
+const sortBy = ref<'recent' | 'title' | 'author'>('recent')
+const progressFilter = ref<'all' | 'early' | 'middle' | 'late'>('all')
+
+const filteredBooks = computed(() => {
+  const query = searchQuery.value.trim().toLowerCase()
+  let list = props.books
+
+  if (query) {
+    list = list.filter((book) => {
+      return (
+        book.title.toLowerCase().includes(query) ||
+        book.author.toLowerCase().includes(query)
+      )
+    })
+  }
+
+  if (progressFilter.value !== 'all') {
+    list = list.filter((book) => {
+      if (!book.totalPages || book.totalPages <= 0) return false
+      const percent = Math.round((book.currentPage / book.totalPages) * 100)
+      if (progressFilter.value === 'early') return percent < 25
+      if (progressFilter.value === 'middle') return percent >= 25 && percent <= 75
+      if (progressFilter.value === 'late') return percent > 75
+      return true
+    })
+  }
+
+  const sorted = [...list]
+  if (sortBy.value === 'title') {
+    sorted.sort((a, b) => a.title.localeCompare(b.title))
+  } else if (sortBy.value === 'author') {
+    sorted.sort((a, b) => a.author.localeCompare(b.author))
+  } else {
+    sorted.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+  }
+
+  return sorted
+})
 
 function handleStatus(bookId: string, status: ReadingStatus) {
   emit('status-change', bookId, status)
@@ -28,29 +68,99 @@ function handleRemove(bookId: string) {
 
     <p v-if="!books.length" class="state">Aucun livre abandonné pour le moment.</p>
 
-    <Carousel
-      v-else
-      class="abandoned__carousel"
-      :items-count="books.length"
-      aria-label="Livres abandonnés"
-      :ariaLabel="'Livres abandonnés'"
-      :items-per-page="3"
-    >
-      <article
-        v-for="book in books"
-        :key="book.id"
-        class="abandoned__card carousel__slide"
-        role="group"
-      >
-        <BookCard :book="book" :hide-actions="true" />
-        <p class="abandoned__meta">Arrêté à la page {{ book.currentPage }} / {{ book.totalPages }}</p>
-        <div class="abandoned__actions">
-          <button type="button" @click="handleStatus(book.id, 'en_cours')">Reprendre</button>
-          <button type="button" @click="handleStatus(book.id, 'a_lire')">Reclasser</button>
-          <button type="button" class="shelf__remove" @click="handleRemove(book.id)">Supprimer</button>
+    <div v-else>
+      <div class="abandoned__filters">
+        <div class="abandoned__filters-row">
+          <label class="abandoned__search">
+            <span class="abandoned__filters-label">Rechercher</span>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Titre ou auteur"
+            />
+          </label>
+          <div class="abandoned__sort">
+            <span class="abandoned__filters-label">Trier par</span>
+            <div class="abandoned__chips">
+              <button
+                type="button"
+                :class="['abandoned__chip', { 'abandoned__chip--active': sortBy === 'recent' }]"
+                @click="sortBy = 'recent'"
+              >
+                Récent
+              </button>
+              <button
+                type="button"
+                :class="['abandoned__chip', { 'abandoned__chip--active': sortBy === 'title' }]"
+                @click="sortBy = 'title'"
+              >
+                Titre
+              </button>
+              <button
+                type="button"
+                :class="['abandoned__chip', { 'abandoned__chip--active': sortBy === 'author' }]"
+                @click="sortBy = 'author'"
+              >
+                Auteur
+              </button>
+            </div>
+          </div>
         </div>
-      </article>
-    </Carousel>
+
+        <div class="abandoned__filters-row abandoned__filters-row--secondary">
+          <span class="abandoned__filters-label">Progression à l'arrêt</span>
+          <div class="abandoned__chips">
+            <button
+              type="button"
+              :class="['abandoned__chip', { 'abandoned__chip--active': progressFilter === 'all' }]"
+              @click="progressFilter = 'all'"
+            >
+              Toutes
+            </button>
+            <button
+              type="button"
+              :class="['abandoned__chip', { 'abandoned__chip--active': progressFilter === 'early' }]"
+              @click="progressFilter = 'early'"
+            >
+              Début
+            </button>
+            <button
+              type="button"
+              :class="['abandoned__chip', { 'abandoned__chip--active': progressFilter === 'middle' }]"
+              @click="progressFilter = 'middle'"
+            >
+              Milieu
+            </button>
+            <button
+              type="button"
+              :class="['abandoned__chip', { 'abandoned__chip--active': progressFilter === 'late' }]"
+              @click="progressFilter = 'late'"
+            >
+              Tard
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <p v-if="books.length && !filteredBooks.length" class="state">Aucun résultat avec ces filtres.</p>
+
+      <div v-else class="abandoned__grid">
+        <article
+          v-for="book in filteredBooks"
+          :key="book.id"
+          class="abandoned__card"
+          role="group"
+        >
+          <BookCard :book="book" :hide-actions="true" />
+          <p class="abandoned__meta">Arrêté à la page {{ book.currentPage }} / {{ book.totalPages }}</p>
+          <div class="abandoned__actions">
+            <button type="button" @click="handleStatus(book.id, 'en_cours')">Reprendre</button>
+            <button type="button" @click="handleStatus(book.id, 'a_lire')">Reclasser</button>
+            <button type="button" class="shelf__remove" @click="handleRemove(book.id)">Supprimer</button>
+          </div>
+        </article>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -91,8 +201,14 @@ function handleRemove(bookId: string) {
 
 .abandoned__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .abandoned__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .abandoned__card {
@@ -197,11 +313,5 @@ function handleRemove(bookId: string) {
   cursor: pointer;
   background: #fee2e2;
   color: #7f1d1d;
-}
-.abandoned__carousel :deep(.carousel__controls) {
-  margin-top: 1.25rem;
-  position: sticky;
-  bottom: 1rem;
-  z-index: 2;
 }
 </style>
