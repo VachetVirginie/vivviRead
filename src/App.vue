@@ -32,12 +32,33 @@ const avatarColor = computed(() => stringToColor(displayName.value))
 function goToProfile() {
   router.push('/profil')
 }
+
+function handleBack() {
+  const publicPaths = ['/', '/login', '/forgot-password', '/reset-password']
+  const historyState = router.options.history.state as { back?: string } | null
+  const back = historyState?.back
+
+  if (!back || publicPaths.includes(back)) {
+    router.push('/home')
+    return
+  }
+
+  router.back()
+}
 </script>
 
 <template>
   <div class="app-shell">
     <div class="app-shell__content">
       <header v-if="user" class="app-shell__header">
+        <button
+          type="button"
+          class="app-shell__back-button"
+          @click="handleBack"
+        >
+          <span class="app-shell__back-icon" aria-hidden="true">←</span>
+          <span>Retour</span>
+        </button>
         <div class="app-shell__header-spacer" />
         <button
           type="button"
@@ -64,7 +85,7 @@ function goToProfile() {
 .app-shell__header {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 0.75rem 1rem 0.25rem;
 }
 
@@ -83,5 +104,30 @@ function goToProfile() {
   font-weight: 700;
   font-size: 1.1rem;
   cursor: pointer;
+}
+
+.app-shell__back-button {
+  border: 2px solid var(--color-black);
+  border-radius: 0;
+  padding: 0.35rem 0.75rem;
+  font-size: var(--text-xs);
+  font-weight: bold;
+  text-transform: uppercase;
+  background: var(--color-white);
+  color: var(--color-black);
+  box-shadow: var(--shadow-subtle);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.app-shell__back-button:hover {
+  transform: var(--transform-press);
+  box-shadow: var(--shadow-hover);
+}
+
+.app-shell__back-icon {
+  font-size: 0.9rem;
 }
 </style>
