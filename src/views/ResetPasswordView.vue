@@ -188,7 +188,7 @@ function goBackToLogin() {
 .auth-block__field span {
   display: block;
   font-size: 0.8rem;
-  color: #6b7280;
+  color: white;
   margin-bottom: 0.2rem;
   font-weight: 500;
 }

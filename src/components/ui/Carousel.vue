@@ -43,10 +43,7 @@ const trackClasses = computed(() => {
   
   // Ajout de classes selon items-per-page responsive
   classes.push(`carousel__track--items-${responsiveItemsPerPage.value}`)
-  
-  // Debug temporaire
-  console.log('Carousel classes:', classes.join(' '), 'itemsPerPage:', responsiveItemsPerPage.value, 'windowWidth:', windowWidth.value)
-  
+    
   return classes.join(' ')
 })
 

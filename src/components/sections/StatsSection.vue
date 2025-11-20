@@ -19,7 +19,7 @@ function getGradientClass(index: number): string {
 </script>
 
 <template>
-  <section id="stats" class="stats stagger-children" aria-label="Statistiques clé viviRead">
+  <section id="stats" class="stats stagger-children" aria-label="Statistiques clé myboooknest">
     <article 
       v-for="(stat, index) in stats" 
       :key="stat.label" 
@@ -56,16 +56,16 @@ function getGradientClass(index: number): string {
 }
 
 .stats__card {
-  background: var(--color-white);
-  border: 3px solid var(--color-black);
-  border-radius: 0;
+  background-color: hsla(246, 100%, 85%, 0.102);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1.25rem;
   padding: var(--space-8) var(--space-6);
-  text-align: center;
+  text-align: left;
   position: relative;
   transition: var(--transition-snap);
-  box-shadow: var(--shadow-brutal);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.6);
   cursor: pointer;
-  animation: var(--animation-pop-in);
+  animation: var(--animation-fade-in);
   animation-fill-mode: both;
 }
 
@@ -85,7 +85,7 @@ function getGradientClass(index: number): string {
 .stats__card:nth-child(1),
 .stats__card:nth-child(2),
 .stats__card:nth-child(3) {
-  color: var(--color-black);
+  color: #e5e7eb;
 }
 
 /* === DYNAMIC MINIMALISM 2025 === */
@@ -233,7 +233,7 @@ function getGradientClass(index: number): string {
   margin: 0 0 var(--space-1);
   font-size: var(--text-3xl);
   font-weight: var(--font-bold);
-  color: var(--color-black);
+  color: #f9fafb;
   line-height: var(--leading-tight);
   transition: all var(--transition-normal);
 }
@@ -247,40 +247,40 @@ function getGradientClass(index: number): string {
   margin: 0 0 var(--space-1);
   font-size: var(--text-base);
   font-weight: var(--font-semibold);
-  color: var(--color-black);
+  color: #e5e7eb;
   line-height: var(--leading-normal);
 }
 
 .stats__sub {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--color-black);
+  color: #cbd5f5;
   line-height: var(--leading-normal);
 }
 
 /* Styles spécifiques pour les cards équilibre dynamique */
 .stats__card:nth-child(1) .stats__value,
 .stats__card:nth-child(2) .stats__value {
-  color: var(--color-black);
+  color: #f9fafb;
   text-shadow: none;
 }
 
 .stats__card:nth-child(1) .stats__label,
 .stats__card:nth-child(2) .stats__label {
-  color: var(--color-black);
+  color: #e5e7eb;
   text-shadow: none;
 }
 
 .stats__card:nth-child(1) .stats__sub,
 .stats__card:nth-child(2) .stats__sub {
-  color: var(--color-black);
+  color: #cbd5f5;
   text-shadow: none;
 }
 
 .stats__card:nth-child(3) .stats__value,
 .stats__card:nth-child(3) .stats__label,
 .stats__card:nth-child(3) .stats__sub {
-  color: var(--color-black);
+  color: #e5e7eb;
   text-shadow: none;
 }
 

@@ -24,7 +24,7 @@ const emit = defineEmits<{
       <p class="hero__eyebrow">Trackeur de lecture nouvelle génération</p>
       <h1>Transforme tes lectures en un parcours clair, motivant et inspirant.</h1>
       <p>
-        viviRead centralise ta bibliothèque, tes envies, tes sessions et tes statistiques pour que chaque page tournée
+        Myboooknest centralise ta bibliothèque, tes envies, tes sessions et tes statistiques pour que chaque page tournée
         compte vraiment.
       </p>
       <div class="hero__actions">
@@ -66,43 +66,19 @@ const emit = defineEmits<{
 
 <style scoped>
 .hero {
-  background: var(--accent-tertiary);
-  border: 4px solid var(--color-black);
-  border-radius: 0;
   padding: clamp(1.5rem, 4vw, 2.4rem);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-8);
-  box-shadow: var(--shadow-brutal);
   position: relative;
-  transition: var(--transition-snap);
-  cursor: pointer;
-  animation: var(--animation-pop-in);
-  animation-delay: 0.3s;
-  animation-fill-mode: both;
-}
-
-.hero:hover {
-  transform: var(--transform-lift);
-  box-shadow: var(--shadow-hover);
-}
-
-.hero::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  right: -4px;
-  width: 20px;
-  height: 20px;
-  background: var(--accent-primary);
-  border: 2px solid var(--color-black);
+  animation: var(--animation-fade-in);
 }
 
 .hero__eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.2em;
   font-size: var(--text-xs);
-  color: var(--color-primary-green);
+  color: #9ca3af;
   margin-bottom: var(--space-3);
   font-weight: var(--font-medium);
 }
@@ -110,13 +86,13 @@ const emit = defineEmits<{
 .hero h1 {
   font-size: clamp(2rem, 4vw, 3.1rem);
   margin: 0 0 var(--space-4);
-  color: var(--color-neutral-900);
+  color: #f9fafb;
   font-weight: var(--font-bold);
 }
 
 .hero p {
   margin: 0 0 var(--space-4);
-  color: var(--color-neutral-600);
+  color: #d1d5db;
   line-height: var(--leading-relaxed);
 }
 
@@ -198,23 +174,29 @@ const emit = defineEmits<{
 
   .hero__panel {
     max-width: 100%;
+    min-width: 300px;
   }
 }
 
 @media (min-width: 1024px) {
   .hero {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr);
+  }
+    .hero__panel {
+    min-width: 500px;
   }
 }
 
 .hero__panel {
-  background: #ffffff;
-  border-radius: 1.25rem;
-  padding: 1.8rem 19%;
-  border: 1px solid #e5e7eb;
+  background-color: hsla(246, 100%, 85%, 0.12);
+  border-radius: 1.5rem;
+  padding: 1.8rem 2.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
   align-self: stretch;
-  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.6);
   margin: 0 auto;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
 .hero__panel-label {

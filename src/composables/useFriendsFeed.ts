@@ -29,10 +29,7 @@ export function useFriendsFeed() {
         .order('created_at', { ascending: false })
         .limit(50)
 
-      console.log('[FriendsFeed] Activités chargées :', rawActivities?.length)
-
       if (activitiesError) {
-        console.warn('Erreur lors du chargement des activités des amis :', activitiesError)
         activities.value = []
         return
       }

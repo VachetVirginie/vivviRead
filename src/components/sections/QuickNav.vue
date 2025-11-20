@@ -34,14 +34,16 @@ function handleOpen(type: 'book' | 'goal') {
   flex-wrap: wrap;
   gap: 0.65rem;
   align-items: center;
-  background: #ffffff;
+  background-color: hsla(246, 100%, 85%, 0.102);
   padding: 0.75rem 1rem;
   border-radius: 999px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .quick-nav a {
-  color: #111827;
+  color: #e5e7eb;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
@@ -59,7 +61,7 @@ function handleOpen(type: 'book' | 'goal') {
   padding: 0.5rem 1.25rem;
   font-weight: 600;
   cursor: pointer;
-  background: #facc15;
-  color: #111827;
+  background: #f9fafb;
+  color: #020617;
 }
 </style>
