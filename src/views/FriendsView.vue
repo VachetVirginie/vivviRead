@@ -220,7 +220,13 @@ onMounted(() => {
                     >
                       {{ avatarInitialForName(activity.userName) }}
                     </div>
-                    <span class="friends-feed__name">{{ activity.userName }}</span>
+                    <button
+                      type="button"
+                      class="friends-feed__name-button"
+                      @click="router.push({ name: 'readerProfile', params: { id: activity.userId } })"
+                    >
+                      <span class="friends-feed__name">{{ activity.userName }}</span>
+                    </button>
                     <span class="friends-feed__badge">{{ badgeForType(activity.type) }}</span>
                   </div>
                   <span class="friends-feed__date">
@@ -317,6 +323,11 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  background: var(--color-white);
+  min-width: 120px;
 }
 
 .friends-network-bar__label {
@@ -458,6 +469,14 @@ onMounted(() => {
   font-weight: var(--font-bold);
   font-size: 0.9rem;
   color: #ffffff;
+}
+
+.friends-feed__name-button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
 }
 
 .friends-feed__name {

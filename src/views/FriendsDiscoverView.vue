@@ -102,9 +102,15 @@ async function handleToggleFollow(profileId: string) {
         <ul v-else-if="hasVisibleProfiles" class="friends-feed">
           <li v-for="profile in filteredProfiles" :key="profile.id" class="friends-feed__item">
             <div class="friends-feed__header">
-              <span class="friends-feed__name">
-                {{ profile.username ? `@${profile.username}` : (profile.full_name || 'Lecteur anonyme') }}
-              </span>
+              <button
+                type="button"
+                class="friends-feed__name-button"
+                @click="router.push({ name: 'readerProfile', params: { id: profile.id } })"
+              >
+                <span class="friends-feed__name">
+                  {{ profile.username ? `@${profile.username}` : (profile.full_name || 'Lecteur anonyme') }}
+                </span>
+              </button>
             </div>
             <p class="friends-feed__summary">
               Profil public. Suis cette personne pour voir ses futures activités de lecture.
@@ -242,6 +248,14 @@ async function handleToggleFollow(profileId: string) {
 
 .friends-feed__name {
   font-weight: var(--font-semibold);
+}
+
+.friends-feed__name-button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
 }
 
 .friends-feed__summary {

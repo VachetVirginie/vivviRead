@@ -53,6 +53,14 @@ const avatarColor = computed(() => stringToColor(displayName.value))
 
 const targetUserId = computed(() => profile.value?.id ?? null)
 
+const publicProfileUrl = computed(() => {
+  if (!targetUserId.value) return ''
+  if (typeof window === 'undefined') {
+    return `/lecteur/${targetUserId.value}`
+  }
+  return `${window.location.origin}/lecteur/${targetUserId.value}`
+})
+
 const isOwnProfile = computed(
   () => !!user.value?.id && user.value.id === targetUserId.value,
 )
@@ -96,6 +104,27 @@ async function onSignOut() {
   await signOut()
   router.push('/')
 }
+
+function goToPublicProfile() {
+  if (!targetUserId.value) return
+  router.push({ name: 'readerProfile', params: { id: targetUserId.value } })
+}
+
+const publicProfileCopyLabel = ref('Copier le lien')
+
+async function copyPublicProfileLink() {
+  if (!publicProfileUrl.value) return
+
+  try {
+    await navigator.clipboard?.writeText(publicProfileUrl.value)
+    publicProfileCopyLabel.value = 'Lien copié !'
+    window.setTimeout(() => {
+      publicProfileCopyLabel.value = 'Copier le lien'
+    }, 2000)
+  } catch (error) {
+    console.warn('Impossible de copier le lien de profil public :', error)
+  }
+}
 </script>
 
 <template>
@@ -123,56 +152,88 @@ async function onSignOut() {
       </header>
 
       <div class="auth-block">
-        <div
-          class="profile-avatar"
-          :style="{ backgroundColor: avatarColor, color: '#ffffff' }"
-          aria-hidden="true"
-        >
-          {{ avatarInitial }}
+        <div class="profile-header">
+          <div
+            class="profile-avatar"
+            :style="{ backgroundColor: avatarColor, color: '#ffffff' }"
+            aria-hidden="true"
+          >
+            {{ avatarInitial }}
+          </div>
+          <div class="profile-header__main">
+            <p class="profile-header__name">{{ displayName }}</p>
+            <p v-if="usernameRef" class="profile-header__username">@{{ usernameRef }}</p>
+          </div>
         </div>
 
-        <p class="auth-block__status">
-          <span class="auth-block__label">Nom affiché</span>
-          <input
-            v-model="editableName"
-            type="text"
-            class="profile-input"
-            autocomplete="name"
-          />
-          <button
-            type="button"
-            class="page-header__action page-header__action--primary"
-            :disabled="loading"
-            @click="onSaveName"
-          >
-            Enregistrer
-          </button>
-        </p>
-        <p class="auth-block__status">
-          <span class="auth-block__label">Pseudo</span>
-          <input
-            v-model="editableUsername"
-            type="text"
-            class="profile-input"
-            autocomplete="nickname"
-          />
-          <button
-            type="button"
-            class="page-header__action page-header__action--primary"
-            :disabled="loading"
-            @click="onSaveUsername"
-          >
-            Enregistrer le pseudo
-          </button>
-        </p>
-        <p class="auth-block__status">
-          <span class="auth-block__label">Email</span>
-          <strong>{{ user?.email }}</strong>
-        </p>
-        <p class="auth-block__status">
-          <span class="auth-block__label">Rôle</span>
-          <strong>{{ role }}</strong>
-        </p>
+        <div class="auth-block__fields">
+          <p class="auth-block__status">
+            <span class="auth-block__label">Nom affiché</span>
+            <input
+              v-model="editableName"
+              type="text"
+              class="profile-input"
+              autocomplete="name"
+            />
+            <button
+              type="button"
+              class="page-header__action page-header__action--primary"
+              :disabled="loading"
+              @click="onSaveName"
+            >
+              Enregistrer
+            </button>
+          </p>
+          <p class="auth-block__status">
+            <span class="auth-block__label">Pseudo</span>
+            <input
+              v-model="editableUsername"
+              type="text"
+              class="profile-input"
+              autocomplete="nickname"
+            />
+            <button
+              type="button"
+              class="page-header__action page-header__action--primary"
+              :disabled="loading"
+              @click="onSaveUsername"
+            >
+              Enregistrer le pseudo
+            </button>
+          </p>
+          <p class="auth-block__status">
+            <span class="auth-block__label">Email</span>
+            <strong>{{ user?.email }}</strong>
+          </p>
+          <p class="auth-block__status">
+            <span class="auth-block__label">Rôle</span>
+            <strong>{{ role }}</strong>
+          </p>
+        </div>
+        <div class="public-profile" aria-label="Profil public partageable">
+          <span class="auth-block__label">Profil public</span>
+          <p v-if="publicProfileUrl" class="public-profile__url">
+            {{ publicProfileUrl }}
+          </p>
+          <div class="public-profile__actions">
+            <button
+              type="button"
+              class="page-header__action"
+              :disabled="!publicProfileUrl"
+              @click="goToPublicProfile"
+            >
+              Voir mon profil public
+            </button>
+            <button
+              type="button"
+              class="page-header__action"
+              :disabled="!publicProfileUrl"
+              @click="copyPublicProfileLink"
+            >
+              {{ publicProfileCopyLabel }}
+            </button>
+          </div>
+        </div>
         <p class="auth-block__status">
           <span class="auth-block__label">Relations sociales</span>
           <button
@@ -257,6 +318,36 @@ async function onSignOut() {
   transform: var(--transform-float);
 }
 
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.profile-header__main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.profile-header__name {
+  margin: 0;
+  font-weight: var(--font-semibold);
+}
+
+.profile-header__username {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.auth-block__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .auth-block__error {
   margin-top: 0.5rem;
   color: var(--color-rouge-corail);
@@ -267,6 +358,28 @@ async function onSignOut() {
   display: block;
   font-size: 0.85rem;
   color: #6b7280;
+}
+
+.public-profile {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--color-neutral-300);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.public-profile__url {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-neutral-700);
+  word-break: break-all;
+}
+
+.public-profile__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
 
 .danger-block {
