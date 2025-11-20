@@ -288,7 +288,7 @@ onMounted(() => {
 }
 
 .friends-card {
-  background-color: hsla(246, 100%, 85%, 0.12);
+  background-color: var(--glass-surface);
   border-radius: 1.5rem;
   border: 1px solid rgba(255, 255, 255, 0.22);
   box-shadow: 0 22px 45px rgba(15, 23, 42, 0.75);

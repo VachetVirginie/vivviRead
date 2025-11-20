@@ -248,7 +248,7 @@ function handleOpenModal(type: 'book' | 'goal') {
 }
 
 .home-block {
-  background-color: hsla(246, 100%, 85%, 0.102);
+  background-color: var(--glass-surface);
   border-radius: 1.5rem;
   padding: var(--space-6);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -338,7 +338,7 @@ function handleOpenModal(type: 'book' | 'goal') {
 .home-goals-preview__card {
   border-radius: 1.5rem;
   padding: var(--space-6);
-  background-color: hsla(246, 100%, 85%, 0.12);
+  background-color: var(--glass-surface);
   border: 1px solid rgba(255, 255, 255, 0.22);
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.55);
   transition: all var(--transition-normal);
@@ -418,7 +418,7 @@ function handleOpenModal(type: 'book' | 'goal') {
 .home-explorer-preview__card {
   border-radius: 1.5rem;
   padding: var(--space-6);
-  background-color: hsla(246, 100%, 85%, 0.12);
+  background-color: var(--glass-surface);
   border: 1px solid rgba(255, 255, 255, 0.22);
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.55);
   transition: all var(--transition-normal);
@@ -473,7 +473,7 @@ function handleOpenModal(type: 'book' | 'goal') {
   border-radius: 1.25rem;
   border: 1px solid rgba(255, 255, 255, 0.22);
   padding: var(--space-4);
-  background-color: hsla(246, 100%, 85%, 0.12);
+  background-color: var(--glass-surface);
 }
 
 .insights-summary__label {

@@ -80,7 +80,7 @@ function handleKeydown(event: KeyboardEvent) {
 
 <style scoped>
 .library-section-card {
-  background-color: hsla(246, 100%, 85%, 0.12);
+  background-color: var(--glass-surface);
   border-radius: 1.5rem;
   padding: 1.5rem 1.5rem;
   border: 1px solid rgba(255, 255, 255, 0.22);

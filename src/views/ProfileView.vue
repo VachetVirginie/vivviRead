@@ -301,21 +301,21 @@ async function copyPublicProfileLink() {
 .profile-input {
   display: block;
   margin: 0.4rem 0 0.6rem;
-  padding: 0.4rem 0.6rem;
-  border-radius: 0;
-  border: 2px solid var(--color-black);
-  background: var(--color-white);
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.9);
   min-width: 0;
   font-weight: 500;
   transition: var(--transition-snap);
-  box-shadow: var(--shadow-inset);
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.8);
+  color: #e5e7eb;
 }
 
 .profile-input:focus {
   outline: none;
-  border-color: var(--accent-tertiary);
-  box-shadow: var(--shadow-brutal);
-  transform: var(--transform-float);
+  border-color: #a855f7;
+  box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.4);
 }
 
 .profile-header {
@@ -357,7 +357,7 @@ async function copyPublicProfileLink() {
 .auth-block__label {
   display: block;
   font-size: 0.85rem;
-  color: #6b7280;
+  color: #cbd5f5;
 }
 
 .public-profile {
@@ -372,7 +372,7 @@ async function copyPublicProfileLink() {
 .public-profile__url {
   margin: 0;
   font-size: 0.8rem;
-  color: var(--color-neutral-700);
+  color: #e5e7eb;
   word-break: break-all;
 }
 
@@ -384,12 +384,11 @@ async function copyPublicProfileLink() {
 
 .danger-block {
   margin-top: 1.5rem;
-  background: var(--color-white);
-  border-radius: 0;
+  background-color: rgba(15, 23, 42, 0.9);
+  border-radius: 1.5rem;
   padding: 1.6rem 1.5rem 1.4rem;
-  border: 3px solid var(--color-black);
-  border-left: 6px solid var(--accent-primary);
-  box-shadow: var(--shadow-brutal);
+  border: 1px solid rgba(248, 113, 113, 0.6);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.9);
   position: relative;
 }
 
@@ -400,9 +399,9 @@ async function copyPublicProfileLink() {
   right: -3px;
   width: 18px;
   height: 18px;
-  background: var(--accent-primary);
+  background: #b91c1c;
   color: white;
-  border: 2px solid var(--color-black);
+  border: 1px solid rgba(248, 113, 113, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -415,7 +414,7 @@ async function copyPublicProfileLink() {
   flex-direction: column;
   gap: 0.75rem;
   font-size: 0.9rem;
-  color: #7f1d1d;
+  color: #fecaca;
 }
 
 .danger-block__button {

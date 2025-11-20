@@ -139,10 +139,11 @@ async function handleToggleFollow(profileId: string) {
 .friends-page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-4) var(--space-12);
+  padding: var(--space-12) var(--space-6) var(--space-16);
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
+  color: #e5e7eb;
 }
 
 .friends-layout {
@@ -158,10 +159,12 @@ async function handleToggleFollow(profileId: string) {
 }
 
 .friends-card {
-  background: var(--color-white);
-  border-radius: 0;
-  border: 3px solid var(--color-black);
-  box-shadow: var(--shadow-brutal);
+  background-color: var(--glass-surface);
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
   padding: var(--space-6);
   display: flex;
   flex-direction: column;
@@ -169,7 +172,7 @@ async function handleToggleFollow(profileId: string) {
 }
 
 .friends-card--feed {
-  border-color: var(--color-jaune-dore);
+  border-top: 2px solid var(--color-jaune-dore);
 }
 
 .friends-card__title {
@@ -188,36 +191,37 @@ async function handleToggleFollow(profileId: string) {
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--color-neutral-600);
+  color: #cbd5f5;
 }
 
 .friends-search__input {
-  padding: 0.4rem 0.6rem;
-  border-radius: 0;
-  border: 2px solid var(--color-black);
-  background: var(--color-white);
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.9);
   font-size: var(--text-sm);
+  color: #e5e7eb;
 }
 
 .friends-search__button {
   align-self: flex-start;
   margin-top: var(--space-2);
-  border-radius: 0;
-  border: 2px solid var(--color-black);
-  background: var(--color-jaune-dore);
-  color: var(--color-black);
+  border-radius: 999px;
+  border: none;
+  background: #f9fafb;
+  color: #020617;
   padding: 0.35rem 0.9rem;
   font-size: var(--text-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  text-transform: none;
+  letter-spacing: 0.08em;
   cursor: pointer;
-  box-shadow: var(--shadow-brutal);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
 }
 
 .friends-empty {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--color-neutral-600);
+  color: #cbd5f5;
 }
 
 .friends-feed {
@@ -230,10 +234,10 @@ async function handleToggleFollow(profileId: string) {
 }
 
 .friends-feed__item {
-  border-radius: 0;
-  border: 2px solid var(--color-black);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
   padding: var(--space-3) var(--space-4);
-  background: var(--color-neutral-50);
+  background: rgba(15, 23, 42, 0.9);
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -261,7 +265,7 @@ async function handleToggleFollow(profileId: string) {
 .friends-feed__summary {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--color-neutral-900);
+  color: #e5e7eb;
 }
 
 .friends-feed__actions {
