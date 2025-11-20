@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 
 import { useAppContext } from '../composables/useAppContext'
 import { useSupabaseTest } from '../composables/useSupabaseTest'
@@ -9,11 +9,11 @@ import type { GoogleBookVolume } from '../services/googleBooks'
 import HeroSection from '../components/sections/HeroSection.vue'
 import StatsSection from '../components/sections/StatsSection.vue'
 import QuickNav from '../components/sections/QuickNav.vue'
-import ModalAddBook from '../components/sections/modals/ModalAddBook.vue'
 import ModalAddGoal from '../components/sections/modals/ModalAddGoal.vue'
 
 /* -------- GLOBAL STATE -------- */
 const { shelf, goals, explorer, modals } = useAppContext()
+const router = useRouter()
 useSupabaseTest()
 
 const goalsList = computed(() => goals.goals.value)
@@ -34,11 +34,18 @@ const quickNavLinks = [
   { id: 'explorer', label: 'Explorateur' },
 ]
 
-const isBookModalOpen = computed(() => modals.active.value === 'book')
 const isGoalModalOpen = computed(() => modals.active.value === 'goal')
 
 function previewAuthors(book: GoogleBookVolume) {
   return book.volumeInfo.authors?.join(', ') ?? 'Auteur·ice inconnu·e'
+}
+
+function handleOpenModal(type: 'book' | 'goal') {
+  if (type === 'book') {
+    router.push({ name: 'explorer' })
+    return
+  }
+  modals.open('goal')
 }
 </script>
 
@@ -47,11 +54,11 @@ function previewAuthors(book: GoogleBookVolume) {
     <HeroSection
       :hero-session="heroSession"
       :loading="explorerLoading"
-      @open-modal="modals.open"
+      @open-modal="handleOpenModal"
       @fetch-books="explorer.submitSearch"
     />
 
-    <QuickNav class="quick-nav animate-fade-in-up" :links="quickNavLinks" @open-modal="modals.open" />
+    <QuickNav class="quick-nav animate-fade-in-up" :links="quickNavLinks" @open-modal="handleOpenModal" />
 
     <StatsSection class="stats-section animate-fade-in-up" :stats="stats" />
 
@@ -128,12 +135,6 @@ function previewAuthors(book: GoogleBookVolume) {
     </section>
 
     <!-- MODALS -->
-    <ModalAddBook
-      v-if="isBookModalOpen"
-      @close="modals.close"
-      @add="shelf.addBook"
-    />
-
     <ModalAddGoal
       v-if="isGoalModalOpen"
       @close="modals.close"

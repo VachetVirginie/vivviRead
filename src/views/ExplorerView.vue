@@ -5,15 +5,12 @@ import { useAppContext } from '../composables/useAppContext'
 import type { GoogleBookVolume } from '../services/googleBooks'
 
 import ExplorerSection from '../components/sections/ExplorerSection.vue'
-import ModalAddBook from '../components/sections/modals/ModalAddBook.vue'
 
-const { shelf, explorer, modals } = useAppContext()
+const { shelf, explorer } = useAppContext()
 
 const explorerState = explorer.publicState
 const explorerRawState = explorer.state
 const explorerLoading = computed(() => explorerRawState.loading)
-
-const isBookModalOpen = computed(() => modals.active.value === 'book')
 
 function isResultInShelf(book: GoogleBookVolume) {
   const authors = book.volumeInfo.authors?.join(', ') ?? 'Auteur·ice inconnu·e'
@@ -31,15 +28,6 @@ function handleExplorerQuery(value: string) {
       <div class="page-header__row">
         <div class="page-header__main">
           <h1 class="page-header__title">Explorer des livres</h1>
-        </div>
-        <div class="page-header__actions">
-          <button
-            type="button"
-            class="page-header__action page-header__action--primary"
-            @click="modals.open('book')"
-          >
-            Ajouter un livre
-          </button>
         </div>
       </div>
     </header>
@@ -78,12 +66,6 @@ function handleExplorerQuery(value: string) {
       :set-mood-filter="explorer.setMoodFilter"
       :reset-filters="explorer.resetFilters"
       @add="shelf.addFromSearch"
-    />
-
-    <ModalAddBook
-      v-if="isBookModalOpen"
-      @close="modals.close"
-      @add="shelf.addBook"
     />
   </main>
 </template>

@@ -83,6 +83,9 @@ const router = createRouter({
       component: ResetPasswordView,
     },
   ],
+  scrollBehavior(_to, _from, _savedPosition) {
+    return { left: 0, top: 0 }
+  },
 })
 
 router.beforeEach(async (to, _from, next) => {

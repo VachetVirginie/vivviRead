@@ -8,7 +8,7 @@ defineEmits<{ (e: 'close'): void }>()
 </script>
 
 <template>
-  <div class="modal" role="dialog" aria-modal="true">
+  <div class="modal__backdrop" role="dialog" aria-modal="true">
     <div class="modal__dialog">
       <button class="modal__close" type="button" aria-label="Fermer" @click="$emit('close')">×</button>
       <div v-if="props.title" class="modal__intro">
@@ -19,7 +19,6 @@ defineEmits<{ (e: 'close'): void }>()
     </div>
   </div>
 </template>
-
 <style scoped>
 .modal__backdrop {
   position: fixed;
@@ -35,7 +34,8 @@ defineEmits<{ (e: 'close'): void }>()
 }
 
 .modal__dialog {
-  width: min(420px, 100%);
+  width: min(640px, 100%);
+  max-height: min(80vh, 640px);
   background: var(--color-white);
   color: var(--color-black);
   border-radius: 0;
@@ -48,6 +48,7 @@ defineEmits<{ (e: 'close'): void }>()
   gap: 1.1rem;
   animation: var(--animation-bounce-in);
   transform-origin: center;
+  overflow-y: auto;
 }
 
 .modal__dialog::after {

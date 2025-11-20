@@ -109,7 +109,7 @@ function handleRemove(id: string) {
             type="text"
             placeholder="Titre ou auteur"
           />
-        </label>
+          </label>
         <div class="shelf__sort">
           <span class="shelf__filters-label">Trier par</span>
           <div class="shelf__chips">
@@ -194,31 +194,32 @@ function handleRemove(id: string) {
       />
     </div>
 
-    <div
-      v-if="activeBook"
-      class="shelf__confirm-overlay"
-      role="dialog"
-      aria-modal="true"
-      :aria-label="`Suivi de ta lecture pour ${activeBook.title}`"
-    >
-      <div class="shelf__modal">
-        <button type="button" class="shelf__confirm-close" aria-label="Fermer" @click="closeBookModal">×</button>
-        <div class="shelf__header">
-          <div class="shelf__title-block">
-            <p class="shelf__label">{{ activeBook.author }}</p>
-            <h3>{{ activeBook.title }}</h3>
+    <Teleport to="body">
+      <div
+        v-if="activeBook"
+        class="shelf__confirm-overlay"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="`Suivi de ta lecture pour ${activeBook.title}`"
+      >
+        <div class="shelf__modal">
+          <button type="button" class="shelf__confirm-close" aria-label="Fermer" @click="closeBookModal">×</button>
+          <div class="shelf__header">
+            <div class="shelf__title-block">
+              <p class="shelf__label">{{ activeBook.author }}</p>
+              <h3>{{ activeBook.title }}</h3>
+            </div>
+            <div class="shelf__meta">
+              <p class="shelf__pages">
+                {{ activeBook.currentPage }} / {{ activeBook.totalPages > 0 ? activeBook.totalPages : '–' }}
+              </p>
+              <button class="shelf__remove" type="button" @click="emit('request-removal', activeBook.id)">
+                Retirer
+              </button>
+            </div>
           </div>
-          <div class="shelf__meta">
-            <p class="shelf__pages">
-              {{ activeBook.currentPage }} / {{ activeBook.totalPages > 0 ? activeBook.totalPages : '–' }}
-            </p>
-            <button class="shelf__remove" type="button" @click="emit('request-removal', activeBook.id)">
-              Retirer
-            </button>
-          </div>
-        </div>
 
-        <label class="shelf__total">
+          <label class="shelf__total">
           <span>Pages totales</span>
           <input
             type="number"
@@ -234,7 +235,7 @@ function handleRemove(id: string) {
           />
         </label>
 
-        <label class="shelf__status">
+          <label class="shelf__status">
           <span>Statut</span>
           <select
             :value="activeBook.status"
@@ -251,7 +252,7 @@ function handleRemove(id: string) {
           </select>
         </label>
 
-        <label class="shelf__range">
+          <label class="shelf__range">
           <span>Page actuelle</span>
           <input
             type="range"
@@ -268,7 +269,7 @@ function handleRemove(id: string) {
           />
         </label>
 
-        <label class="shelf__percent">
+          <label class="shelf__percent">
           <span>Progression (%)</span>
           <input
             type="number"
@@ -288,7 +289,7 @@ function handleRemove(id: string) {
           </small>
         </label>
 
-        <textarea
+          <textarea
           class="shelf__notes"
           rows="2"
           :value="activeBook.notes ?? ''"
@@ -299,41 +300,42 @@ function handleRemove(id: string) {
               value: ($event.target as HTMLTextAreaElement).value,
             })
           "
-        ></textarea>
-      </div>
-    </div>
-
-    <div
-      v-if="props.removalPromptId && removalBook"
-      class="shelf__confirm-overlay"
-      role="dialog"
-      aria-modal="true"
-      :aria-label="`Que souhaites-tu faire de ${removalBook.title} ?`"
-    >
-      <div class="shelf__confirm">
-        <button
-          type="button"
-          class="shelf__confirm-close"
-          aria-label="Fermer"
-          @click="emit('removal-choice', { id: removalBook.id, choice: 'cancel' })"
-        >
-          ×
-        </button>
-        <p class="shelf__confirm-title">Que souhaites-tu faire de ce livre ?</p>
-        <p class="shelf__confirm-meta">{{ removalBook.title }} · {{ removalBook.author }}</p>
-        <div class="shelf__confirm-actions">
-          <button type="button" @click="emit('removal-choice', { id: removalBook.id, choice: 'to_read' })">
-            Repasser en PAL
-          </button>
-          <button type="button" @click="emit('removal-choice', { id: removalBook.id, choice: 'abandon' })">
-            Marquer abandonné
-          </button>
-          <button type="button" @click="emit('removal-choice', { id: removalBook.id, choice: 'delete' })">
-            Supprimer
-          </button>
+          ></textarea>
         </div>
       </div>
-    </div>
+
+      <div
+        v-if="props.removalPromptId && removalBook"
+        class="shelf__confirm-overlay"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="`Que souhaites-tu faire de ${removalBook.title} ?`"
+      >
+        <div class="shelf__confirm">
+          <button
+            type="button"
+            class="shelf__confirm-close"
+            aria-label="Fermer"
+            @click="emit('removal-choice', { id: removalBook.id, choice: 'cancel' })"
+          >
+            ×
+          </button>
+          <p class="shelf__confirm-title">Que souhaites-tu faire de ce livre ?</p>
+          <p class="shelf__confirm-meta">{{ removalBook.title }} · {{ removalBook.author }}</p>
+          <div class="shelf__confirm-actions">
+            <button type="button" @click="emit('removal-choice', { id: removalBook.id, choice: 'to_read' })">
+              Repasser en PAL
+            </button>
+            <button type="button" @click="emit('removal-choice', { id: removalBook.id, choice: 'abandon' })">
+              Marquer abandonné
+            </button>
+            <button type="button" @click="emit('removal-choice', { id: removalBook.id, choice: 'delete' })">
+              Supprimer
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </section>
 </template>
 
@@ -349,8 +351,6 @@ function handleRemove(id: string) {
   flex-direction: column;
   gap: 1.5rem;
   position: relative;
-  animation: var(--animation-slide-up);
-  animation-fill-mode: both;
 }
 
 .shelf__filters {
@@ -570,35 +570,41 @@ function handleRemove(id: string) {
 .shelf__confirm-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.45);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1.5rem;
   z-index: 30;
+  animation: var(--animation-fade-in);
 }
 
-.shelf__modal {
-  background: #ffffff;
-  border-radius: 1rem;
-  padding: 1.1rem 1.25rem 1rem;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.4);
-  max-width: 360px;
-  width: calc(100% - 2rem);
+.shelf__modal,
+.shelf__confirm {
+  background: var(--color-white);
+  color: var(--color-black);
+  border-radius: 0;
+  border: 3px solid var(--color-black);
+  padding: 1.5rem 1.6rem 1.3rem;
+  box-shadow: var(--shadow-brutal);
+  max-width: 540px;
+  width: min(540px, 100%);
   position: relative;
-  max-height: 80vh;
+  max-height: min(80vh, 600px);
   overflow-y: auto;
 }
 
-.shelf__confirm {
-  background: #ffffff;
-  border-radius: 1rem;
-  padding: 1.1rem 1.25rem 1rem;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.4);
-  max-width: 360px;
-  width: calc(100% - 2rem);
-  position: relative;
+.shelf__modal::after,
+.shelf__confirm::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 16px;
+  height: 16px;
+  background: var(--accent-secondary);
+  border: 2px solid var(--color-black);
 }
 
 .shelf__confirm-title {
@@ -620,30 +626,37 @@ function handleRemove(id: string) {
 }
 
 .shelf__confirm-actions button {
-  border-radius: 0.8rem;
-  padding: 0.5rem 0.9rem;
+  border: 2px solid var(--color-black);
+  border-radius: 0;
+  padding: 0.6rem 0.9rem;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: bold;
   width: 100%;
   text-align: center;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  box-shadow: var(--shadow-subtle);
+  transition: var(--transition-snap);
 }
 
 .shelf__confirm-actions button:nth-child(1) {
-  background: #ecfdf3;
-  color: #166534;
-  border: 1px solid #22c55e;
+  background: var(--accent-tertiary);
+  color: var(--color-black);
 }
 
 .shelf__confirm-actions button:nth-child(2) {
-  background: #fff7ed;
-  color: #9a3412;
-  border: 1px solid #f97316;
+  background: var(--accent-secondary);
+  color: #ffffff;
 }
 
 .shelf__confirm-actions button:nth-child(3) {
   background: var(--color-rouge-corail);
   color: white;
-  border: 1px solid #FF5555;
+}
+
+.shelf__confirm-actions button:hover {
+  transform: var(--transform-press);
+  box-shadow: var(--shadow-hover);
 }
 
 .shelf__confirm-close {
@@ -655,5 +668,20 @@ function handleRemove(id: string) {
   color: #9ca3af;
   font-size: 1.1rem;
   cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .shelf__confirm-overlay {
+    align-items: flex-start;
+    padding: 1rem 0.75rem;
+    overflow-y: auto;
+  }
+
+  .shelf__modal,
+  .shelf__confirm {
+    max-height: none;
+    width: 100%;
+    margin-top: 2.5rem;
+  }
 }
 </style>

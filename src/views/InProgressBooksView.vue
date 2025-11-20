@@ -1,20 +1,18 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useAppContext } from '../composables/useAppContext'
 import type { ReadingStatus } from '../composables/useReadingShelf'
 
 import ShelfSection from '../components/sections/ShelfSection.vue'
-import ModalAddBook from '../components/sections/modals/ModalAddBook.vue'
 
-const { shelf, modals } = useAppContext()
+const { shelf } = useAppContext()
 const router = useRouter()
 
 const inProgressBooks = computed(() => shelf.inProgressBooks.value)
 const removalPromptId = shelf.removalPromptId
 const shelfBooks = shelf.books
-const isBookModalOpen = computed(() => modals.active.value === 'book')
 
 const statusOptions: { value: ReadingStatus; label: string }[] = [
   { value: 'a_lire', label: 'À lire' },
@@ -60,6 +58,10 @@ function handleRemovalChoice(payload: { id: string; choice: 'to_read' | 'abandon
 function goToExplorer() {
   router.push({ name: 'explorer' })
 }
+
+onMounted(() => {
+  window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+})
 </script>
 
 <template>
@@ -95,12 +97,6 @@ function goToExplorer() {
       @change-total-pages="handleShelfTotalPages"
       @request-removal="shelf.requestRemoval"
       @removal-choice="handleRemovalChoice"
-    />
-
-    <ModalAddBook
-      v-if="isBookModalOpen"
-      @close="modals.close"
-      @add="shelf.addBook"
     />
   </main>
 </template>

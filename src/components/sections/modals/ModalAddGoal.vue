@@ -114,6 +114,10 @@ onBeforeUnmount(() => {
   color: #6b7280;
 }
 
+.modal-add-goal label:last-of-type {
+  margin-top: 0.75rem;
+}
+
 .modal-add-goal input,
 .modal-add-goal select {
   font-size: 0.95rem;
@@ -129,25 +133,26 @@ onBeforeUnmount(() => {
 }
 
 .modal-add-goal__chip {
-  border-radius: 999px;
+  border-radius: 0;
   padding: 0.35rem 0.8rem;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  color: #374151;
+  border: 2px solid var(--color-black);
+  background: var(--color-white);
+  color: var(--color-black);
   font-size: 0.8rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+  transition: var(--transition-snap);
+  box-shadow: var(--shadow-subtle);
 }
 
 .modal-add-goal__chip--active {
-  background: #facc15;
-  border-color: #facc15;
-  color: #111827;
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.18);
-  transform: translateY(-1px);
+  background: var(--accent-tertiary);
+  border-color: var(--color-black);
+  color: var(--color-black);
+  box-shadow: var(--shadow-brutal);
+  transform: var(--transform-press);
 }
 
 .modal-add-goal input::placeholder {

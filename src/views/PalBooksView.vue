@@ -4,13 +4,11 @@ import { useRouter } from 'vue-router'
 
 import { useAppContext } from '../composables/useAppContext'
 import ToReadSection from '../components/sections/ToReadSection.vue'
-import ModalAddBook from '../components/sections/modals/ModalAddBook.vue'
 
-const { shelf, modals } = useAppContext()
+const { shelf } = useAppContext()
 const router = useRouter()
 
 const toReadBooks = computed(() => shelf.toReadBooks.value)
-const isBookModalOpen = computed(() => modals.active.value === 'book')
 
 function handleToReadStart(id: string) {
   shelf.startReading(id)
@@ -47,12 +45,6 @@ function goToExplorer() {
       :books="toReadBooks"
       @status-change="handleToReadStart"
       @remove="shelf.removeBook"
-    />
-
-    <ModalAddBook
-      v-if="isBookModalOpen"
-      @close="modals.close"
-      @add="shelf.addBook"
     />
   </main>
 </template>

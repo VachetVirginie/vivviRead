@@ -168,45 +168,47 @@ function handleModalAction(action: 'start' | 'remove') {
       />
     </div>
 
-    <div
-      v-if="activeBook"
-      class="to-read__modal-overlay"
-      role="dialog"
-      aria-modal="true"
-      :aria-label="`Gérer ${activeBook.title}`"
-    >
-      <div class="to-read__modal">
-        <button type="button" class="to-read__modal-close" aria-label="Fermer" @click="closeBookModal">×</button>
-        <h3 class="to-read__modal-title">{{ activeBook.title }}</h3>
-        <p class="to-read__modal-meta">
-          {{ activeBook.author }}
-          <template v-if="activeBook.totalPages"> · {{ activeBook.totalPages }} pages</template>
-        </p>
-        <p v-if="activeBook.averageRating" class="to-read__modal-extra">
-          Note moyenne {{ activeBook.averageRating.toFixed(1) }} / 5
-        </p>
-        <div v-if="activeBook.coverUrl" class="to-read__modal-cover-wrapper">
-          <img
-            class="to-read__modal-cover"
-            :src="activeBook.coverUrl"
-            :alt="`Couverture de ${activeBook.title}`"
-          />
-        </div>
-        <p v-if="activeBook.description" class="to-read__modal-summary">
-          {{ activeBook.description }}
-        </p>
-        <p v-else-if="activeBook.notes" class="to-read__modal-summary">
-          {{ activeBook.notes }}
-        </p>
-        <p v-else class="to-read__modal-summary">
-          Tu peux ajouter un résumé personnel de ce livre dans tes notes.
-        </p>
-        <div class="to-read__modal-actions">
-          <button type="button" @click="handleModalAction('start')">Commencer la lecture</button>
-          <button type="button" @click="handleModalAction('remove')">Supprimer de la pile</button>
+    <Teleport to="body">
+      <div
+        v-if="activeBook"
+        class="to-read__modal-overlay"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="`Gérer ${activeBook.title}`"
+      >
+        <div class="to-read__modal">
+          <button type="button" class="to-read__modal-close" aria-label="Fermer" @click="closeBookModal">×</button>
+          <h3 class="to-read__modal-title">{{ activeBook.title }}</h3>
+          <p class="to-read__modal-meta">
+            {{ activeBook.author }}
+            <template v-if="activeBook.totalPages"> · {{ activeBook.totalPages }} pages</template>
+          </p>
+          <p v-if="activeBook.averageRating" class="to-read__modal-extra">
+            Note moyenne {{ activeBook.averageRating.toFixed(1) }} / 5
+          </p>
+          <div v-if="activeBook.coverUrl" class="to-read__modal-cover-wrapper">
+            <img
+              class="to-read__modal-cover"
+              :src="activeBook.coverUrl"
+              :alt="`Couverture de ${activeBook.title}`"
+            />
+          </div>
+          <p v-if="activeBook.description" class="to-read__modal-summary">
+            {{ activeBook.description }}
+          </p>
+          <p v-else-if="activeBook.notes" class="to-read__modal-summary">
+            {{ activeBook.notes }}
+          </p>
+          <p v-else class="to-read__modal-summary">
+            Tu peux ajouter un résumé personnel de ce livre dans tes notes.
+          </p>
+          <div class="to-read__modal-actions">
+            <button type="button" @click="handleModalAction('start')">Commencer la lecture</button>
+            <button type="button" @click="handleModalAction('remove')">Supprimer de la pile</button>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </section>
 </template>
 
@@ -430,24 +432,42 @@ function handleModalAction(action: 'start' | 'remove') {
 .to-read__modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.45);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1.5rem;
   z-index: 30;
+  animation: var(--animation-fade-in);
 }
 
 .to-read__modal {
-  background: #ffffff;
-  border-radius: 1rem;
-  padding: 1.2rem 1.4rem 1.1rem;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.35);
-  max-width: 380px;
-  width: calc(100% - 2rem);
+  background: var(--color-white);
+  color: var(--color-black);
+  border-radius: 0;
+  border: 3px solid var(--color-black);
+  padding: 1.7rem 1.7rem 1.4rem;
+  box-shadow: var(--shadow-brutal);
+  max-width: 480px;
+  width: min(480px, 100%);
   position: relative;
-  max-height: 80vh;
+  max-height: min(80vh, 560px);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.to-read__modal::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 16px;
+  height: 16px;
+  background: var(--accent-primary);
+  border: 2px solid var(--color-black);
 }
 
 .to-read__modal-title {
@@ -489,25 +509,36 @@ function handleModalAction(action: 'start' | 'remove') {
   margin-top: 0.9rem;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.55rem;
 }
 
 .to-read__modal-actions button {
-  border-radius: 0.85rem;
-  padding: 0.55rem 0.9rem;
-  font-weight: 600;
-  border: none;
+  border: 2px solid var(--color-black);
+  border-radius: 0;
+  padding: 0.6rem 0.9rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.8rem;
   cursor: pointer;
+  box-shadow: var(--shadow-subtle);
+  background: var(--color-white);
+  color: var(--color-black);
+  transition: var(--transition-snap);
 }
 
 .to-read__modal-actions button:first-child {
-  background: var(--color-jaune-dore);
-  color: #111827;
+  background: var(--accent-tertiary);
+  color: var(--color-black);
 }
 
 .to-read__modal-actions button:last-child {
   background: #fef2f2;
   color: var(--color-rouge-corail);
+}
+
+.to-read__modal-actions button:hover {
+  transform: var(--transform-press);
+  box-shadow: var(--shadow-hover);
 }
 
 .to-read__modal-close {
@@ -537,6 +568,18 @@ function handleModalAction(action: 'start' | 'remove') {
 
   .to-read__actions {
     margin-top: 0.25rem;
+  }
+
+  .to-read__modal-overlay {
+    align-items: flex-start;
+    padding: 1rem 0.75rem;
+    overflow-y: auto;
+  }
+
+  .to-read__modal {
+    max-height: none;
+    width: 100%;
+    margin-top: 2.5rem;
   }
 }
 </style>

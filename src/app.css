@@ -620,15 +620,25 @@ html {
 }
 
 .modal__actions button {
-  border: none;
-  border-radius: 999px;
+  border: 2px solid var(--color-black);
+  border-radius: 0;
   padding: 0.6rem 1.4rem;
-  font-weight: 600;
+  font-size: var(--text-sm);
+  font-weight: bold;
+  text-transform: uppercase;
   cursor: pointer;
+  transition: var(--transition-snap);
+  box-shadow: var(--shadow-brutal);
+  background: var(--color-white);
+  color: var(--color-black);
 }
 
 .modal__actions button:first-child {
-  background: var(--color-jaune-dore);
-  color: var(--color-neutral-900);
-  box-shadow: var(--shadow-lg);
+  background: var(--accent-tertiary);
+  color: var(--color-black);
+}
+
+.modal__actions button:first-child:hover {
+  transform: var(--transform-press);
+  box-shadow: var(--shadow-hover);
 }

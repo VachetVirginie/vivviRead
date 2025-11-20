@@ -6,13 +6,11 @@ import { useAppContext } from '../composables/useAppContext'
 import type { ReadingStatus } from '../composables/useReadingShelf'
 
 import CompletedSection from '../components/sections/CompletedSection.vue'
-import ModalAddBook from '../components/sections/modals/ModalAddBook.vue'
 
-const { shelf, modals } = useAppContext()
+const { shelf } = useAppContext()
 const router = useRouter()
 
 const completedBooks = computed(() => shelf.completedBooks.value)
-const isBookModalOpen = computed(() => modals.active.value === 'book')
 
 function handleCompletedStatusChange(payload: { id: string; status: ReadingStatus }) {
   shelf.setStatus(payload.id, payload.status)
@@ -49,12 +47,6 @@ function goToExplorer() {
       :books="completedBooks"
       @status-change="handleCompletedStatusChange"
       @remove="shelf.removeBook"
-    />
-
-    <ModalAddBook
-      v-if="isBookModalOpen"
-      @close="modals.close"
-      @add="shelf.addBook"
     />
   </main>
 </template>

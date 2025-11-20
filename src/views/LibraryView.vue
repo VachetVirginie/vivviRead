@@ -4,16 +4,14 @@ import { useRouter } from 'vue-router'
 
 import { useAppContext } from '../composables/useAppContext'
 import LibrarySectionCard from '../components/sections/LibrarySectionCard.vue'
-import ModalAddBook from '../components/sections/modals/ModalAddBook.vue'
 
-const { shelf, modals } = useAppContext()
+const { shelf } = useAppContext()
 const router = useRouter()
 
 const toReadBooks = computed(() => shelf.toReadBooks.value)
 const inProgressBooks = computed(() => shelf.inProgressBooks.value)
 const completedBooks = computed(() => shelf.completedBooks.value)
 const abandonedBooks = computed(() => shelf.abandonedBooks.value)
-const isBookModalOpen = computed(() => modals.active.value === 'book')
 
 function goToExplorer() {
   router.push({ name: 'explorer' })
@@ -79,12 +77,6 @@ function goToExplorer() {
         variant="abandoned"
       />
     </section>
-
-    <ModalAddBook
-      v-if="isBookModalOpen"
-      @close="modals.close"
-      @add="shelf.addBook"
-    />
   </main>
 </template>
 
