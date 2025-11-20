@@ -9,7 +9,6 @@ const router = useRouter()
 
 const {
   user,
-  role,
   loading: authLoading,
   errorMessage: authError,
   email,
@@ -25,6 +24,8 @@ const redirectPath = computed(() => (route.query.redirect as string | undefined)
 const mode = ref<'login' | 'signup'>('login')
 const isLoginMode = computed(() => mode.value === 'login')
 
+const signupToast = ref<string | null>(null)
+
 function switchToLogin() {
   mode.value = 'login'
 }
@@ -37,7 +38,14 @@ async function handleSubmit() {
   if (isLoginMode.value) {
     await signInWithEmail()
   } else {
-    await signUpWithEmail()
+    const result = await signUpWithEmail()
+    if (result && result.success) {
+      signupToast.value =
+        "Inscription réussie. Vérifie ta boîte mail pour confirmer ton compte avant de te connecter."
+      window.setTimeout(() => {
+        signupToast.value = null
+      }, 6000)
+    }
   }
 }
 
@@ -77,15 +85,8 @@ watchEffect(() => {
         </header>
 
         <div class="auth-block">
-          <div class="auth-block__status">
-            <p v-if="user">
-              Connecté en tant que <strong>{{ user.email }}</strong>
-              <br />
-              Rôle : <strong>{{ role }}</strong>
-            </p>
-            <p v-else>
-              Non connecté.
-            </p>
+          <div v-if="signupToast" class="login-toast">
+            {{ signupToast }}
           </div>
 
           <form class="auth-block__form" @submit.prevent="handleSubmit">
@@ -131,13 +132,6 @@ watchEffect(() => {
           </form>
         </div>
 
-        <p class="home-block__hint login-hint">
-          {{
-            isLoginMode
-              ? 'Une fois connecté·e, tu seras redirigé·e automatiquement vers ta page d\'accueil.'
-              : 'Ton compte sera prêt en quelques secondes une fois le formulaire validé.'
-          }}
-        </p>
       </section>
     </section>
   </main>
@@ -275,6 +269,15 @@ watchEffect(() => {
   margin-top: 0.8rem;
   font-size: 0.8rem;
   color: #6b7280;
+}
+
+.login-toast {
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  background: var(--color-jaune-dore);
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
 }
 
 .auth-block__forgot {

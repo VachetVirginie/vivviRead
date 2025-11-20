@@ -57,6 +57,10 @@ function goBackToLogin() {
         </header>
 
         <div v-if="isValidSession" class="auth-block">
+          <div v-if="successMessage" class="login-toast">
+            ✅ {{ successMessage }}
+            <br /><small>Redirection vers la connexion…</small>
+          </div>
           <form class="auth-block__form" @submit.prevent="handleUpdatePassword">
             <label class="auth-block__field">
               <span>Nouveau mot de passe</span>
@@ -93,10 +97,6 @@ function goBackToLogin() {
             </div>
 
             <div class="auth-block__messages">
-              <p v-if="successMessage" class="auth-block__success">
-                ✅ {{ successMessage }}
-                <br><small>Redirection vers la connexion...</small>
-              </p>
               <p v-if="errorMessage" class="auth-block__error">
                 ❌ {{ errorMessage }}
               </p>

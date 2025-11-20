@@ -150,7 +150,7 @@ onMounted(() => {
     <section class="friends-layout" aria-label="Flux d'activités des amis">
       <section class="friends-card friends-card--feed" aria-label="Activités détaillées des amis">
         <h2 class="friends-card__title">Activités récentes</h2>
-
+<!-- 
         <div class="friends-network-bar">
           <div class="friends-network-bar__item">
             <span class="friends-network-bar__label">Tu suis</span>
@@ -163,7 +163,7 @@ onMounted(() => {
           <p v-if="!friendsRelations.hasFollowing" class="friends-network-bar__hint">
             Commence par suivre des amis depuis "Trouver des amis" pour voir leurs lectures ici.
           </p>
-        </div>
+        </div> -->
 
         <div class="friends-feed-filters" aria-label="Filtrer les activités">
           <button

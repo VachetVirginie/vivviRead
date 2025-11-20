@@ -38,6 +38,9 @@ function goBackToLogin() {
         </header>
 
         <div class="auth-block">
+          <div v-if="successMessage" class="login-toast">
+            ✅ {{ successMessage }}
+          </div>
           <form class="auth-block__form" @submit.prevent="handleResetPassword">
             <label class="auth-block__field">
               <span>Adresse email</span>
@@ -61,9 +64,6 @@ function goBackToLogin() {
             </div>
 
             <div class="auth-block__messages">
-              <p v-if="successMessage" class="auth-block__success">
-                ✅ {{ successMessage }}
-              </p>
               <p v-if="errorMessage" class="auth-block__error">
                 ❌ {{ errorMessage }}
               </p>

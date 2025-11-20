@@ -160,8 +160,11 @@ async function signUpWithEmail() {
     if (data.user) {
       await loadCurrentUser()
     }
+
+    return { success: true }
   } catch (err) {
     errorMessage.value = err instanceof Error ? err.message : String(err)
+    return { success: false }
   } finally {
     loading.value = false
   }
