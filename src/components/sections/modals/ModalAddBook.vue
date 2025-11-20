@@ -91,7 +91,7 @@ onBeforeUnmount(() => {
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #6b7280;
+  color: #cbd5f5;
 }
 
 .modal-add-book input {

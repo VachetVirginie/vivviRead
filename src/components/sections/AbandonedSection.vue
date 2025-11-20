@@ -166,12 +166,11 @@ function handleRemove(bookId: string) {
 
 <style scoped>
 .abandoned {
-  background: var(--color-white);
-  border-radius: 0;
-  padding: 1.75rem 1.5rem 6rem;
-  border: 3px solid var(--color-black);
-  border-left: 8px solid var(--accent-primary);
-  box-shadow: var(--shadow-brutal);
+  background-color: hsla(246, 100%, 85%, 0.12);
+  border-radius: 1.5rem;
+  padding: 1.75rem 1.75rem 6rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.75);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -180,23 +179,13 @@ function handleRemove(bookId: string) {
   animation-delay: 0.4s;
   animation-fill-mode: both;
   margin-bottom: 2em;
+  color: #e5e7eb;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
 .abandoned::after {
-  content: '⏸';
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  width: 20px;
-  height: 20px;
-  background: var(--accent-primary);
-  color: white;
-  border: 2px solid var(--color-black);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 12px;
+  content: none;
 }
 
 .abandoned__grid {
@@ -212,12 +201,12 @@ function handleRemove(bookId: string) {
 }
 
 .abandoned__card {
-  border-radius: 0;
+  border-radius: 1.25rem;
   padding: 1.25rem;
-  background: var(--color-white);
-  border: 2px solid var(--color-black);
-  border-left: 6px solid var(--accent-primary);
-  box-shadow: var(--shadow-subtle);
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  border-left: 4px solid var(--accent-primary);
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.75);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -239,19 +228,7 @@ function handleRemove(bookId: string) {
 .abandoned__card:nth-child(4) { animation-delay: 0.3s; }
 
 .abandoned__card::before {
-  content: '💔';
-  position: absolute;
-  bottom: -2px;
-  left: -2px;
-  width: 16px;
-  height: 16px;
-  background: var(--accent-primary);
-  color: white;
-  border: 1px solid var(--color-black);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
+  content: none;
 }
 
 .abandoned__cover-wrapper {
@@ -268,7 +245,7 @@ function handleRemove(bookId: string) {
 
 .abandoned__label {
   margin: 0;
-  color: var(--color-black);
+  color: #fecaca;
   font-size: 0.9rem;
   font-weight: bold;
   text-transform: uppercase;
@@ -278,15 +255,15 @@ function handleRemove(bookId: string) {
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0.2rem 0.4rem;
-  background: rgba(255, 107, 107, 0.1);
+  background: rgba(248, 113, 113, 0.18);
   border: 1px solid var(--accent-primary);
-  border-radius: 0;
+  border-radius: 999px;
   display: inline-block;
 }
 
 .abandoned__meta {
   margin: 0;
-  color: #4b5563;
+  color: #e5e7eb;
   font-size: 0.9rem;
 }
 
@@ -306,14 +283,15 @@ function handleRemove(bookId: string) {
 }
 
 .abandoned__chip {
-  border: 2px solid var(--color-black);
-  border-radius: 0;
-  padding: 0.25rem 0.6rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  border-radius: 999px;
+  padding: 0.25rem 0.8rem;
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  background: var(--color-white);
+  background: transparent;
   cursor: pointer;
+  color: #cbd5f5;
 }
 
 .abandoned__chip--active {
@@ -328,32 +306,32 @@ function handleRemove(bookId: string) {
 }
 
 .abandoned__actions button {
-  border: 2px solid var(--color-black);
-  border-radius: 0;
-  padding: 0.4rem 0.9rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  font-size: 0.75rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.45rem 1.1rem;
+  font-weight: 600;
+  text-transform: none;
+  font-size: 0.8rem;
   cursor: pointer;
-  background: var(--accent-primary);
-  color: #ffffff;
+  background: #f9fafb;
+  color: #020617;
   transition: var(--transition-snap);
-  box-shadow: var(--shadow-subtle);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
 }
 
 .abandoned__actions button:nth-child(2) {
-  background: var(--color-white);
-  color: var(--color-black);
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
 }
 
 .abandoned__actions .shelf__remove {
-  background: #fef2f2;
+  background: #fee2e2;
   color: var(--color-rouge-corail);
-  border-color: var(--color-rouge-corail);
+  border-color: transparent;
 }
 
 .abandoned__actions button:hover {
-  transform: var(--transform-press);
-  box-shadow: var(--shadow-hover);
+  background: #e5e7eb;
+  color: #020617;
 }
 </style>

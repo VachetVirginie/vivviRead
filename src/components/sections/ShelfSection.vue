@@ -341,16 +341,18 @@ function handleRemove(id: string) {
 
 <style scoped>
 .shelf {
-  background: var(--color-white);
-  border-radius: 0;
-  padding: 1.75rem 1.5rem;
-  border: 3px solid var(--color-black);
-  border-left: 8px solid var(--accent-secondary);
-  box-shadow: var(--shadow-brutal);
+  background-color: hsla(246, 100%, 85%, 0.12);
+  border-radius: 1.5rem;
+  padding: 1.75rem 1.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.75);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   position: relative;
+  color: #e5e7eb;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
 .shelf__filters {
@@ -376,6 +378,7 @@ function handleRemove(id: string) {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  color: #9ca3af;
 }
 
 .shelf__search {
@@ -386,12 +389,14 @@ function handleRemove(id: string) {
 }
 
 .shelf__search input {
-  border: 2px solid var(--color-black);
-  border-radius: 0;
-  padding: 0.4rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  padding: 0.45rem 0.75rem;
   font: inherit;
   width: 100%;
   box-sizing: border-box;
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
 }
 
 .shelf__chips {
@@ -401,19 +406,20 @@ function handleRemove(id: string) {
 }
 
 .shelf__chip {
-  border: 2px solid var(--color-black);
-  border-radius: 0;
-  padding: 0.25rem 0.6rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  border-radius: 999px;
+  padding: 0.25rem 0.8rem;
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  background: var(--color-white);
+  background: transparent;
   cursor: pointer;
+  color: #cbd5f5;
 }
 
 .shelf__chip--active {
-  background: var(--accent-secondary);
-  color: #ffffff;
+  background: #f9fafb;
+  color: #020617;
 }
 
 .shelf__grid {
@@ -429,19 +435,7 @@ function handleRemove(id: string) {
 }
 
 .shelf::after {
-  content: '📖';
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  width: 20px;
-  height: 20px;
-  background: var(--accent-secondary);
-  color: white;
-  border: 2px solid var(--color-black);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
+  content: none;
 }
 
 .shelf__header {
@@ -457,7 +451,7 @@ function handleRemove(id: string) {
 
 .shelf__label {
   margin: 0 0 0.35rem;
-  color: var(--color-black);
+  color: #e5e7eb;
   font-size: 0.9rem;
   font-weight: bold;
   text-transform: uppercase;
@@ -467,9 +461,9 @@ function handleRemove(id: string) {
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0.2rem 0.4rem;
-  background: var(--color-gray-100);
-  border: 1px solid var(--color-black);
-  border-radius: 0;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  border-radius: 999px;
   display: inline-block;
 }
 
@@ -494,14 +488,14 @@ function handleRemove(id: string) {
   flex-direction: column;
   gap: 0.35rem;
   font-size: 0.9rem;
-  color: #4b5563;
+  color: #cbd5f5;
 }
 
 .shelf__modal .shelf__total,
 .shelf__modal .shelf__status,
 .shelf__modal .shelf__range,
 .shelf__modal .shelf__percent {
-  background: #f9fafb;
+  background: rgba(15, 23, 42, 0.9);
   border-radius: 0.9rem;
   padding: 0.6rem 0.75rem;
 }
@@ -511,18 +505,18 @@ function handleRemove(id: string) {
 }
 
 .shelf__status select {
-  border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
-  color: #111827;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
   padding: 0.5rem 0.75rem;
 }
 
 .shelf__notes {
   border-radius: 0.9rem;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
-  color: #111827;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
   padding: 0.85rem 1rem;
   font-family: inherit;
   resize: vertical;
@@ -536,9 +530,9 @@ function handleRemove(id: string) {
 
 .shelf__total input,
 .shelf__percent input {
-  border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.9);
   padding: 0.45rem 0.75rem;
   font-family: inherit;
   font-size: 0.9rem;
@@ -549,8 +543,8 @@ function handleRemove(id: string) {
 .shelf__status select:focus,
 .shelf__notes:focus {
   outline: none;
-  border-color: #facc15;
-  box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.18);
+  border-color: #a855f7;
+  box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.4);
 }
 
 .shelf__total input::-webkit-outer-spin-button,
@@ -570,8 +564,8 @@ function handleRemove(id: string) {
 .shelf__confirm-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(8px);
+  background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95));
+  backdrop-filter: blur(18px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -582,12 +576,12 @@ function handleRemove(id: string) {
 
 .shelf__modal,
 .shelf__confirm {
-  background: var(--color-white);
-  color: var(--color-black);
-  border-radius: 0;
-  border: 3px solid var(--color-black);
-  padding: 1.5rem 1.6rem 1.3rem;
-  box-shadow: var(--shadow-brutal);
+  background-color: hsla(246, 100%, 85%, 0.16);
+  color: #e5e7eb;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 1.5rem 1.7rem 1.3rem;
+  box-shadow: 0 26px 60px rgba(15, 23, 42, 0.9);
   max-width: 540px;
   width: min(540px, 100%);
   position: relative;
@@ -597,14 +591,7 @@ function handleRemove(id: string) {
 
 .shelf__modal::after,
 .shelf__confirm::after {
-  content: '';
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  width: 16px;
-  height: 16px;
-  background: var(--accent-secondary);
-  border: 2px solid var(--color-black);
+  content: none;
 }
 
 .shelf__confirm-title {
@@ -626,37 +613,37 @@ function handleRemove(id: string) {
 }
 
 .shelf__confirm-actions button {
-  border: 2px solid var(--color-black);
-  border-radius: 0;
-  padding: 0.6rem 0.9rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1.2rem;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 600;
   width: 100%;
   text-align: center;
-  text-transform: uppercase;
+  text-transform: none;
   font-size: 0.8rem;
-  box-shadow: var(--shadow-subtle);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
   transition: var(--transition-snap);
 }
 
 .shelf__confirm-actions button:nth-child(1) {
-  background: var(--accent-tertiary);
-  color: var(--color-black);
+  background: #f9fafb;
+  color: #020617;
 }
 
 .shelf__confirm-actions button:nth-child(2) {
-  background: var(--accent-secondary);
-  color: #ffffff;
+  background: #0ea5e9;
+  color: #f9fafb;
 }
 
 .shelf__confirm-actions button:nth-child(3) {
-  background: var(--color-rouge-corail);
+  background: #dc2626;
   color: white;
 }
 
 .shelf__confirm-actions button:hover {
-  transform: var(--transform-press);
-  box-shadow: var(--shadow-hover);
+  background: #e5e7eb;
+  color: #020617;
 }
 
 .shelf__confirm-close {

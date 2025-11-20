@@ -257,17 +257,18 @@ onMounted(() => {
 .reader-page {
   max-width: 900px;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-4) var(--space-12);
+  padding: var(--space-12) var(--space-6) var(--space-16);
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
+  color: #e5e7eb;
 }
 
 .reader-card {
-  background: var(--color-white);
-  border-radius: 0;
-  border: 3px solid var(--color-black);
-  box-shadow: var(--shadow-brutal);
+  background-color: var(--glass-surface);
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.75);
   padding: var(--space-6);
   display: flex;
   flex-direction: column;
@@ -286,7 +287,7 @@ onMounted(() => {
   width: 3rem;
   height: 3rem;
   border-radius: 999px;
-  border: 2px solid var(--color-black);
+  border: 2px solid rgba(255, 255, 255, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -311,7 +312,7 @@ onMounted(() => {
 .reader-username {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--color-neutral-600);
+  color: #cbd5f5;
 }
 
 .reader-stats {
@@ -321,9 +322,9 @@ onMounted(() => {
 }
 
 .reader-stats__item {
-  background: var(--color-neutral-50);
-  border-radius: 0;
-  border: 2px solid var(--color-black);
+  background: rgba(15, 23, 42, 0.9);
+  border-radius: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
   padding: var(--space-2) var(--space-3);
 }
 
@@ -332,7 +333,7 @@ onMounted(() => {
   font-size: var(--text-xxs, 0.65rem);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--color-neutral-600);
+  color: #9ca3af;
 }
 
 .reader-stats__value {
@@ -345,7 +346,7 @@ onMounted(() => {
 }
 
 .reader-activities {
-  border-top: 2px dashed var(--color-neutral-300);
+  border-top: 1px dashed rgba(148, 163, 184, 0.5);
   padding-top: var(--space-4);
   display: flex;
   flex-direction: column;
@@ -368,10 +369,10 @@ onMounted(() => {
 }
 
 .reader-activities__item {
-  border-radius: 0;
-  border: 2px solid var(--color-black);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
   padding: var(--space-3) var(--space-4);
-  background: var(--color-neutral-50);
+  background: rgba(15, 23, 42, 0.9);
 }
 
 .reader-activities__summary {
@@ -382,19 +383,19 @@ onMounted(() => {
 .reader-activities__detail {
   margin: 0 0 0.25rem;
   font-size: var(--text-sm);
-  color: var(--color-neutral-700);
+  color: #cbd5f5;
 }
 
 .reader-activities__date {
   margin: 0;
   font-size: var(--text-xs);
-  color: var(--color-neutral-500);
+  color: #9ca3af;
 }
 
 .reader-state {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--color-neutral-600);
+  color: #cbd5f5;
 }
 
 .reader-state--error {

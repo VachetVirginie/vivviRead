@@ -214,13 +214,16 @@ function handleModalAction(action: 'start' | 'remove') {
 
 <style scoped>
 .to-read {
-  background: #ffffff;
+  background-color: hsla(246, 100%, 85%, 0.12);
   border-radius: 1.5rem;
-  padding: 1.75rem 1.5rem;
-  border: 1px solid #e5e7eb;
+  padding: 1.75rem 1.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
+  color: #e5e7eb;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
 .to-read__filters {
@@ -246,6 +249,7 @@ function handleModalAction(action: 'start' | 'remove') {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  color: #9ca3af;
 }
 
 .to-read__search {
@@ -256,12 +260,14 @@ function handleModalAction(action: 'start' | 'remove') {
 }
 
 .to-read__search input {
-  border: 2px solid var(--color-black);
-  border-radius: 0;
-  padding: 0.4rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  padding: 0.45rem 0.75rem;
   font: inherit;
   width: 100%;
   box-sizing: border-box;
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
 }
 
 .to-read__chips {
@@ -271,18 +277,20 @@ function handleModalAction(action: 'start' | 'remove') {
 }
 
 .to-read__chip {
-  border: 2px solid var(--color-black);
-  border-radius: 0;
-  padding: 0.25rem 0.6rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  border-radius: 999px;
+  padding: 0.25rem 0.8rem;
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  background: var(--color-white);
+  background: transparent;
   cursor: pointer;
+  color: #cbd5f5;
 }
 
 .to-read__chip--active {
-  background: var(--color-jaune-dore);
+  background: #f9fafb;
+  color: #020617;
 }
 
 .to-read__grid {
@@ -298,11 +306,11 @@ function handleModalAction(action: 'start' | 'remove') {
 }
 
 .to-read__card {
-  border-radius: 0;
+  border-radius: 1.5rem;
   padding: 1.25rem;
-  background: var(--color-white);
-  border: 2px solid var(--color-black);
-  box-shadow: var(--shadow-subtle);
+  background-color: var(--glass-surface);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.75);
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
@@ -432,8 +440,8 @@ function handleModalAction(action: 'start' | 'remove') {
 .to-read__modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(8px);
+  background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95));
+  backdrop-filter: blur(18px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -443,12 +451,12 @@ function handleModalAction(action: 'start' | 'remove') {
 }
 
 .to-read__modal {
-  background: var(--color-white);
-  color: var(--color-black);
-  border-radius: 0;
-  border: 3px solid var(--color-black);
-  padding: 1.7rem 1.7rem 1.4rem;
-  box-shadow: var(--shadow-brutal);
+  background-color: hsla(246, 100%, 85%, 0.16);
+  color: #e5e7eb;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 1.7rem 1.8rem 1.4rem;
+  box-shadow: 0 26px 60px rgba(15, 23, 42, 0.9);
   max-width: 480px;
   width: min(480px, 100%);
   position: relative;
@@ -460,14 +468,7 @@ function handleModalAction(action: 'start' | 'remove') {
 }
 
 .to-read__modal::after {
-  content: '';
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  width: 16px;
-  height: 16px;
-  background: var(--accent-primary);
-  border: 2px solid var(--color-black);
+  content: none;
 }
 
 .to-read__modal-title {
@@ -477,13 +478,13 @@ function handleModalAction(action: 'start' | 'remove') {
 .to-read__modal-meta {
   margin: 0;
   font-size: 0.9rem;
-  color: #4b5563;
+  color: #9ca3af;
 }
 
 .to-read__modal-extra {
   margin: 0.4rem 0 0;
   font-size: 0.85rem;
-  color: #6b7280;
+  color: #cbd5f5;
 }
 
 .to-read__modal-cover-wrapper {
@@ -502,7 +503,7 @@ function handleModalAction(action: 'start' | 'remove') {
 .to-read__modal-summary {
   margin-top: 0.75rem;
   font-size: 0.9rem;
-  color: #4b5563;
+  color: #d1d5db;
 }
 
 .to-read__modal-actions {
@@ -513,32 +514,31 @@ function handleModalAction(action: 'start' | 'remove') {
 }
 
 .to-read__modal-actions button {
-  border: 2px solid var(--color-black);
-  border-radius: 0;
-  padding: 0.6rem 0.9rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  font-size: 0.8rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1.2rem;
+  font-weight: 600;
+  text-transform: none;
+  font-size: 0.85rem;
   cursor: pointer;
-  box-shadow: var(--shadow-subtle);
-  background: var(--color-white);
-  color: var(--color-black);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
+  background: #f9fafb;
+  color: #020617;
   transition: var(--transition-snap);
 }
 
 .to-read__modal-actions button:first-child {
-  background: var(--accent-tertiary);
-  color: var(--color-black);
+  background: #f9fafb;
+  color: #020617;
 }
 
 .to-read__modal-actions button:last-child {
-  background: #fef2f2;
+  background: #fee2e2;
   color: var(--color-rouge-corail);
 }
 
 .to-read__modal-actions button:hover {
-  transform: var(--transform-press);
-  box-shadow: var(--shadow-hover);
+  background: #e5e7eb;
 }
 
 .to-read__modal-close {

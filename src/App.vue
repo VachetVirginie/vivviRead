@@ -108,15 +108,13 @@ function handleBack() {
 }
 
 .app-shell__back-button {
-  border: 2px solid var(--color-black);
-  border-radius: 0;
-  padding: 0.35rem 0.75rem;
-  font-size: var(--text-xs);
-  font-weight: bold;
-  text-transform: uppercase;
-  background: var(--color-white);
-  color: var(--color-black);
-  box-shadow: var(--shadow-subtle);
+  border: none;
+  padding: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  text-transform: none;
+  background: transparent;
+  color: #e5e7eb;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -124,8 +122,7 @@ function handleBack() {
 }
 
 .app-shell__back-button:hover {
-  transform: var(--transform-press);
-  box-shadow: var(--shadow-hover);
+  text-decoration: underline;
 }
 
 .app-shell__back-icon {

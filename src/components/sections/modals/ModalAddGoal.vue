@@ -153,7 +153,7 @@ onBeforeUnmount(() => {
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #6b7280;
+  color: #cbd5f5;
 }
 
 .modal-add-goal label:last-of-type {
@@ -176,26 +176,24 @@ onBeforeUnmount(() => {
 }
 
 .modal-add-goal__chip {
-  border-radius: 0;
-  padding: 0.35rem 0.8rem;
-  border: 2px solid var(--color-black);
-  background: var(--color-white);
-  color: var(--color-black);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: transparent;
+  color: #cbd5f5;
   font-size: 0.8rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   cursor: pointer;
   transition: var(--transition-snap);
-  box-shadow: var(--shadow-subtle);
+  box-shadow: none;
 }
 
 .modal-add-goal__chip--active {
-  background: var(--accent-tertiary);
-  border-color: var(--color-black);
-  color: var(--color-black);
-  box-shadow: 3px 3px 0 var(--color-black);
-  transform: translate(0, 0);
+  background: #f9fafb;
+  border-color: transparent;
+  color: #020617;
 }
 
 .modal-add-goal input::placeholder {

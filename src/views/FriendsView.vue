@@ -274,10 +274,11 @@ onMounted(() => {
 .friends-page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-4) var(--space-12);
+  padding: var(--space-12) var(--space-6) var(--space-16);
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
+  color: #e5e7eb;
 }
 
 .friends-layout {
@@ -287,10 +288,12 @@ onMounted(() => {
 }
 
 .friends-card {
-  background: var(--color-white);
-  border-radius: 0;
-  border: 3px solid var(--color-black);
-  box-shadow: var(--shadow-brutal);
+  background-color: var(--glass-surface);
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
   padding: var(--space-6);
   display: flex;
   flex-direction: column;
@@ -298,7 +301,7 @@ onMounted(() => {
 }
 
 .friends-card--feed {
-  border-color: var(--color-jaune-dore);
+  border-top: 2px solid rgba(250, 250, 250, 0.5);
 }
 
 .friends-card__title {
@@ -356,21 +359,22 @@ onMounted(() => {
 }
 
 .friends-feed-filter {
-  border-radius: 0;
-  border: 2px solid var(--color-black);
-  background: var(--color-white);
-  color: var(--color-black);
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: transparent;
+  color: #cbd5f5;
   padding: 0.3rem 0.8rem;
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.12em;
   cursor: pointer;
-  box-shadow: var(--shadow-subtle);
+  box-shadow: none;
 }
 
 .friends-feed-filter--active {
-  background: var(--color-jaune-dore);
-  box-shadow: 3px 3px 0 var(--color-black);
+  background: #f9fafb;
+  color: #020617;
+  border-color: transparent;
 }
 
 .friends-stats {
@@ -403,7 +407,7 @@ onMounted(() => {
 .friends-empty {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--color-neutral-600);
+  color: #cbd5f5;
 }
 
 .friends-feed {
@@ -432,14 +436,14 @@ onMounted(() => {
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--color-neutral-600);
+  color: #9ca3af;
 }
 
 .friends-feed__item {
-  border-radius: 0;
-  border: 2px solid var(--color-black);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
   padding: var(--space-3) var(--space-4);
-  background: var(--color-neutral-50);
+  background: rgba(15, 23, 42, 0.85);
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -462,7 +466,7 @@ onMounted(() => {
   width: 2rem;
   height: 2rem;
   border-radius: 999px;
-  border: 2px solid var(--color-black);
+  border: 2px solid rgba(255, 255, 255, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -484,50 +488,50 @@ onMounted(() => {
 }
 
 .friends-feed__badge {
-  border-radius: 0;
-  border: 2px solid var(--color-black);
-  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  padding: 0.1rem 0.5rem;
   font-size: var(--text-xxs, 0.65rem);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  background: var(--color-jaune-dore);
+  background: rgba(15, 23, 42, 0.6);
+  color: #e5e7eb;
 }
 
 .friends-feed__date {
   font-size: var(--text-xs);
-  color: var(--color-neutral-500);
+  color: #9ca3af;
 }
 
 .friends-feed__summary {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--color-neutral-900);
+  color: #e5e7eb;
 }
 
 .friends-feed__detail {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--color-neutral-700);
+  color: #cbd5f5;
 }
 
 .friends-feed__action {
   align-self: flex-start;
   margin-top: 0.35rem;
-  border-radius: 0;
-  border: 2px solid var(--color-black);
-  background: var(--color-white);
-  color: var(--color-black);
+  border-radius: 999px;
+  border: none;
+  background: #f9fafb;
+  color: #020617;
   padding: 0.25rem 0.8rem;
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.12em;
   cursor: pointer;
-  box-shadow: var(--shadow-subtle);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.7);
 }
 
 .friends-feed__action:hover {
-  background: var(--color-jaune-dore);
-  box-shadow: 3px 3px 0 var(--color-black);
+  background: #e5e7eb;
 }
 
 @media (max-width: 640px) {

@@ -66,15 +66,15 @@ const authorLabel = computed(() => {
 
 <style scoped>
 .book-card {
-  background: var(--color-white);
-  border: 2px solid var(--color-black);
-  border-radius: 0;
+  background-color: var(--glass-surface);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 1.5rem;
   padding: var(--space-6);
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
   transition: var(--transition-snap);
-  box-shadow: var(--shadow-subtle);
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.75);
   position: relative;
   cursor: pointer;
   animation: var(--animation-slide-up);
@@ -82,6 +82,9 @@ const authorLabel = computed(() => {
   height: 100%;
   min-height: 380px;
   width: 100%;
+  color: #e5e7eb;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
 .book-card:hover {
@@ -91,15 +94,7 @@ const authorLabel = computed(() => {
 }
 
 .book-card::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  width: 12px;
-  height: 12px;
-  background: var(--accent-secondary);
-  border: 1px solid var(--color-black);
-  transition: var(--transition-snap);
+  content: none;
 }
 
 .book-card__main {
@@ -112,9 +107,9 @@ const authorLabel = computed(() => {
 
 /* Design spécial pour une card seule (featured) */
 .carousel__track--single .book-card {
-  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-neutral-50) 100%);
-  border: 2px solid var(--color-primary-yellow);
-  box-shadow: var(--shadow-xl), 0 0 0 1px rgba(250, 204, 21, 0.1);
+  background-color: var(--glass-surface);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 26px 52px rgba(15, 23, 42, 0.9);
   transform: scale(1.02);
 }
 
@@ -300,9 +295,9 @@ const authorLabel = computed(() => {
 
 .book-card__label {
   margin: 0;
-  color: var(--color-black);
+  color: #e5e7eb;
   font-size: var(--text-sm);
-  font-weight: bold;
+  font-weight: var(--font-bold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   max-width: 100%;
@@ -311,9 +306,9 @@ const authorLabel = computed(() => {
   text-overflow: ellipsis;
   position: relative;
   padding: 0.25rem 0.5rem;
-  background: var(--color-gray-100);
-  border: 1px solid var(--color-black);
-  border-radius: 0;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  border-radius: 999px;
 }
 
 .book-card__label::after {
@@ -323,14 +318,14 @@ const authorLabel = computed(() => {
   top: 0;
   bottom: 0;
   width: 8px;
-  background: linear-gradient(to right, transparent, var(--color-gray-100));
+  background: linear-gradient(to right, transparent, rgba(15, 23, 42, 0.9));
   pointer-events: none;
 }
 
 .book-card__meta {
   margin: 0;
   font-size: var(--text-xs);
-  color: var(--color-neutral-400);
+  color: #9ca3af;
   font-weight: var(--font-medium);
   max-width: 100%;
   white-space: nowrap;
@@ -350,7 +345,7 @@ const authorLabel = computed(() => {
   -webkit-box-orient: vertical;
   overflow: hidden;
   line-clamp: 2;
-  color: var(--color-black);
+  color: #f9fafb;
   position: relative;
 }
 
@@ -361,7 +356,7 @@ const authorLabel = computed(() => {
   right: 0;
   width: 20px;
   height: 1.3em;
-  background: linear-gradient(to right, transparent, var(--color-white));
+  background: linear-gradient(to right, transparent, hsla(246, 100%, 85%, 0.16));
   pointer-events: none;
 }
 
@@ -385,25 +380,24 @@ const authorLabel = computed(() => {
 }
 
 .book-card__actions button:first-child {
-  background: var(--accent-primary);
-  color: var(--color-white);
-  border: 2px solid var(--color-black);
-  box-shadow: var(--shadow-brutal);
+  background: #f9fafb;
+  color: #020617;
+  border: none;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
   position: relative;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.02em;
 }
 
 .book-card__actions button:first-child:hover {
-  transform: var(--transform-press);
-  box-shadow: var(--shadow-hover);
-  animation: pulse-scale 0.8s ease-in-out infinite;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
 }
 
 .book-card__actions button:first-child:active {
-  transform: translateY(4px);
-  box-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
+  transform: translateY(1px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.8);
 }
 
 .book-card__remove {

@@ -8,7 +8,6 @@ import type { GoogleBookVolume } from '../services/googleBooks'
 
 import HeroSection from '../components/sections/HeroSection.vue'
 import StatsSection from '../components/sections/StatsSection.vue'
-import QuickNav from '../components/sections/QuickNav.vue'
 import ModalAddGoal from '../components/sections/modals/ModalAddGoal.vue'
 
 /* -------- GLOBAL STATE -------- */
@@ -67,12 +66,6 @@ const explorerPreviewResults = computed(() => explorerState.value.results.slice(
 /* -------- COMPUTED -------- */
 const heroSession = computed(() => shelf.computeHeroSession())
 const stats = computed(() => shelf.computeStats())
-const quickNavLinks = [
-  { id: 'stats', label: 'Statistiques' },
-  { id: 'goals', label: 'Objectifs' },
-  { id: 'insights', label: 'Insights' },
-  { id: 'explorer', label: 'Explorateur' },
-]
 
 const isGoalModalOpen = computed(() => modals.active.value === 'goal')
 
@@ -97,8 +90,6 @@ function handleOpenModal(type: 'book' | 'goal') {
       @open-modal="handleOpenModal"
       @fetch-books="explorer.submitSearch"
     />
-
-    <QuickNav class="quick-nav animate-fade-in-up" :links="quickNavLinks" @open-modal="handleOpenModal" />
 
     <StatsSection class="stats-section animate-fade-in-up" :stats="stats" />
 
@@ -233,7 +224,8 @@ function handleOpenModal(type: 'book' | 'goal') {
   gap: var(--space-8);
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-4) var(--space-12);
+  padding: var(--space-12) var(--space-6) var(--space-16);
+  color: #e5e7eb;
 }
 
 @media (min-width: 1024px) {
@@ -241,7 +233,6 @@ function handleOpenModal(type: 'book' | 'goal') {
     grid-template-columns: 2fr 1fr;
     grid-template-areas: 
       "hero hero"
-      "quicknav quicknav"
       "stats stats"
       "insights goals"
       "explorer explorer";
@@ -250,7 +241,6 @@ function handleOpenModal(type: 'book' | 'goal') {
   }
   
   .hero { grid-area: hero; }
-  .quick-nav { grid-area: quicknav; }
   .stats-section { grid-area: stats; }
   .insights-section { grid-area: insights; }
   .goals-section { grid-area: goals; }
@@ -258,11 +248,13 @@ function handleOpenModal(type: 'book' | 'goal') {
 }
 
 .home-block {
-  background: var(--color-white);
-  border-radius: 0;
-  padding: var(--space-8) var(--space-6);
-  border: 3px solid var(--color-black);
-  box-shadow: var(--shadow-brutal);
+  background-color: var(--glass-surface);
+  border-radius: 1.5rem;
+  padding: var(--space-6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
@@ -276,19 +268,14 @@ function handleOpenModal(type: 'book' | 'goal') {
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
+  height: 3px;
   background: var(--color-jaune-dore);
-  opacity: 0;
-  transition: opacity var(--transition-normal);
+  opacity: 1;
 }
 
 .home-block:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
-}
-
-.home-block:hover::before {
-  opacity: 1;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .home-block__header {
@@ -303,20 +290,20 @@ function handleOpenModal(type: 'book' | 'goal') {
   margin: 0 0 var(--space-2);
   font-size: var(--text-xl);
   font-weight: var(--font-semibold);
-  color: var(--color-neutral-900);
+  color: #f9fafb;
 }
 
 .home-block__subtitle {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--color-neutral-600);
+  color: #d1d5db;
   line-height: var(--leading-relaxed);
 }
 
 .home-block__link {
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
-  color: var(--color-primary-green);
+  color: var(--color-neutral-800);
   text-decoration: none;
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-full);
@@ -325,10 +312,15 @@ function handleOpenModal(type: 'book' | 'goal') {
 }
 
 .home-block__link:hover {
-  background: var(--color-primary-green);
-  color: var(--color-surface);
+  background: var(--accent-secondary);
+  color: var(--color-black);
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
+}
+
+.home-block__link:focus-visible {
+  outline: 2px solid var(--color-jaune-dore);
+  outline-offset: 2px;
 }
 
 .home-block__hint {
@@ -344,11 +336,11 @@ function handleOpenModal(type: 'book' | 'goal') {
 }
 
 .home-goals-preview__card {
-  border-radius: var(--radius-xl);
+  border-radius: 1.5rem;
   padding: var(--space-6);
-  background: var(--color-jaune-dore);
-  border: 1px solid #E6C266;
-  box-shadow: var(--shadow-sm);
+  background-color: var(--glass-surface);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.55);
   transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
@@ -375,7 +367,7 @@ function handleOpenModal(type: 'book' | 'goal') {
   text-transform: uppercase;
   font-size: var(--text-xs);
   letter-spacing: 0.15em;
-  color: var(--color-neutral-800);
+  color: #cbd5f5;
   font-weight: var(--font-medium);
   position: relative;
   z-index: 1;
@@ -385,7 +377,7 @@ function handleOpenModal(type: 'book' | 'goal') {
   margin: 0 0 var(--space-2);
   font-size: var(--text-lg);
   font-weight: var(--font-semibold);
-  color: var(--color-neutral-900);
+  color: #f9fafb;
   position: relative;
   z-index: 1;
 }
@@ -394,7 +386,7 @@ function handleOpenModal(type: 'book' | 'goal') {
   margin: var(--space-1) 0 var(--space-4);
   font-weight: var(--font-semibold);
   font-size: var(--text-base);
-  color: var(--color-neutral-800);
+  color: #e5e7eb;
   position: relative;
   z-index: 1;
 }
@@ -403,7 +395,7 @@ function handleOpenModal(type: 'book' | 'goal') {
   width: 100%;
   height: 8px;
   border-radius: var(--radius-full);
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(15, 23, 42, 0.6);
   position: relative;
   z-index: 1;
   overflow: hidden;
@@ -413,7 +405,7 @@ function handleOpenModal(type: 'book' | 'goal') {
   display: block;
   height: 100%;
   border-radius: var(--radius-full);
-  background: var(--color-neutral-900);
+  background: #f9fafb;
   transition: width var(--transition-slow);
 }
 
@@ -424,11 +416,11 @@ function handleOpenModal(type: 'book' | 'goal') {
 }
 
 .home-explorer-preview__card {
-  border-radius: var(--radius-xl);
+  border-radius: 1.5rem;
   padding: var(--space-6);
-  background: var(--color-surface);
-  border: 1px solid var(--color-neutral-200);
-  box-shadow: var(--shadow-sm);
+  background-color: var(--glass-surface);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.55);
   transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
@@ -460,14 +452,14 @@ function handleOpenModal(type: 'book' | 'goal') {
   margin: 0 0 var(--space-2);
   font-size: var(--text-base);
   font-weight: var(--font-semibold);
-  color: var(--color-neutral-900);
+  color: #f9fafb;
   line-height: var(--leading-tight);
 }
 
 .home-explorer-preview__meta {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--color-neutral-600);
+  color: #cbd5f5;
   line-height: var(--leading-normal);
 }
 
@@ -478,10 +470,10 @@ function handleOpenModal(type: 'book' | 'goal') {
 }
 
 .insights-summary__item {
-  border-radius: 0;
-  border: 2px solid var(--color-black);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
   padding: var(--space-4);
-  background: var(--color-neutral-50);
+  background-color: var(--glass-surface);
 }
 
 .insights-summary__label {
@@ -489,31 +481,24 @@ function handleOpenModal(type: 'book' | 'goal') {
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--color-neutral-600);
+  color: #cbd5f5;
 }
 
 .insights-summary__value {
   margin: 0;
   font-size: var(--text-lg);
   font-weight: var(--font-semibold);
+  color: #f9fafb;
 }
 
 .home-block .state {
-  color: var(--color-neutral-500);
+  color: #cbd5f5;
   font-size: var(--text-sm);
   text-align: center;
   padding: var(--space-8) var(--space-4);
-  background: var(--color-neutral-50);
+  background: rgba(15, 23, 42, 0.8);
   border-radius: var(--radius-lg);
-  border: 2px dashed var(--color-neutral-200);
-}
-
-.home-block__hint {
-  margin: 0;
-  font-size: var(--text-xs);
-  color: var(--color-neutral-500);
-  text-align: center;
-  font-style: italic;
+  border: 1px dashed rgba(148, 163, 184, 0.6);
 }
 
 #explorer {

@@ -175,12 +175,11 @@ const filteredBooks = computed(() => {
 
 <style scoped>
 .completed {
-  background: var(--color-white);
-  border-radius: 0;
-  padding: 1.75rem 1.5rem 6rem;
-  border: 3px solid var(--color-black);
-  border-left: 8px solid #16a34a;
-  box-shadow: var(--shadow-brutal);
+  background-color: hsla(246, 100%, 85%, 0.12);
+  border-radius: 1.5rem;
+  padding: 1.75rem 1.75rem 6rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.75);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -188,23 +187,13 @@ const filteredBooks = computed(() => {
   animation: var(--animation-slide-up);
   animation-delay: 0.2s;
   animation-fill-mode: both;
+  color: #e5e7eb;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
 .completed::after {
-  content: '✓';
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  width: 20px;
-  height: 20px;
-  background: #16a34a;
-  color: white;
-  border: 2px solid var(--color-black);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 12px;
+  content: none;
 }
 
 .completed__grid {
@@ -220,12 +209,12 @@ const filteredBooks = computed(() => {
 }
 
 .completed__card {
-  border-radius: 0;
+  border-radius: 1.25rem;
   padding: 1.25rem;
-  background: var(--color-white);
-  border: 2px solid var(--color-black);
-  border-top: 4px solid #16a34a;
-  box-shadow: var(--shadow-subtle);
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  border-top: 2px solid #16a34a;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.75);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -249,19 +238,7 @@ const filteredBooks = computed(() => {
 }
 
 .completed__card::before {
-  content: '📚';
-  position: absolute;
-  bottom: -2px;
-  right: -2px;
-  width: 16px;
-  height: 16px;
-  background: #16a34a;
-  color: white;
-  border: 1px solid var(--color-black);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
+  content: none;
 }
 
 .completed__cover-wrapper {
@@ -278,7 +255,7 @@ const filteredBooks = computed(() => {
 
 .completed__label {
   margin: 0;
-  color: var(--color-black);
+  color: #bbf7d0;
   font-size: 0.9rem;
   font-weight: bold;
   text-transform: uppercase;
@@ -288,15 +265,15 @@ const filteredBooks = computed(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0.2rem 0.4rem;
-  background: rgba(22, 163, 74, 0.1);
+  background: rgba(22, 163, 74, 0.22);
   border: 1px solid #16a34a;
-  border-radius: 0;
+  border-radius: 999px;
   display: inline-block;
 }
 
 .completed__meta {
   margin: 0;
-  color: #4b5563;
+  color: #9ca3af;
   font-size: 0.9rem;
 }
 
@@ -311,7 +288,7 @@ const filteredBooks = computed(() => {
 
 .completed__notes {
   margin: 0;
-  color: #166534;
+  color: #bbf7d0;
   font-size: 0.9rem;
   white-space: pre-wrap;
 }
@@ -323,22 +300,20 @@ const filteredBooks = computed(() => {
 }
 
 .completed__actions button {
-  border: 2px solid var(--color-black);
-  border-radius: 0;
-  padding: 0.4rem 0.9rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  font-size: 0.75rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.45rem 1.1rem;
+  font-weight: 600;
+  text-transform: none;
+  font-size: 0.8rem;
   cursor: pointer;
-  background: #16a34a;
-  color: white;
+  background: #f9fafb;
+  color: #020617;
   transition: var(--transition-snap);
-  box-shadow: var(--shadow-subtle);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
 }
 
 .completed__actions button:hover {
-  transform: var(--transform-press);
-  box-shadow: var(--shadow-hover);
-  animation: pulse-scale 0.6s ease-in-out infinite;
+  background: #e5e7eb;
 }
 </style>

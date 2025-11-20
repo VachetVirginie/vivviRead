@@ -80,11 +80,11 @@ function handleKeydown(event: KeyboardEvent) {
 
 <style scoped>
 .library-section-card {
-  background: var(--color-white);
-  border-radius: 0;
-  padding: 1.25rem 1.25rem;
-  border: 3px solid var(--color-black);
-  box-shadow: var(--shadow-brutal);
+  background-color: var(--glass-surface);
+  border-radius: 1.5rem;
+  padding: 1.5rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.75);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -93,6 +93,9 @@ function handleKeydown(event: KeyboardEvent) {
   transition: var(--transition-snap);
   animation: var(--animation-slide-up);
   animation-fill-mode: both;
+  color: #e5e7eb;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
 .library-section-card:hover {
@@ -101,35 +104,28 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 .library-section-card::after {
-  content: '→';
+  content: '';
   position: absolute;
-  top: -3px;
-  right: -3px;
-  width: 20px;
-  height: 20px;
-  background: var(--accent-primary);
-  color: #ffffff;
-  border: 2px solid var(--color-black);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  pointer-events: none;
 }
 
 .library-section-card--to-read {
-  border-left: 8px solid var(--color-jaune-dore);
+  border-top: 2px solid var(--color-jaune-dore);
 }
 
 .library-section-card--in-progress {
-  border-left: 8px solid var(--accent-secondary);
+  border-top: 2px solid var(--accent-secondary);
 }
 
 .library-section-card--completed {
-  border-left: 8px solid #16a34a;
+  border-top: 2px solid #16a34a;
 }
 
 .library-section-card--abandoned {
-  border-left: 8px solid var(--accent-primary);
+  border-top: 2px solid var(--accent-primary);
 }
 
 .library-section-card__header {
@@ -142,6 +138,7 @@ function handleKeydown(event: KeyboardEvent) {
 .library-section-card__title {
   margin: 0.25rem 0 0;
   font-size: var(--text-base);
+  color: #f9fafb;
 }
 
 .library-section-card__count {
@@ -150,6 +147,7 @@ function handleKeydown(event: KeyboardEvent) {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  color: #cbd5f5;
 }
 
 .library-section-card__body {
@@ -166,9 +164,10 @@ function handleKeydown(event: KeyboardEvent) {
 .library-section-card__cover-wrapper {
   width: 64px;
   height: 96px;
-  border: 2px solid var(--color-black);
-  background: var(--color-gray-100);
-  box-shadow: var(--shadow-subtle);
+  border-radius: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(15, 23, 42, 0.85);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.7);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -191,7 +190,7 @@ function handleKeydown(event: KeyboardEvent) {
 .library-section-card__empty {
   margin: 0;
   font-size: 0.9rem;
-  color: #4b5563;
+  color: #cbd5f5;
 }
 
 .library-section-card__footer {
@@ -204,5 +203,6 @@ function handleKeydown(event: KeyboardEvent) {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  color: #f9fafb;
 }
 </style>

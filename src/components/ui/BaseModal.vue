@@ -23,8 +23,8 @@ defineEmits<{ (e: 'close'): void }>()
 .modal__backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(8px);
+  background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95));
+  backdrop-filter: blur(18px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,13 +36,13 @@ defineEmits<{ (e: 'close'): void }>()
 .modal__dialog {
   width: min(640px, 100%);
   max-height: min(80vh, 640px);
-  background: var(--color-white);
-  color: var(--color-black);
-  border-radius: 0;
-  border: 3px solid var(--color-black);
-  padding: 1.7rem 1.7rem 1.4rem;
+  background-color: hsla(246, 100%, 85%, 0.16);
+  color: #e5e7eb;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 1.7rem 1.9rem 1.6rem;
   position: relative;
-  box-shadow: var(--shadow-brutal);
+  box-shadow: 0 26px 60px rgba(15, 23, 42, 0.9);
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
@@ -52,14 +52,7 @@ defineEmits<{ (e: 'close'): void }>()
 }
 
 .modal__dialog::after {
-  content: '';
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  width: 16px;
-  height: 16px;
-  background: var(--accent-primary);
-  border: 2px solid var(--color-black);
+  content: none;
 }
 
 .modal__close {
@@ -75,11 +68,12 @@ defineEmits<{ (e: 'close'): void }>()
 
 .modal__intro h3 {
   margin: 0 0 0.25rem;
+  color: #f9fafb;
 }
 
 .modal__intro p {
   margin: 0;
-  color: #4b5563;
+  color: #d1d5db;
 }
 
 .modal__form {
@@ -92,24 +86,23 @@ defineEmits<{ (e: 'close'): void }>()
 .modal__form select,
 .modal__form textarea {
   width: 100%;
-  border-radius: 0;
-  border: 2px solid var(--color-black);
-  background: var(--color-white);
-  color: var(--color-black);
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
   padding: 0.65rem 0.9rem;
   font-family: inherit;
   font-weight: 500;
   transition: var(--transition-snap);
-  box-shadow: var(--shadow-inset);
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.8);
 }
 
 .modal__form input:focus,
 .modal__form select:focus,
 .modal__form textarea:focus {
   outline: none;
-  border-color: var(--accent-tertiary);
-  box-shadow: var(--shadow-brutal);
-  transform: var(--transform-float);
+  border-color: #a855f7;
+  box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.4);
 }
 
 .modal__actions {
@@ -119,23 +112,22 @@ defineEmits<{ (e: 'close'): void }>()
 }
 
 .modal__actions button {
-  border: 2px solid var(--color-black);
-  border-radius: 0;
-  padding: 0.65rem 1.4rem;
-  font-weight: bold;
-  text-transform: uppercase;
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1.6rem;
+  font-weight: 600;
+  text-transform: none;
   cursor: pointer;
   transition: var(--transition-snap);
-  box-shadow: var(--shadow-brutal);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
 }
 
 .modal__actions button:first-child {
-  background: var(--accent-tertiary);
-  color: var(--color-black);
+  background: #f9fafb;
+  color: #020617;
 }
 
 .modal__actions button:first-child:hover {
-  transform: var(--transform-press);
-  box-shadow: var(--shadow-hover);
+  background: #e5e7eb;
 }
 </style>

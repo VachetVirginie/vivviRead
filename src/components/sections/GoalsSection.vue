@@ -68,27 +68,23 @@ const emit = defineEmits<{
 
 <style scoped>
 .goals {
-  background: var(--color-white);
-  border-radius: 0;
-  padding: 1.75rem 1.5rem;
-  border: 3px solid var(--color-black);
-  box-shadow: var(--shadow-brutal);
+  background-color: var(--glass-surface);
+  border-radius: 1.5rem;
+  padding: 1.75rem 1.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.75);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   position: relative;
   margin-bottom: 2em;
+  color: #e5e7eb;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
 .goals::after {
-  content: '';
-  position: absolute;
-  top: -3px;
-  left: -3px;
-  width: 14px;
-  height: 14px;
-  background: var(--accent-tertiary);
-  border: 2px solid var(--color-black);
+  content: none;
 }
 
 .goals__grid {
@@ -98,11 +94,11 @@ const emit = defineEmits<{
 }
 
 .goals__card {
-  border-radius: 0;
-  padding: 1.25rem;
-  background: var(--color-white);
-  border: 2px solid var(--color-black);
-  box-shadow: var(--shadow-subtle);
+  border-radius: 1.25rem;
+  padding: 1.25rem 1.4rem;
+  background-color: var(--glass-surface);
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.75);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -117,8 +113,11 @@ const emit = defineEmits<{
 }
 
 .goals__card--completed {
-  border-color: #16a34a;
-  box-shadow: 0 12px 32px rgba(22, 163, 74, 0.22);
+  border-color: #22c55e;
+  box-shadow: 0 18px 40px rgba(34, 197, 94, 0.32);
+  background:
+    radial-gradient(circle at top left, rgba(34, 197, 94, 0.22), transparent 55%),
+    var(--glass-surface);
 }
 
 .goals__header {
@@ -133,8 +132,8 @@ const emit = defineEmits<{
   margin-right: 0.35rem;
   padding: 0.15rem 0.55rem;
   border-radius: 999px;
-  background: #ecfdf3;
-  color: #166534;
+  background: rgba(34, 197, 94, 0.16);
+  color: #bbf7d0;
   font-size: 0.7rem;
   font-weight: 600;
 }
@@ -144,27 +143,27 @@ const emit = defineEmits<{
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.15em;
-  color: #16a34a;
+  color: #6ee7b7;
 }
 
 .goals__value {
   margin: 0;
   font-weight: 700;
-  color: #111827;
+  color: #e5e7eb;
 }
 
 .goals__progress {
   width: 100%;
   height: 10px;
   border-radius: 999px;
-  background: #e5e7eb;
+  background: rgba(15, 23, 42, 0.7);
 }
 
 .goals__progress span {
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: #111827;
+  background: linear-gradient(90deg, #22c55e, #a855f7);
 }
 
 .goals__input-group {
@@ -172,27 +171,32 @@ const emit = defineEmits<{
   flex-direction: column;
   gap: 0.3rem;
   font-size: 0.9rem;
-  color: #4b5563;
+  color: #cbd5f5;
 }
 
 .goals__input-group input {
-  border-radius: 0.8rem;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.9);
   padding: 0.45rem 0.75rem;
   font-family: inherit;
   font-size: 0.9rem;
+  color: #e5e7eb;
 }
 
 .goals__input-group input:focus {
   outline: none;
-  border-color: var(--color-jaune-dore);
-  box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.4);
+  border-color: #a855f7;
+  box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.4);
 }
 
 .goals__deadline {
   margin: 0;
-  color: #4b5563;
+  color: #9ca3af;
   font-size: 0.9rem;
+}
+
+.goals .state {
+  color: #cbd5f5;
 }
 </style>
