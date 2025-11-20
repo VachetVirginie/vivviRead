@@ -24,6 +24,33 @@ export function useGoals() {
     return data.user.id
   }
 
+  async function createActivityForCurrentUser(input: {
+    type: 'goal_created' | 'goal_completed'
+    payload: Record<string, any>
+    visibility?: 'public' | 'followers' | 'private'
+    goalId?: string | null
+  }) {
+    try {
+      const userId = await getCurrentUserId()
+      const { error } = await supabase.from('activities').insert({
+        user_id: userId,
+        type: input.type,
+        visibility: input.visibility ?? 'followers',
+        goal_id: input.goalId ?? null,
+        payload: input.payload ?? {},
+      })
+
+      if (error) {
+        console.warn("Erreur lors de la création de l'activité d'objectif dans Supabase :", error)
+      }
+    } catch (error) {
+      console.warn(
+        "Erreur inattendue lors de la création de l'activité d'objectif dans Supabase :",
+        error,
+      )
+    }
+  }
+
   function mapRowToGoal(row: {
     id: string
     title: string
@@ -105,6 +132,17 @@ export function useGoals() {
 
       const readingGoal = mapRowToGoal(data)
       goals.value = [readingGoal, ...goals.value]
+
+      void createActivityForCurrentUser({
+        type: 'goal_created',
+        payload: {
+          title: readingGoal.title,
+          target_value: readingGoal.targetValue,
+          unit: readingGoal.unit,
+          deadline: readingGoal.deadline ?? null,
+        },
+        goalId: readingGoal.id,
+      })
     } catch (error) {
       console.warn('Erreur lors de la création de l’objectif dans Supabase :', error)
     }
@@ -117,6 +155,8 @@ export function useGoals() {
     if (targetGoal.trackingMode !== 'manual') {
       return
     }
+
+    const wasCompleted = targetGoal.currentValue >= targetGoal.targetValue
 
     const nextGoals = goals.value.map((goal) =>
       goal.id === id
@@ -133,6 +173,8 @@ export function useGoals() {
     const updated = goals.value.find((g) => g.id === id)
     if (!updated) return
 
+    const isNowCompleted = updated.currentValue >= updated.targetValue
+
     try {
       const { error } = await supabase
         .from('goals')
@@ -144,6 +186,21 @@ export function useGoals() {
 
       if (error) {
         console.warn("Erreur lors de la mise à jour de l'objectif dans Supabase :", error)
+        return
+      }
+
+      if (!wasCompleted && isNowCompleted) {
+        void createActivityForCurrentUser({
+          type: 'goal_completed',
+          payload: {
+            title: updated.title,
+            target_value: updated.targetValue,
+            unit: updated.unit,
+            current_value: updated.currentValue,
+            deadline: updated.deadline ?? null,
+          },
+          goalId: updated.id,
+        })
       }
     } catch (error) {
       console.warn("Erreur lors de la mise à jour de l'objectif dans Supabase :", error)

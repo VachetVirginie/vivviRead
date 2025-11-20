@@ -13,6 +13,8 @@ import LoginView from '../views/LoginView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import ForgotPasswordView from '../views/ForgotPasswordView.vue'
 import ResetPasswordView from '../views/ResetPasswordView.vue'
+import FriendsView from '../views/FriendsView.vue'
+import FriendsDiscoverView from '../views/FriendsDiscoverView.vue'
 import { supabase } from '../lib/supabaseClient'
 
 const router = createRouter({
@@ -62,6 +64,16 @@ const router = createRouter({
       path: '/insights',
       name: 'insights',
       component: InsightsView,
+    },
+    {
+      path: '/amis',
+      name: 'friends',
+      component: FriendsView,
+    },
+    {
+      path: '/amis/trouver',
+      name: 'friendsDiscover',
+      component: FriendsDiscoverView,
     },
     {
       path: '/explorer',

@@ -2,19 +2,39 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
+import { useAppContext } from '../composables/useAppContext'
 
 const router = useRouter()
-const { user, profile, role, updateProfileFullName, loading, errorMessage, signOut } = useAuth()
+const {
+  user,
+  profile,
+  role,
+  updateProfileFullName,
+  loading,
+  errorMessage,
+  signOut,
+  username: usernameRef,
+  updateProfileUsername,
+} = useAuth()
+const { friendsRelations } = useAppContext()
 
 const displayName = computed(() => profile.value?.full_name || user.value?.email || 'Utilisateur')
 
 const editableName = ref(displayName.value)
+const editableUsername = ref(usernameRef.value || '')
 
 watch(
   () => displayName.value,
   (value) => {
     editableName.value = value
   }
+)
+
+watch(
+  () => usernameRef.value,
+  (value) => {
+    editableUsername.value = value || ''
+  },
 )
 
 const avatarInitial = computed(() => displayName.value.charAt(0).toUpperCase())
@@ -31,8 +51,45 @@ function stringToColor(input: string): string {
 
 const avatarColor = computed(() => stringToColor(displayName.value))
 
+const targetUserId = computed(() => profile.value?.id ?? null)
+
+const isOwnProfile = computed(
+  () => !!user.value?.id && user.value.id === targetUserId.value,
+)
+
+const isFollowingTarget = computed(() =>
+  targetUserId.value ? friendsRelations.isFollowing(targetUserId.value) : false,
+)
+
+const followButtonLabel = computed(() => {
+  if (isOwnProfile.value) {
+    return 'Impossible de se suivre soi-même'
+  }
+  return isFollowingTarget.value ? 'Suivi' : 'Suivre'
+})
+
+const followButtonDisabled = computed(
+  () => loading.value || isOwnProfile.value || !targetUserId.value,
+)
+
+async function handleToggleFollow() {
+  if (!targetUserId.value || isOwnProfile.value) {
+    return
+  }
+
+  if (isFollowingTarget.value) {
+    await friendsRelations.unfollowUser(targetUserId.value)
+  } else {
+    await friendsRelations.followUser(targetUserId.value)
+  }
+}
+
 async function onSaveName() {
   await updateProfileFullName(editableName.value.trim())
+}
+
+async function onSaveUsername() {
+  await updateProfileUsername(editableUsername.value.trim())
 }
 
 async function onSignOut() {
@@ -92,12 +149,40 @@ async function onSignOut() {
           </button>
         </p>
         <p class="auth-block__status">
+          <span class="auth-block__label">Pseudo</span>
+          <input
+            v-model="editableUsername"
+            type="text"
+            class="profile-input"
+            autocomplete="nickname"
+          />
+          <button
+            type="button"
+            class="page-header__action page-header__action--primary"
+            :disabled="loading"
+            @click="onSaveUsername"
+          >
+            Enregistrer le pseudo
+          </button>
+        </p>
+        <p class="auth-block__status">
           <span class="auth-block__label">Email</span>
           <strong>{{ user?.email }}</strong>
         </p>
         <p class="auth-block__status">
           <span class="auth-block__label">Rôle</span>
           <strong>{{ role }}</strong>
+        </p>
+        <p class="auth-block__status">
+          <span class="auth-block__label">Relations sociales</span>
+          <button
+            type="button"
+            class="page-header__action"
+            :disabled="followButtonDisabled"
+            @click="handleToggleFollow"
+          >
+            {{ followButtonLabel }}
+          </button>
         </p>
         <div class="auth-block__actions">
           <button

@@ -6,6 +6,7 @@ interface Profile {
   full_name: string | null
   avatar_url: string | null
   role: 'owner' | 'user' | 'premium' | string
+  username?: string | null
 }
 
 const user = ref<null | { id: string; email: string | null }>(null)
@@ -16,6 +17,7 @@ const errorMessage = ref<string | null>(null)
 const email = ref('')
 const password = ref('')
 const fullName = ref('')
+const username = ref('')
 const resetEmail = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
@@ -48,6 +50,7 @@ async function loadCurrentUser() {
     }
 
     profile.value = (profiles as Profile) ?? null
+    username.value = (profile.value?.username as string | null) ?? ''
   } catch (err) {
     errorMessage.value = err instanceof Error ? err.message : String(err)
   } finally {
@@ -82,16 +85,72 @@ async function updateProfileFullName(newFullName: string) {
   }
 }
 
+async function updateProfileUsername(newUsername: string) {
+  loading.value = true
+  errorMessage.value = null
+
+  const normalized = newUsername.trim()
+
+  if (!normalized) {
+    errorMessage.value = 'Le pseudo ne peut pas être vide'
+    loading.value = false
+    return { success: false }
+  }
+
+  try {
+    const { data: userData, error: userError } = await supabase.auth.getUser()
+    if (userError || !userData.user) {
+      throw userError || new Error('Aucun utilisateur connecté')
+    }
+
+    const { data: existing, error: existingError } = await supabase
+      .from('profiles')
+      .select('id')
+      .ilike('username', normalized)
+      .neq('id', userData.user.id)
+      .maybeSingle()
+
+    if (existingError && existingError.code !== 'PGRST116') {
+      throw existingError
+    }
+
+    if (existing) {
+      errorMessage.value = 'Ce pseudo est déjà utilisé'
+      return { success: false }
+    }
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ username: normalized })
+      .eq('id', userData.user.id)
+
+    if (error) {
+      throw error
+    }
+
+    await loadCurrentUser()
+    return { success: true }
+  } catch (err) {
+    errorMessage.value = err instanceof Error ? err.message : String(err)
+    return { success: false }
+  } finally {
+    loading.value = false
+  }
+}
+
 async function signUpWithEmail() {
   loading.value = true
   errorMessage.value = null
   try {
+    const normalizedUsername = username.value.trim() || null
+
     const { data, error } = await supabase.auth.signUp({
       email: email.value,
       password: password.value,
       options: {
         data: {
-          full_name: fullName.value || null,
+          full_name: normalizedUsername,
+          username: normalizedUsername,
         },
       },
     })
@@ -209,6 +268,7 @@ export function useAuth() {
     email,
     password,
     fullName,
+    username,
     resetEmail,
     newPassword,
     confirmPassword,
@@ -216,6 +276,7 @@ export function useAuth() {
     signInWithEmail,
     signOut,
     updateProfileFullName,
+    updateProfileUsername,
     resetPassword,
     updatePassword,
     loadCurrentUser,

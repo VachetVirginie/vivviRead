@@ -14,7 +14,7 @@ const {
   errorMessage: authError,
   email,
   password,
-  fullName,
+  username,
   signUpWithEmail,
   signInWithEmail,
 } = useAuth()
@@ -89,6 +89,16 @@ watchEffect(() => {
           </div>
 
           <form class="auth-block__form" @submit.prevent="handleSubmit">
+            <label v-if="!isLoginMode" class="auth-block__field">
+              <span>Pseudo</span>
+              <input
+                v-model="username"
+                type="text"
+                autocomplete="nickname"
+                :required="!isLoginMode"
+              />
+            </label>
+
             <label class="auth-block__field">
               <span>Email</span>
               <input v-model="email" type="email" autocomplete="email" required />
@@ -97,16 +107,6 @@ watchEffect(() => {
             <label class="auth-block__field">
               <span>Mot de passe</span>
               <input v-model="password" type="password" autocomplete="current-password" required />
-            </label>
-
-            <label class="auth-block__field">
-              <span>Nom complet (pour l'inscription)</span>
-              <input
-                v-model="fullName"
-                type="text"
-                autocomplete="name"
-                :required="!isLoginMode"
-              />
             </label>
 
             <div class="auth-block__actions">

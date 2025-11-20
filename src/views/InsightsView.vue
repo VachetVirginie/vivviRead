@@ -578,6 +578,51 @@ function handleFindSimilarBooks() {
   background: var(--color-neutral-900);
 }
 
+.insights-friends {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.insights-friends__item {
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-neutral-50);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.insights-friends__main {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.insights-friends__name {
+  font-weight: var(--font-semibold);
+  margin-right: 0.25rem;
+}
+
+.insights-friends__summary {
+  color: var(--color-neutral-800);
+}
+
+.insights-friends__book {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-neutral-700);
+}
+
+.insights-friends__date {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-neutral-500);
+}
+
 .insights-card--timeline {
   grid-column: span 2;
 }

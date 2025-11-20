@@ -30,6 +30,35 @@ export function useReadingShelf() {
     return data.user.id
   }
 
+  async function createActivityForCurrentUser(input: {
+    type: 'book_added' | 'book_finished'
+    payload: Record<string, any>
+    visibility?: 'public' | 'followers' | 'private'
+    bookId?: string | null
+    userBookId?: string | null
+  }) {
+    try {
+      const userId = await getCurrentUserId()
+      const { error } = await supabase.from('activities').insert({
+        user_id: userId,
+        type: input.type,
+        visibility: input.visibility ?? 'followers',
+        book_id: input.bookId ?? null,
+        user_book_id: input.userBookId ?? null,
+        payload: input.payload ?? {},
+      })
+
+      if (error) {
+        console.warn("Erreur lors de la création de l'activité de lecture dans Supabase :", error)
+      }
+    } catch (error) {
+      console.warn(
+        "Erreur inattendue lors de la création de l'activité de lecture dans Supabase :",
+        error,
+      )
+    }
+  }
+
   function mapRowToReadingBook(row: any): ReadingBook {
     return {
       id: row.id,
@@ -185,6 +214,20 @@ export function useReadingShelf() {
 
       const readingBook = mapRowToReadingBook(data)
       books.value = [readingBook, ...books.value]
+
+      void createActivityForCurrentUser({
+        type: 'book_added',
+        payload: {
+          title: readingBook.title,
+          author: readingBook.author,
+          total_pages: readingBook.totalPages,
+          current_page: readingBook.currentPage,
+          status: readingBook.status,
+          cover_url: readingBook.coverUrl ?? null,
+        },
+        bookId: (data as any).books?.id ?? null,
+        userBookId: data.id as string,
+      })
     } catch (error) {
       console.warn('Erreur lors de l’ajout du livre dans Supabase :', error)
     }
@@ -236,6 +279,21 @@ export function useReadingShelf() {
     const updated = books.value.find((book) => book.id === id)
     if (updated) {
       syncUserBook(id)
+
+      if (status === 'lu') {
+        void createActivityForCurrentUser({
+          type: 'book_finished',
+          payload: {
+            title: updated.title,
+            author: updated.author,
+            total_pages: updated.totalPages,
+            current_page: updated.currentPage,
+            status: updated.status,
+            cover_url: updated.coverUrl ?? null,
+          },
+          userBookId: updated.id,
+        })
+      }
     }
   }
 
