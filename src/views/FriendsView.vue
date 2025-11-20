@@ -1,13 +1,94 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppContext } from '../composables/useAppContext'
 
 const router = useRouter()
-const { friendsFeed, friendsRelations } = useAppContext()
+const { shelf, friendsFeed, friendsRelations } = useAppContext()
 
 const activities = computed(() => friendsFeed.activities.value)
 const hasActivities = computed(() => activities.value.length > 0)
+
+const feedFilter = ref<'all' | 'books' | 'goals'>('all')
+
+const filteredActivities = computed(() => {
+  if (feedFilter.value === 'books') {
+    return activities.value.filter((activity) => activity.type.startsWith('book_'))
+  }
+
+  if (feedFilter.value === 'goals') {
+    return activities.value.filter((activity) => activity.type.startsWith('goal_'))
+  }
+
+  return activities.value
+})
+
+function formatDateLabel(dateString: string): string {
+  const date = new Date(dateString)
+  const today = new Date()
+
+  const day = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  const todayDay = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  const diffMs = todayDay.getTime() - day.getTime()
+  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
+
+  if (diffDays === 0) return "Aujourd'hui"
+  if (diffDays === 1) return 'Hier'
+
+  return date.toLocaleDateString()
+}
+
+function badgeForType(type: string): string {
+  if (type === 'book_added') return 'LIVRE AJOUTÉ'
+  if (type === 'book_finished') return 'LIVRE TERMINÉ'
+  if (type === 'goal_created') return 'OBJECTIF CRÉÉ'
+  if (type === 'goal_completed') return 'OBJECTIF ATTEINT'
+  return 'ACTIVITÉ'
+}
+
+interface ActivityGroup {
+  label: string
+  items: ReturnType<typeof activities.value> | any
+}
+
+const groupedActivities = computed(() => {
+  const groups: ActivityGroup[] = []
+  let currentKey: string | null = null
+  let currentGroup: ActivityGroup | null = null
+
+  for (const activity of filteredActivities.value) {
+    const d = new Date(activity.createdAt)
+    const key = d.toISOString().slice(0, 10)
+
+    if (key !== currentKey) {
+      currentKey = key
+      currentGroup = {
+        label: formatDateLabel(activity.createdAt),
+        items: [],
+      }
+      groups.push(currentGroup)
+    }
+
+    currentGroup!.items.push(activity)
+  }
+
+  return groups
+})
+
+function handleSetFilter(filter: 'all' | 'books' | 'goals') {
+  feedFilter.value = filter
+}
+
+function handleAddToShelf(activity: (typeof activities.value)[number]) {
+  if (!activity.bookTitle || !activity.bookAuthor) return
+
+  shelf.addFromSearch({
+    title: activity.bookTitle,
+    author: activity.bookAuthor,
+    totalPages: activity.totalPages,
+    coverUrl: activity.coverUrl,
+  })
+}
 
 onMounted(() => {
   friendsFeed.loadFriendsActivities()
@@ -59,30 +140,83 @@ onMounted(() => {
       <section class="friends-card friends-card--feed" aria-label="Activités détaillées des amis">
         <h2 class="friends-card__title">Activités récentes</h2>
 
+        <div class="friends-feed-filters" aria-label="Filtrer les activités">
+          <button
+            type="button"
+            class="friends-feed-filter"
+            :class="{ 'friends-feed-filter--active': feedFilter === 'all' }"
+            @click="handleSetFilter('all')"
+          >
+            Tout
+          </button>
+          <button
+            type="button"
+            class="friends-feed-filter"
+            :class="{ 'friends-feed-filter--active': feedFilter === 'books' }"
+            @click="handleSetFilter('books')"
+          >
+            Livres
+          </button>
+          <button
+            type="button"
+            class="friends-feed-filter"
+            :class="{ 'friends-feed-filter--active': feedFilter === 'goals' }"
+            @click="handleSetFilter('goals')"
+          >
+            Objectifs
+          </button>
+        </div>
+
         <p v-if="friendsFeed.loading && !hasActivities" class="friends-empty">
           Chargement des lectures de tes amis…
         </p>
 
-        <ul v-if="hasActivities" class="friends-feed">
-          <li v-for="activity in activities" :key="activity.id" class="friends-feed__item">
-            <div class="friends-feed__header">
-              <span class="friends-feed__name">{{ activity.userName }}</span>
-              <span class="friends-feed__date">
-                {{ new Date(activity.createdAt).toLocaleDateString() }}
-              </span>
-            </div>
-            <p class="friends-feed__summary">
-              {{ activity.summary }}
+        <div v-if="hasActivities" class="friends-feed-groups">
+          <section
+            v-for="group in groupedActivities"
+            :key="group.label"
+            class="friends-feed-group"
+          >
+            <p class="friends-feed__group-label">
+              {{ group.label }}
             </p>
-            <p v-if="activity.bookTitle" class="friends-feed__detail">
-              « {{ activity.bookTitle }} »
-              <span v-if="activity.bookAuthor">· {{ activity.bookAuthor }}</span>
-            </p>
-            <p v-else-if="activity.goalTitle" class="friends-feed__detail">
-              Objectif : {{ activity.goalTitle }}
-            </p>
-          </li>
-        </ul>
+            <ul class="friends-feed">
+              <li
+                v-for="activity in group.items"
+                :key="activity.id"
+                class="friends-feed__item"
+              >
+                <div class="friends-feed__header">
+                  <div class="friends-feed__header-main">
+                    <span class="friends-feed__name">{{ activity.userName }}</span>
+                    <span class="friends-feed__badge">{{ badgeForType(activity.type) }}</span>
+                  </div>
+                  <span class="friends-feed__date">
+                    {{ new Date(activity.createdAt).toLocaleDateString() }}
+                  </span>
+                </div>
+                <p class="friends-feed__summary">
+                  {{ activity.summary }}
+                </p>
+                <p v-if="activity.bookTitle" class="friends-feed__detail">
+                  « {{ activity.bookTitle }} »
+                  <span v-if="activity.bookAuthor">· {{ activity.bookAuthor }}</span>
+                </p>
+                <p v-else-if="activity.goalTitle" class="friends-feed__detail">
+                  Objectif : {{ activity.goalTitle }}
+                </p>
+                <button
+                  v-if="activity.bookTitle && activity.bookAuthor"
+                  type="button"
+                  class="friends-feed__action"
+                  @click="handleAddToShelf(activity)"
+                >
+                  Ajouter à ma liste
+                </button>
+              </li>
+            </ul>
+          </section>
+        </div>
 
         <p v-else-if="!friendsFeed.loading" class="friends-empty">
           Aucune activité pour le moment. Tes propres lectures et objectifs, ainsi que ceux de tes amis suivis,
@@ -136,6 +270,31 @@ onMounted(() => {
   font-weight: var(--font-semibold);
 }
 
+.friends-feed-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: var(--space-3);
+}
+
+.friends-feed-filter {
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  background: var(--color-white);
+  color: var(--color-black);
+  padding: 0.3rem 0.8rem;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  box-shadow: var(--shadow-subtle);
+}
+
+.friends-feed-filter--active {
+  background: var(--color-jaune-dore);
+  box-shadow: 3px 3px 0 var(--color-black);
+}
+
 .friends-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -178,6 +337,26 @@ onMounted(() => {
   gap: var(--space-3);
 }
 
+.friends-feed-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.friends-feed-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.friends-feed__group-label {
+  margin: 0 0 0.35rem;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-neutral-600);
+}
+
 .friends-feed__item {
   border-radius: 0;
   border: 2px solid var(--color-black);
@@ -195,8 +374,24 @@ onMounted(() => {
   gap: var(--space-3);
 }
 
+.friends-feed__header-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .friends-feed__name {
   font-weight: var(--font-semibold);
+}
+
+.friends-feed__badge {
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  padding: 0.1rem 0.4rem;
+  font-size: var(--text-xxs, 0.65rem);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  background: var(--color-jaune-dore);
 }
 
 .friends-feed__date {
@@ -214,5 +409,25 @@ onMounted(() => {
   margin: 0;
   font-size: var(--text-sm);
   color: var(--color-neutral-700);
+}
+
+.friends-feed__action {
+  align-self: flex-start;
+  margin-top: 0.35rem;
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  background: var(--color-white);
+  color: var(--color-black);
+  padding: 0.25rem 0.8rem;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  box-shadow: var(--shadow-subtle);
+}
+
+.friends-feed__action:hover {
+  background: var(--color-jaune-dore);
+  box-shadow: 3px 3px 0 var(--color-black);
 }
 </style>

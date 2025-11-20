@@ -9,6 +9,8 @@ export interface FriendActivity {
   createdAt: string
   bookTitle?: string
   bookAuthor?: string
+  totalPages?: number
+  coverUrl?: string
   goalTitle?: string
   summary: string
 }
@@ -87,6 +89,8 @@ export function useFriendsFeed() {
           createdAt: row.created_at as string,
           bookTitle: payload.title ?? undefined,
           bookAuthor: payload.author ?? undefined,
+          totalPages: typeof payload.total_pages === 'number' ? payload.total_pages : undefined,
+          coverUrl: typeof payload.cover_url === 'string' ? payload.cover_url : undefined,
           goalTitle: payload.title ?? undefined,
           summary,
         }
