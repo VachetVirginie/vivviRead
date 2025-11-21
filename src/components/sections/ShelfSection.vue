@@ -25,6 +25,8 @@ const emit = defineEmits<{
 const searchQuery = ref('')
 const sortBy = ref<'recent' | 'title' | 'author'>('recent')
 const progressFilter = ref<'all' | '0-25' | '25-50' | '50-75' | '75-100'>('all')
+const showAdvancedFilters = ref(false)
+const hasActiveAdvancedFilters = computed(() => progressFilter.value !== 'all')
 
 function progressPercent(book: ReadingBook) {
   if (!book.totalPages || book.totalPages <= 0) {
@@ -75,6 +77,9 @@ const activeBookId = ref<string | null>(null)
 
 const activeBook = computed(() => props.books.find((b) => b.id === activeBookId.value) ?? null)
 
+const statusFeedback = ref<string | null>(null)
+let statusFeedbackTimeout: number | null = null
+
 function openBookModal(id: string) {
   activeBookId.value = id
 }
@@ -89,6 +94,57 @@ function handleStatusChange(id: string) {
 
 function handleRemove(id: string) {
   emit('remove', id)
+}
+
+function handleQuickProgress(type: 'plus10' | 'chapter') {
+  if (!activeBook.value) return
+
+  const book = activeBook.value
+  if (!book.totalPages || book.totalPages <= 0) {
+    return
+  }
+
+  const increment = type === 'plus10' ? 10 : Math.max(1, Math.round(book.totalPages / 20))
+  const nextPage = Math.min(book.totalPages, book.currentPage + increment)
+
+  emit('change-progress', {
+    id: book.id,
+    value: nextPage,
+  })
+}
+
+function handleStatusSelectChange(event: Event) {
+  if (!activeBook.value) return
+
+  const select = event.target as HTMLSelectElement
+  const nextStatus = select.value as ReadingStatus
+
+  if (nextStatus === activeBook.value.status) {
+    return
+  }
+
+  emit('change-status', {
+    id: activeBook.value.id,
+    status: nextStatus,
+  })
+
+  let message = 'Statut mis à jour'
+  if (nextStatus === 'lu') {
+    message = 'Marqué comme terminé'
+  } else if (nextStatus === 'abandonne') {
+    message = 'Marqué comme abandonné'
+  }
+
+  statusFeedback.value = message
+
+  if (statusFeedbackTimeout !== null) {
+    clearTimeout(statusFeedbackTimeout)
+  }
+
+  statusFeedbackTimeout = window.setTimeout(() => {
+    statusFeedback.value = null
+    statusFeedbackTimeout = null
+  }, 2000)
 }
 </script>
 
@@ -138,44 +194,59 @@ function handleRemove(id: string) {
         </div>
       </div>
 
-      <div class="shelf__filters-row shelf__filters-row--secondary">
-        <span class="shelf__filters-label">Progression</span>
-        <div class="shelf__chips">
-          <button
-            type="button"
-            :class="['shelf__chip', { 'shelf__chip--active': progressFilter === 'all' }]"
-            @click="progressFilter = 'all'"
-          >
-            Toutes
-          </button>
-          <button
-            type="button"
-            :class="['shelf__chip', { 'shelf__chip--active': progressFilter === '0-25' }]"
-            @click="progressFilter = '0-25'"
-          >
-            0–25 %
-          </button>
-          <button
-            type="button"
-            :class="['shelf__chip', { 'shelf__chip--active': progressFilter === '25-50' }]"
-            @click="progressFilter = '25-50'"
-          >
-            25–50 %
-          </button>
-          <button
-            type="button"
-            :class="['shelf__chip', { 'shelf__chip--active': progressFilter === '50-75' }]"
-            @click="progressFilter = '50-75'"
-          >
-            50–75 %
-          </button>
-          <button
-            type="button"
-            :class="['shelf__chip', { 'shelf__chip--active': progressFilter === '75-100' }]"
-            @click="progressFilter = '75-100'"
-          >
-            75–100 %
-          </button>
+      <div class="shelf__advanced-toggle">
+        <button
+          type="button"
+          class="shelf__advanced-button"
+          @click="showAdvancedFilters = !showAdvancedFilters"
+        >
+          Affiner les résultats
+          <span v-if="hasActiveAdvancedFilters" class="shelf__advanced-badge">
+            1
+          </span>
+        </button>
+      </div>
+
+      <div v-if="showAdvancedFilters" class="shelf__filters-advanced">
+        <div class="shelf__filters-row shelf__filters-row--secondary">
+          <span class="shelf__filters-label">Progression</span>
+          <div class="shelf__chips">
+            <button
+              type="button"
+              :class="['shelf__chip', { 'shelf__chip--active': progressFilter === 'all' }]"
+              @click="progressFilter = 'all'"
+            >
+              Toutes
+            </button>
+            <button
+              type="button"
+              :class="['shelf__chip', { 'shelf__chip--active': progressFilter === '0-25' }]"
+              @click="progressFilter = '0-25'"
+            >
+              0–25 %
+            </button>
+            <button
+              type="button"
+              :class="['shelf__chip', { 'shelf__chip--active': progressFilter === '25-50' }]"
+              @click="progressFilter = '25-50'"
+            >
+              25–50 %
+            </button>
+            <button
+              type="button"
+              :class="['shelf__chip', { 'shelf__chip--active': progressFilter === '50-75' }]"
+              @click="progressFilter = '50-75'"
+            >
+              50–75 %
+            </button>
+            <button
+              type="button"
+              :class="['shelf__chip', { 'shelf__chip--active': progressFilter === '75-100' }]"
+              @click="progressFilter = '75-100'"
+            >
+              75–100 %
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -235,59 +306,91 @@ function handleRemove(id: string) {
           />
         </label>
 
+          <div class="shelf__progress-block">
+            <p class="shelf__progress-main">
+              <span class="shelf__progress-pages">
+                {{ activeBook.currentPage }} / {{ activeBook.totalPages > 0 ? activeBook.totalPages : '–' }} pages
+              </span>
+              <span v-if="activeBook.totalPages > 0" class="shelf__progress-percent">
+                {{ progressPercent(activeBook) }} %
+              </span>
+            </p>
+
+            <div class="shelf__progress-quick">
+              <button
+                type="button"
+                class="shelf__quick-button"
+                :disabled="!activeBook.totalPages || activeBook.totalPages <= 0"
+                @click="handleQuickProgress('plus10')"
+              >
+                +10 pages
+              </button>
+              <button
+                type="button"
+                class="shelf__quick-button"
+                :disabled="!activeBook.totalPages || activeBook.totalPages <= 0"
+                @click="handleQuickProgress('chapter')"
+              >
+                Marquer un chapitre
+              </button>
+            </div>
+
+            <div class="shelf__progress-inputs">
+              <label class="shelf__range">
+              <span>Page actuelle</span>
+              <input
+                type="range"
+                :min="0"
+                :max="activeBook.totalPages"
+                :value="activeBook.currentPage"
+                :disabled="!activeBook.totalPages || activeBook.totalPages <= 0"
+                @input="
+                  emit('change-progress', {
+                    id: activeBook.id,
+                    value: Number(($event.target as HTMLInputElement).value),
+                  })
+                "
+              />
+            </label>
+
+              <label class="shelf__percent">
+              <span>Progression (%)</span>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                :value="progressPercent(activeBook)"
+                :disabled="!activeBook.totalPages || activeBook.totalPages <= 0"
+                @change="
+                  emit('change-percent', {
+                    id: activeBook.id,
+                    value: Number(($event.target as HTMLInputElement).value),
+                  })
+                "
+              />
+              <small v-if="!activeBook.totalPages || activeBook.totalPages <= 0">
+                Ajoute le nombre de pages pour activer.
+              </small>
+            </label>
+            </div>
+          </div>
+
           <label class="shelf__status">
           <span>Statut</span>
-          <select
-            :value="activeBook.status"
-            @change="
-              emit('change-status', {
-                id: activeBook.id,
-                status: ($event.target as HTMLSelectElement).value as ReadingStatus,
-              })
-            "
-          >
-            <option v-for="option in props.statusOptions" :key="option.value" :value="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-        </label>
-
-          <label class="shelf__range">
-          <span>Page actuelle</span>
-          <input
-            type="range"
-            :min="0"
-            :max="activeBook.totalPages"
-            :value="activeBook.currentPage"
-            :disabled="!activeBook.totalPages || activeBook.totalPages <= 0"
-            @input="
-              emit('change-progress', {
-                id: activeBook.id,
-                value: Number(($event.target as HTMLInputElement).value),
-              })
-            "
-          />
-        </label>
-
-          <label class="shelf__percent">
-          <span>Progression (%)</span>
-          <input
-            type="number"
-            min="0"
-            max="100"
-            :value="progressPercent(activeBook)"
-            :disabled="!activeBook.totalPages || activeBook.totalPages <= 0"
-            @change="
-              emit('change-percent', {
-                id: activeBook.id,
-                value: Number(($event.target as HTMLInputElement).value),
-              })
-            "
-          />
-          <small v-if="!activeBook.totalPages || activeBook.totalPages <= 0">
-            Ajoute le nombre de pages pour activer.
-          </small>
-        </label>
+          <div class="shelf__status-control">
+            <select
+              :value="activeBook.status"
+              @change="handleStatusSelectChange"
+            >
+              <option v-for="option in props.statusOptions" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+            <span v-if="statusFeedback" class="shelf__status-feedback">
+              ✓ {{ statusFeedback }}
+            </span>
+          </div>
+          </label>
 
           <textarea
           class="shelf__notes"
@@ -372,6 +475,49 @@ function handleRemove(id: string) {
 
 .shelf__filters-row--secondary {
   justify-content: flex-start;
+}
+
+.shelf__advanced-toggle {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 0.25rem;
+}
+
+.shelf__advanced-button {
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  padding: 0.35rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: var(--transition-snap);
+}
+
+.shelf__advanced-button:hover {
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.shelf__advanced-badge {
+  min-width: 1.35rem;
+  height: 1.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--color-rouge-corail);
+  color: #f9fafb;
+  font-size: 0.7rem;
+}
+
+.shelf__filters-advanced {
+  margin-top: 0.5rem;
 }
 
 .shelf__filters-label {
@@ -492,6 +638,66 @@ function handleRemove(id: string) {
   color: #cbd5f5;
 }
 
+.shelf__progress-block {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.shelf__progress-main {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.shelf__progress-pages {
+  font-weight: 600;
+}
+
+.shelf__progress-percent {
+  font-size: 0.9rem;
+  color: #facc15;
+}
+
+.shelf__progress-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.shelf__quick-button {
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  padding: 0.3rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
+  cursor: pointer;
+  transition: var(--transition-snap);
+}
+
+.shelf__quick-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.shelf__quick-button:not(:disabled):hover {
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.shelf__progress-inputs {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
 .shelf__modal .shelf__total,
 .shelf__modal .shelf__status,
 .shelf__modal .shelf__range,
@@ -512,6 +718,25 @@ function handleRemove(id: string) {
   background: rgba(15, 23, 42, 0.9);
   color: #e5e7eb;
   padding: 0.5rem 0.75rem;
+}
+
+.shelf__status-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.shelf__status-feedback {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: var(--accent-secondary);
+  color: #020617;
+  border-radius: 999px;
+  border: 1px solid var(--color-black);
+  padding: 0.1rem 0.45rem;
+  font-weight: var(--font-medium);
+  animation: celebration 0.4s ease-out;
 }
 
 .shelf__notes {

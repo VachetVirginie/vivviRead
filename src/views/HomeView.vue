@@ -66,6 +66,7 @@ const explorerPreviewResults = computed(() => explorerState.value.results.slice(
 /* -------- COMPUTED -------- */
 const heroSession = computed(() => shelf.computeHeroSession())
 const stats = computed(() => shelf.computeStats())
+const isNewUser = computed(() => shelf.books.value.length === 0)
 
 const isGoalModalOpen = computed(() => modals.active.value === 'goal')
 
@@ -80,6 +81,15 @@ function handleOpenModal(type: 'book' | 'goal') {
   }
   modals.open('goal')
 }
+
+function handleHeroPrimaryAction() {
+  if (shelf.books.value.length === 0) {
+    router.push({ name: 'explorer' })
+    return
+  }
+
+  router.push({ name: 'libraryInProgress' })
+}
 </script>
 
 <template>
@@ -87,11 +97,16 @@ function handleOpenModal(type: 'book' | 'goal') {
     <HeroSection
       :hero-session="heroSession"
       :loading="explorerLoading"
+      :is-new-user="isNewUser"
       @open-modal="handleOpenModal"
-      @fetch-books="explorer.submitSearch"
+      @fetch-books="handleHeroPrimaryAction"
     />
 
-    <StatsSection class="stats-section animate-fade-in-up" :stats="stats" />
+    <StatsSection
+      v-if="!isNewUser"
+      class="stats-section animate-fade-in-up"
+      :stats="stats"
+    />
 
     <section
       id="insights"
@@ -111,7 +126,7 @@ function handleOpenModal(type: 'book' | 'goal') {
         </RouterLink>
       </header>
 
-      <div class="insights-summary">
+      <div v-if="!isNewUser" class="insights-summary">
         <div class="insights-summary__item">
           <p class="insights-summary__label">Dernier livre terminé</p>
           <p class="insights-summary__value">
@@ -127,6 +142,9 @@ function handleOpenModal(type: 'book' | 'goal') {
           <p class="insights-summary__value">{{ totalPagesRead }}</p>
         </div>
       </div>
+      <p v-else class="state">
+        Tes insights apparaîtront ici dès que tu auras ajouté et commencé à lire un livre.
+      </p>
     </section>
 
     <section id="goals" class="home-block goals-section animate-fade-in-up" aria-label="Aperçu de mes objectifs">
@@ -139,7 +157,7 @@ function handleOpenModal(type: 'book' | 'goal') {
           </p>
         </div>
         <RouterLink to="/objectifs" class="home-block__link">
-          Voir tous mes objectifs
+          Gérer mes objectifs
         </RouterLink>
       </header>
 
@@ -167,9 +185,18 @@ function handleOpenModal(type: 'book' | 'goal') {
           </div>
         </article>
       </div>
-      <p v-else class="state">
-        Aucun objectif pour le moment. Commence par t’en fixer un dans l’onglet Objectifs.
-      </p>
+      <div v-else class="home-goals-empty">
+        <p class="state">
+          Aucun objectif pour le moment. Commence par t’en fixer un dans l’onglet Objectifs.
+        </p>
+        <button
+          type="button"
+          class="home-goals-empty__cta"
+          @click="modals.open('goal')"
+        >
+          Créer un objectif
+        </button>
+      </div>
 
       <p v-if="goalsCount > goalsPreview.length" class="home-block__hint">
         {{ goalsCount - goalsPreview.length }} autre(s) objectif(s) t’attendent dans la page dédiée.
@@ -186,7 +213,7 @@ function handleOpenModal(type: 'book' | 'goal') {
           </p>
         </div>
         <RouterLink to="/explorer" class="home-block__link">
-          Ouvrir l’explorateur
+          Ouvrir Explorer
         </RouterLink>
       </header>
 
@@ -333,6 +360,27 @@ function handleOpenModal(type: 'book' | 'goal') {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-4);
+}
+
+.home-goals-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.home-goals-empty__cta {
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  background: var(--color-jaune-dore);
+  color: var(--color-black);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  box-shadow: var(--shadow-brutal);
 }
 
 .home-goals-preview__card {

@@ -704,3 +704,15 @@ input[type="number"] {
   color: var(--color-neutral-100);
 }
   
+select {
+  background-color: rgba(15, 23, 42, 0.95);
+  color: var(--color-neutral-100);
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+}
+
+select option {
+  background-color: rgba(15, 23, 42, 0.98);
+  color: var(--color-neutral-100);
+}
+

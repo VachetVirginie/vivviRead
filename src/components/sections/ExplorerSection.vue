@@ -82,6 +82,7 @@ function handleAdd(book: GoogleBookVolume) {
 // Filtres locaux pour Explorer
 
 const activePresetLabel = ref<string | null>(null)
+const showAdvancedFilters = ref(false)
 
 function handleHideInShelfChange(event: Event) {
   const checked = (event.target as HTMLInputElement).checked
@@ -199,7 +200,36 @@ const activeFiltersSummary = computed(() => {
         </button>
       </div>
 
-      <div class="search__filters">
+      <div class="search__filters-header">
+        <div class="search__sort-inline">
+          <label class="search__filter-label" for="explorer-sort">Trier par</label>
+          <select
+            id="explorer-sort"
+            :value="props.sortMode"
+            class="search__sort-select"
+            @change="handleSortChange"
+          >
+            <option value="relevance">Pertinence</option>
+            <option value="pages-asc">Plus courts d'abord</option>
+            <option value="pages-desc">Plus longs d'abord</option>
+            <option value="date-desc">Les plus récents</option>
+            <option value="rating-desc">Mieux notés</option>
+          </select>
+        </div>
+
+        <button
+          type="button"
+          class="search__advanced-button"
+          @click="showAdvancedFilters = !showAdvancedFilters"
+        >
+          Affiner les résultats
+          <span v-if="props.hasActiveFilters" class="search__advanced-badge">
+            {{ props.activeFiltersCount }}
+          </span>
+        </button>
+      </div>
+
+      <div v-if="showAdvancedFilters" class="search__filters">
         <div class="search__filter-group">
           <span class="search__filter-label">Longueur</span>
           <button
@@ -313,22 +343,6 @@ const activeFiltersSummary = computed(() => {
             <input type="checkbox" :checked="props.hideInShelf" @change="handleHideInShelfChange" />
             <span>Masquer les livres déjà dans ta bibliothèque</span>
           </label>
-        </div>
-
-        <div class="search__filter-group search__filter-group--inline">
-          <label class="search__filter-label" for="explorer-sort">Trier par</label>
-          <select
-            id="explorer-sort"
-            :value="props.sortMode"
-            class="search__sort-select"
-            @change="handleSortChange"
-          >
-            <option value="relevance">Pertinence</option>
-            <option value="pages-asc">Plus courts d'abord</option>
-            <option value="pages-desc">Plus longs d'abord</option>
-            <option value="date-desc">Les plus récents</option>
-            <option value="rating-desc">Mieux notés</option>
-          </select>
         </div>
 
         <div v-if="props.hasActiveFilters" class="search__filters-footer">
@@ -535,6 +549,21 @@ const activeFiltersSummary = computed(() => {
   gap: var(--space-3);
 }
 
+.search__filters-header {
+  margin-top: var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.search__sort-inline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
 .search__filters-footer {
   display: flex;
   justify-content: space-between;
@@ -598,6 +627,38 @@ const activeFiltersSummary = computed(() => {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #9ca3af;
+}
+
+.search__advanced-button {
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  padding: var(--space-2) var(--space-4);
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  box-shadow: var(--shadow-subtle);
+  transition: var(--transition-snap);
+}
+
+.search__advanced-button:hover {
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.search__advanced-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  margin-left: var(--space-1);
+  border-radius: 999px;
+  background: var(--color-rouge-corail);
+  color: #f9fafb;
+  font-size: 0.7rem;
 }
 
 .search__filter-chip {
@@ -715,6 +776,18 @@ const activeFiltersSummary = computed(() => {
   .search__filter-chip {
     padding: var(--space-1) var(--space-2);
     font-size: var(--text-xs);
+  }
+
+  .search__filters-header {
+    margin-top: var(--space-3);
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search .search__advanced-button {
+    width: auto;
+    padding-inline: var(--space-4);
+    align-self: flex-start;
   }
 }
 

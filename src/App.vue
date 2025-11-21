@@ -3,11 +3,13 @@ import { computed, onMounted } from 'vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { provideAppContext } from './composables/useAppContext'
 import { useAuth } from './composables/useAuth'
+import { useToasts } from './composables/useToasts'
 
 provideAppContext()
 
 const router = useRouter()
 const { user, profile, loadCurrentUser } = useAuth()
+const { toasts, dismiss } = useToasts()
 
 onMounted(() => {
   loadCurrentUser()
@@ -45,6 +47,13 @@ function handleBack() {
 
   router.back()
 }
+
+function handleToastAction(id: string, handler?: () => void) {
+  if (handler) {
+    handler()
+  }
+  dismiss(id)
+}
 </script>
 
 <template>
@@ -70,6 +79,38 @@ function handleBack() {
         </button>
       </header>
       <RouterView />
+    </div>
+
+    <div
+      v-if="toasts.length"
+      class="toast-stack"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      <div
+        v-for="toast in toasts"
+        :key="toast.id"
+        class="toast"
+        :class="`toast--${toast.variant}`"
+      >
+        <span class="toast__message">{{ toast.message }}</span>
+        <button
+          v-if="toast.actionLabel"
+          type="button"
+          class="toast__action"
+          @click="handleToastAction(toast.id, toast.onAction)"
+        >
+          {{ toast.actionLabel }}
+        </button>
+        <button
+          type="button"
+          class="toast__close"
+          aria-label="Fermer"
+          @click="dismiss(toast.id)"
+        >
+          ×
+        </button>
+      </div>
     </div>
 
     <nav v-if="user" class="app-shell__nav" aria-label="Navigation principale">
@@ -126,6 +167,65 @@ function handleBack() {
 }
 
 .app-shell__back-icon {
+  font-size: 0.9rem;
+}
+
+.toast-stack {
+  position: fixed;
+  right: 1rem;
+  bottom: 4.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 40;
+}
+
+.toast {
+  min-width: 260px;
+  max-width: 320px;
+  background: var(--color-neutral-50);
+  color: var(--color-neutral-900);
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  box-shadow: var(--shadow-brutal);
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--text-sm);
+  animation: var(--animation-pop-in);
+}
+
+.toast--success {
+  border-color: var(--accent-secondary);
+}
+
+.toast--error {
+  border-color: var(--accent-primary);
+}
+
+.toast__message {
+  flex: 1;
+}
+
+.toast__action {
+  border-radius: 0;
+  border: 2px solid var(--color-black);
+  background: var(--color-jaune-dore);
+  color: var(--color-black);
+  padding: 0.15rem 0.6rem;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+}
+
+.toast__close {
+  border: none;
+  background: transparent;
+  color: var(--color-neutral-600);
+  cursor: pointer;
   font-size: 0.9rem;
 }
 </style>

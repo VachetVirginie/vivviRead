@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+
 interface HeroSession {
   title: string
   meta: string
@@ -10,7 +12,14 @@ interface HeroSession {
 const props = defineProps<{
   heroSession: HeroSession
   loading: boolean
+  isNewUser: boolean
 }>()
+
+const primaryCtaLabel = computed(() => {
+  if (props.loading) return 'Chargement…'
+  if (props.isNewUser) return 'Ajouter mon premier livre'
+  return 'Continuer ma lecture'
+})
 
 const emit = defineEmits<{
   (e: 'fetch-books'): void
@@ -29,7 +38,7 @@ const emit = defineEmits<{
       </p>
       <div class="hero__actions">
         <button type="button" @click="emit('fetch-books')" :disabled="props.loading">
-          {{ props.loading ? 'Chargement…' : 'Explorer les livres' }}
+          {{ primaryCtaLabel }}
         </button>
         <a href="#explorer">Voir un aperçu</a>
       </div>

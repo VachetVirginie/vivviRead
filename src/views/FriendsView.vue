@@ -3,10 +3,12 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppContext } from '../composables/useAppContext'
 import { useAuth } from '../composables/useAuth'
+import { useToasts } from '../composables/useToasts'
 
 const router = useRouter()
 const { shelf, friendsFeed, friendsRelations } = useAppContext()
 const { user } = useAuth()
+const { showToast } = useToasts()
 
 const activities = computed(() => friendsFeed.activities.value)
 const hasActivities = computed(() => activities.value.length > 0)
@@ -115,6 +117,15 @@ function handleAddToShelf(activity: (typeof activities.value)[number]) {
     author: activity.bookAuthor,
     totalPages: activity.totalPages,
     coverUrl: activity.coverUrl,
+  })
+
+  showToast({
+    message: 'Ajouté à ta bibliothèque',
+    actionLabel: 'Voir',
+    onAction: () => {
+      router.push({ name: 'library' })
+    },
+    variant: 'success',
   })
 }
 
@@ -243,6 +254,12 @@ onMounted(() => {
                 <p v-else-if="activity.goalTitle" class="friends-feed__detail">
                   Objectif : {{ activity.goalTitle }}
                 </p>
+                <span
+                  v-if="activity.bookTitle && activity.bookAuthor && shelf.isInShelf(activity.bookTitle, activity.bookAuthor)"
+                  class="friends-feed__tag"
+                >
+                  Ajouté
+                </span>
                 <button
                   v-if="activity.bookTitle && activity.bookAuthor && activity.userId !== currentUserId"
                   type="button"
@@ -534,6 +551,19 @@ onMounted(() => {
 
 .friends-feed__action:hover {
   background: #e5e7eb;
+}
+
+.friends-feed__tag {
+  align-self: flex-start;
+  margin-top: 0.15rem;
+  padding: 0.1rem 0.5rem;
+  font-size: var(--text-xxs, 0.65rem);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  background: var(--accent-secondary);
+  color: #020617;
+  border-radius: 999px;
+  border: 1px solid var(--color-black);
 }
 
 @media (max-width: 640px) {

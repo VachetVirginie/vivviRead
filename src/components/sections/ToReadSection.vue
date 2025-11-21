@@ -13,6 +13,8 @@ const emit = defineEmits<{
 const searchQuery = ref('')
 const sortBy = ref<'recent' | 'title' | 'author'>('recent')
 const sizeFilter = ref<'all' | 'short' | 'medium' | 'long'>('all')
+const showAdvancedFilters = ref(false)
+const hasActiveAdvancedFilters = computed(() => sizeFilter.value !== 'all')
 
 const filteredBooks = computed(() => {
   const query = searchQuery.value.trim().toLowerCase()
@@ -120,37 +122,52 @@ function handleModalAction(action: 'start' | 'remove') {
         </div>
       </div>
 
-      <div class="to-read__filters-row to-read__filters-row--secondary">
-        <span class="to-read__filters-label">Taille</span>
-        <div class="to-read__chips">
-          <button
-            type="button"
-            :class="['to-read__chip', { 'to-read__chip--active': sizeFilter === 'all' }]"
-            @click="sizeFilter = 'all'"
-          >
-            Toutes
-          </button>
-          <button
-            type="button"
-            :class="['to-read__chip', { 'to-read__chip--active': sizeFilter === 'short' }]"
-            @click="sizeFilter = 'short'"
-          >
-            Courtes
-          </button>
-          <button
-            type="button"
-            :class="['to-read__chip', { 'to-read__chip--active': sizeFilter === 'medium' }]"
-            @click="sizeFilter = 'medium'"
-          >
-            Moyennes
-          </button>
-          <button
-            type="button"
-            :class="['to-read__chip', { 'to-read__chip--active': sizeFilter === 'long' }]"
-            @click="sizeFilter = 'long'"
-          >
-            Pavés
-          </button>
+      <div class="to-read__advanced-toggle">
+        <button
+          type="button"
+          class="to-read__advanced-button"
+          @click="showAdvancedFilters = !showAdvancedFilters"
+        >
+          Affiner les résultats
+          <span v-if="hasActiveAdvancedFilters" class="to-read__advanced-badge">
+            1
+          </span>
+        </button>
+      </div>
+
+      <div v-if="showAdvancedFilters" class="to-read__filters-advanced">
+        <div class="to-read__filters-row to-read__filters-row--secondary">
+          <span class="to-read__filters-label">Taille</span>
+          <div class="to-read__chips">
+            <button
+              type="button"
+              :class="['to-read__chip', { 'to-read__chip--active': sizeFilter === 'all' }]"
+              @click="sizeFilter = 'all'"
+            >
+              Toutes
+            </button>
+            <button
+              type="button"
+              :class="['to-read__chip', { 'to-read__chip--active': sizeFilter === 'short' }]"
+              @click="sizeFilter = 'short'"
+            >
+              Courtes
+            </button>
+            <button
+              type="button"
+              :class="['to-read__chip', { 'to-read__chip--active': sizeFilter === 'medium' }]"
+              @click="sizeFilter = 'medium'"
+            >
+              Moyennes
+            </button>
+            <button
+              type="button"
+              :class="['to-read__chip', { 'to-read__chip--active': sizeFilter === 'long' }]"
+              @click="sizeFilter = 'long'"
+            >
+              Pavés
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -243,6 +260,49 @@ function handleModalAction(action: 'start' | 'remove') {
 
 .to-read__filters-row--secondary {
   justify-content: flex-start;
+}
+
+.to-read__advanced-toggle {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 0.25rem;
+}
+
+.to-read__advanced-button {
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  padding: 0.35rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: var(--transition-snap);
+}
+
+.to-read__advanced-button:hover {
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.to-read__advanced-badge {
+  min-width: 1.35rem;
+  height: 1.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--color-rouge-corail);
+  color: #f9fafb;
+  font-size: 0.7rem;
+}
+
+.to-read__filters-advanced {
+  margin-top: 0.5rem;
 }
 
 .to-read__filters-label {

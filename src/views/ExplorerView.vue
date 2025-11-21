@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 import { useAppContext } from '../composables/useAppContext'
+import { useToasts } from '../composables/useToasts'
 import type { GoogleBookVolume } from '../services/googleBooks'
 
 import ExplorerSection from '../components/sections/ExplorerSection.vue'
 
 const { shelf, explorer } = useAppContext()
+const router = useRouter()
+const { showToast } = useToasts()
 
 const explorerState = explorer.publicState
 const explorerRawState = explorer.state
@@ -86,6 +90,28 @@ function isResultInShelf(book: GoogleBookVolume) {
 function handleExplorerQuery(value: string) {
   explorerRawState.query = value
 }
+
+interface ExplorerAddPayload {
+  title: string
+  author: string
+  totalPages?: number
+  coverUrl?: string
+  averageRating?: number
+  description?: string
+}
+
+function handleAddFromExplorer(payload: ExplorerAddPayload) {
+  shelf.addFromSearch(payload)
+
+  showToast({
+    message: 'Ajouté à ta bibliothèque',
+    actionLabel: 'Voir',
+    onAction: () => {
+      router.push({ name: 'libraryPal' })
+    },
+    variant: 'success',
+  })
+}
 </script>
 
 <template>
@@ -132,7 +158,7 @@ function handleExplorerQuery(value: string) {
       :set-sort-mode="explorer.setSortMode"
       :set-mood-filter="explorer.setMoodFilter"
       :reset-filters="explorer.resetFilters"
-      @add="shelf.addFromSearch"
+      @add="handleAddFromExplorer"
     />
   </main>
 </template>
