@@ -143,7 +143,8 @@ const emit = defineEmits<{
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.15em;
-  color: #6ee7b7;
+  font-weight: bolder;
+  color: #09ed92;
 }
 
 .goals__value {

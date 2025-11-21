@@ -486,6 +486,7 @@ onMounted(() => {
 
 .friends-feed__name {
   font-weight: var(--font-semibold);
+  color: var(--color-neutral-100);
 }
 
 .friends-feed__badge {
