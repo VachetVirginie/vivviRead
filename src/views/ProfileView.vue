@@ -397,6 +397,7 @@ strong {
   border: 1px solid rgba(248, 113, 113, 0.6);
   box-shadow: 0 22px 45px rgba(15, 23, 42, 0.9);
   position: relative;
+  margin-bottom: 2em;
 }
 
 .danger-block::after {

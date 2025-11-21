@@ -126,6 +126,7 @@ function handleKeydown(event: KeyboardEvent) {
 
 .library-section-card--abandoned {
   border-top: 2px solid var(--accent-primary);
+  margin-bottom: 2em;
 }
 
 .library-section-card__header {

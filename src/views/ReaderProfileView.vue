@@ -273,6 +273,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
+  margin-bottom: 2em;
 }
 
 .reader-header {
@@ -405,6 +406,7 @@ onMounted(() => {
 @media (max-width: 640px) {
   .reader-card {
     padding: var(--space-5) var(--space-4);
+    margin-bottom: 2em;
   }
 }
 </style>

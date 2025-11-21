@@ -28,9 +28,9 @@ function goBackToLogin() {
     <section class="login-layout">
       <section class="home-block login-card" aria-label="Réinitialisation du mot de passe">
         <!-- Illustration -->
-        <div class="login-illustration" aria-hidden="true">
+        <!-- <div class="login-illustration" aria-hidden="true">
           <img :src="homeIllustration" alt="Illustration de lecture pour BoookNest" />
-        </div>
+        </div> -->
 
         <header class="reset-header">
           <h1>Mot de passe oublié ?</h1>

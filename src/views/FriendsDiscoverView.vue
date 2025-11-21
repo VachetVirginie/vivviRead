@@ -150,11 +150,13 @@ async function handleToggleFollow(profileId: string) {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: var(--space-6);
+  margin-bottom: 2em;
 }
 
 @media (max-width: 900px) {
   .friends-layout {
     grid-template-columns: minmax(0, 1fr);
+    margin-bottom: 2em;
   }
 }
 

@@ -285,6 +285,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
+  margin-bottom: 2em;
 }
 
 .friends-card {

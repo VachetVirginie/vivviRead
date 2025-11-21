@@ -73,9 +73,9 @@ watchEffect(() => {
 
       <section class="home-block login-card" aria-label="Connexion et inscription">
         <!-- Illustration au-dessus du formulaire -->
-        <div class="login-illustration" aria-hidden="true">
+        <!-- <div class="login-illustration" aria-hidden="true">
           <img :src="homeIllustration" alt="Illustration de lecture pour BoookNest" />
-        </div>
+        </div> -->
 
         <header class="login-tabs">
           <button
@@ -138,7 +138,7 @@ watchEffect(() => {
               </router-link>
             </div>
 
-            <p v-if="authError" class="auth-block__error">
+            <p v-if="authError && authError !== 'Auth session missing!'" class="auth-block__error">
               {{ authError }}
             </p>
           </form>
@@ -187,7 +187,8 @@ watchEffect(() => {
   font-size: var(--text-xs);
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #9ca3af;
+  color: var(--color-neutral-100);
+  font-weight: bolder;
 }
 
 .login-hero__title {
@@ -196,6 +197,7 @@ watchEffect(() => {
   line-height: 1.1;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  font-weight: bolder;
 }
 
 .login-hero__subtitle {
@@ -203,6 +205,7 @@ watchEffect(() => {
   max-width: 26rem;
   font-size: var(--text-sm);
   color: #d1d5db;
+  font-weight: bolder;
 }
 
 .login-illustration {
@@ -239,6 +242,7 @@ watchEffect(() => {
   gap: var(--space-2);
   margin-bottom: 1.5rem;
   border-bottom: 1px solid #e5e7eb;
+  color: var(--color-neutral-100);
 }
 
 .login-tab {
@@ -251,7 +255,7 @@ watchEffect(() => {
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
   text-transform: none;
-  color: var(--color-neutral-600);
+  color: var(--color-neutral-100);
   cursor: pointer;
   transition: color var(--transition-normal);
 }
