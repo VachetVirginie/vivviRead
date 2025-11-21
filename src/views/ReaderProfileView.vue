@@ -188,7 +188,7 @@ onMounted(() => {
       <div class="reader-header">
         <div
           class="reader-avatar"
-          :style="{ backgroundColor: avatarColor, color: '#ffffff' }"
+          :style="{ backgroundColor: avatarColor, color: '#020617' }"
           aria-hidden="true"
         >
           {{ avatarInitial }}

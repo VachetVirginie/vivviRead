@@ -425,16 +425,18 @@ function handleModalAction(action: 'start' | 'remove') {
 .to-read__actions button {
   border: none;
   border-radius: 999px;
-  padding: 0.45rem 1.1rem;
+  padding: 0.5rem 1.1rem;
   font-weight: 600;
   cursor: pointer;
   font-size: 0.85rem;
   min-width: 120px;
+  transition: var(--transition-snap);
 }
 
 .to-read__actions button:first-child {
-  background: #facc15;
-  color: #111827;
+  background: #f9fafb;
+  color: #020617;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
 }
 
 .to-read__modal-overlay {

@@ -63,7 +63,7 @@ function handleBack() {
         <button
           type="button"
           class="app-shell__avatar-button"
-          :style="{ backgroundColor: avatarColor, color: '#ffffff' }"
+          :style="{ backgroundColor: avatarColor, color: '#020617' }"
           @click="goToProfile"
         >
           {{ avatarInitial }}

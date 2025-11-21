@@ -56,7 +56,7 @@ function getGradientClass(index: number): string {
 }
 
 .stats__card {
-  background-color: hsla(246, 100%, 85%, 0.102);
+  background-color: var(--glass-surface);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 1.25rem;
   padding: var(--space-8) var(--space-6);
@@ -221,6 +221,7 @@ function getGradientClass(index: number): string {
   font-size: var(--text-xl);
   position: relative;
   z-index: 1;
+  color: #111827;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
@@ -254,7 +255,7 @@ function getGradientClass(index: number): string {
 .stats__sub {
   margin: 0;
   font-size: var(--text-sm);
-  color: #cbd5f5;
+  color: #e5e7eb;
   line-height: var(--leading-normal);
 }
 

@@ -308,7 +308,7 @@ function handleRemove(bookId: string) {
 .abandoned__actions button {
   border: none;
   border-radius: 999px;
-  padding: 0.45rem 1.1rem;
+  padding: 0.5rem 1.1rem;
   font-weight: 600;
   text-transform: none;
   font-size: 0.8rem;
@@ -316,7 +316,7 @@ function handleRemove(bookId: string) {
   background: #f9fafb;
   color: #020617;
   transition: var(--transition-snap);
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.7);
 }
 
 .abandoned__actions button:nth-child(2) {
@@ -325,8 +325,8 @@ function handleRemove(bookId: string) {
 }
 
 .abandoned__actions .shelf__remove {
-  background: #fee2e2;
-  color: var(--color-rouge-corail);
+  background: #b91c1c;
+  color: #fef2f2;
   border-color: transparent;
 }
 

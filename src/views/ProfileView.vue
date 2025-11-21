@@ -155,7 +155,7 @@ async function copyPublicProfileLink() {
         <div class="profile-header">
           <div
             class="profile-avatar"
-            :style="{ backgroundColor: avatarColor, color: '#ffffff' }"
+            :style="{ backgroundColor: avatarColor, color: '#020617' }"
             aria-hidden="true"
           >
             {{ avatarInitial }}
@@ -168,8 +168,9 @@ async function copyPublicProfileLink() {
 
         <div class="auth-block__fields">
           <p class="auth-block__status">
-            <span class="auth-block__label">Nom affiché</span>
+            <label class="auth-block__label" for="profile-full-name">Nom affiché</label>
             <input
+              id="profile-full-name"
               v-model="editableName"
               type="text"
               class="profile-input"
@@ -185,8 +186,9 @@ async function copyPublicProfileLink() {
             </button>
           </p>
           <p class="auth-block__status">
-            <span class="auth-block__label">Pseudo</span>
+            <label class="auth-block__label" for="profile-username">Pseudo</label>
             <input
+              id="profile-username"
               v-model="editableUsername"
               type="text"
               class="profile-input"
@@ -286,6 +288,10 @@ async function copyPublicProfileLink() {
 </template>
 
 <style scoped>
+strong {
+  color: var(--color-neutral-100);
+}
+
 .profile-avatar {
   width: 3rem;
   height: 3rem;
@@ -334,12 +340,13 @@ async function copyPublicProfileLink() {
 .profile-header__name {
   margin: 0;
   font-weight: var(--font-semibold);
+  color: var(--color-neutral-100);
 }
 
 .profile-header__username {
   margin: 0;
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--color-neutral-300);
 }
 
 .auth-block__fields {
@@ -422,11 +429,16 @@ async function copyPublicProfileLink() {
   border-radius: 999px;
   border: none;
   padding: 0.5rem 1.2rem;
-  background: var(--color-rouge-corail);
-  color: white;
+  background: #7f1d1d;
+  color: #fef2f2;
   font-size: 0.85rem;
   font-weight: 600;
-  opacity: 0.6;
+  opacity: 1;
   cursor: not-allowed;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.85);
+}
+
+.home-block__subtitle {
+  color: var(--color-neutral-100);
 }
 </style>

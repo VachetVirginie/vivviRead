@@ -71,7 +71,21 @@ const emit = defineEmits<{
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-8);
   position: relative;
+  border-radius: 1.75rem;
+  overflow: hidden;
   animation: var(--animation-fade-in);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: -25%;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.14), transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(84, 207, 198, 0.18), transparent 65%);
+  opacity: 0.9;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .hero__eyebrow {
@@ -92,7 +106,7 @@ const emit = defineEmits<{
 
 .hero p {
   margin: 0 0 var(--space-4);
-  color: #d1d5db;
+  color: #e5e7eb;
   line-height: var(--leading-relaxed);
 }
 
@@ -109,9 +123,11 @@ const emit = defineEmits<{
   padding: 0.85rem 1.75rem;
   font-weight: 600;
   font-size: 1rem;
-  background: #111827;
-  color: #f9fafb;
+  background: #f9fafb;
+  color: #020617;
   cursor: pointer;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
+  transition: var(--transition-snap);
 }
 
 .hero__actions button:disabled {
@@ -120,8 +136,8 @@ const emit = defineEmits<{
 
 .hero__actions a {
   align-self: center;
-  color: #111827;
-  text-decoration: none;
+  color: #e5e7eb;
+  text-decoration: underline;
   font-weight: 600;
 }
 
@@ -135,8 +151,9 @@ const emit = defineEmits<{
 }
 
 .hero__badges li {
-  background: #111827;
-  color: #f5eee2;
+  background: rgba(15, 23, 42, 0.75);
+  color: #e5e7eb;
+  border: 1px solid rgba(148, 163, 184, 0.6);
   border-radius: 999px;
   padding: 0.3rem 0.8rem;
   font-size: 0.85rem;
@@ -203,7 +220,7 @@ const emit = defineEmits<{
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.2em;
-  color: #6b7280;
+  color: #cbd5f5;
   margin-bottom: 0.5rem;
 }
 
@@ -213,7 +230,7 @@ const emit = defineEmits<{
 
 .hero__panel-meta {
   margin: 0 0 1.25rem;
-  color: #4b5563;
+  color: #e5e7eb;
 }
 
 .hero__progress {
@@ -233,7 +250,7 @@ const emit = defineEmits<{
 
 .hero__panel-status {
   margin: 0;
-  color: #4b5563;
+  color: #e5e7eb;
 }
 
 .hero__cover {

@@ -302,7 +302,7 @@ const filteredBooks = computed(() => {
 .completed__actions button {
   border: none;
   border-radius: 999px;
-  padding: 0.45rem 1.1rem;
+  padding: 0.5rem 1.1rem;
   font-weight: 600;
   text-transform: none;
   font-size: 0.8rem;
@@ -310,10 +310,11 @@ const filteredBooks = computed(() => {
   background: #f9fafb;
   color: #020617;
   transition: var(--transition-snap);
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.7);
 }
 
 .completed__actions button:hover {
   background: #e5e7eb;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.85);
 }
 </style>

@@ -74,7 +74,7 @@ watchEffect(() => {
       <section class="home-block login-card" aria-label="Connexion et inscription">
         <!-- Illustration au-dessus du formulaire -->
         <div class="login-illustration" aria-hidden="true">
-          <img :src="homeIllustration" alt="" />
+          <img :src="homeIllustration" alt="Illustration de lecture pour BoookNest" />
         </div>
 
         <header class="login-tabs">

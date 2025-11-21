@@ -296,7 +296,7 @@ function handleOpenModal(type: 'book' | 'goal') {
 .home-block__subtitle {
   margin: 0;
   font-size: var(--text-sm);
-  color: #d1d5db;
+  color: #e5e7eb;
   line-height: var(--leading-relaxed);
 }
 
@@ -326,7 +326,7 @@ function handleOpenModal(type: 'book' | 'goal') {
 .home-block__hint {
   margin: 0;
   font-size: 0.85rem;
-  color: #4b5563;
+  color: #cbd5f5;
 }
 
 .home-goals-preview__grid {
@@ -367,7 +367,7 @@ function handleOpenModal(type: 'book' | 'goal') {
   text-transform: uppercase;
   font-size: var(--text-xs);
   letter-spacing: 0.15em;
-  color: #cbd5f5;
+  color: #e5e7eb;
   font-weight: var(--font-medium);
   position: relative;
   z-index: 1;
@@ -459,8 +459,9 @@ function handleOpenModal(type: 'book' | 'goal') {
 .home-explorer-preview__meta {
   margin: 0;
   font-size: var(--text-sm);
-  color: #cbd5f5;
+  color: #e5e7eb;
   line-height: var(--leading-normal);
+  font-weight: bolder;
 }
 
 .insights-summary {
@@ -481,7 +482,8 @@ function handleOpenModal(type: 'book' | 'goal') {
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #cbd5f5;
+  color: #e5e7eb;
+  font-weight: bolder;
 }
 
 .insights-summary__value {

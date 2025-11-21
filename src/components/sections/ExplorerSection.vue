@@ -151,7 +151,7 @@ const activeFiltersSummary = computed(() => {
     <div class="explorer__header">
       <p class="section-eyebrow">Explorer</p>
       <h2>Découvre de nouvelles lectures et ajoute-les en un clic.</h2>
-      <p>Utilise un mot-clé ou sélectionne un preset pour trouver ta prochaine pépite.</p>
+      <p class="explorer__header__description">Utilise un mot-clé ou sélectionne un preset pour trouver ta prochaine pépite.</p>
     </div>
 
     <form class="search" @submit.prevent="props.onSubmit">
@@ -453,7 +453,7 @@ const activeFiltersSummary = computed(() => {
 
 .explorer__header p {
   margin: 0;
-  color: #d1d5db;
+  color: var(--color-black);
   line-height: var(--leading-relaxed);
 }
 
@@ -874,6 +874,10 @@ const activeFiltersSummary = computed(() => {
   cursor: not-allowed;
   background: rgba(148, 163, 184, 0.35);
   color: #e5e7eb;
+}
+
+.explorer__header__description {
+  color: var(--color-white) !important;
 }
 
 @media (max-width: 640px) {

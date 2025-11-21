@@ -472,7 +472,7 @@ onMounted(() => {
   justify-content: center;
   font-weight: var(--font-bold);
   font-size: 0.9rem;
-  color: #ffffff;
+  color: #020617;
 }
 
 .friends-feed__name-button {

@@ -48,7 +48,7 @@ function goBackToLogin() {
       <section class="home-block login-card" aria-label="Nouveau mot de passe">
         <!-- Illustration -->
         <div class="login-illustration" aria-hidden="true">
-          <img :src="homeIllustration" alt="" />
+          <img :src="homeIllustration" alt="Illustration de lecture pour BoookNest" />
         </div>
 
         <header class="reset-header">
@@ -188,7 +188,7 @@ function goBackToLogin() {
 .auth-block__field span {
   display: block;
   font-size: 0.8rem;
-  color: white;
+  color: #111827;
   margin-bottom: 0.2rem;
   font-weight: 500;
 }
