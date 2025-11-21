@@ -381,7 +381,7 @@ html {
 
 .state {
   margin: 0;
-  color: #4b5563;
+  color: var(--color-neutral-100);
 }
 
 .state--error {
@@ -692,3 +692,8 @@ html {
 .border-rainbow {
   border-image: linear-gradient(90deg, #dc3b3e 10%, #ff8f00 28%, #ffe066 35%, #3bdc90 50%, #3b99dc, #d535c3 90%) 100;
 }
+
+input[type="number"] {
+  color: var(--color-neutral-100);
+}
+  

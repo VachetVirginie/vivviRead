@@ -224,6 +224,7 @@ function handleModalAction(action: 'start' | 'remove') {
   color: #e5e7eb;
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
+  margin-bottom: 2rem;
 }
 
 .to-read__filters {
@@ -557,6 +558,7 @@ function handleModalAction(action: 'start' | 'remove') {
 @media (max-width: 480px) {
   .to-read {
     padding: 1.4rem 1rem;
+    margin-bottom: 2rem;
   }
 
   .to-read__card {

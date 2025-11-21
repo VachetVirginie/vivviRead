@@ -453,7 +453,7 @@ const activeFiltersSummary = computed(() => {
 
 .explorer__header p {
   margin: 0;
-  color: var(--color-black);
+  color: #e5e7eb;
   line-height: var(--leading-relaxed);
 }
 
@@ -628,6 +628,7 @@ const activeFiltersSummary = computed(() => {
   border: 1px solid rgba(148, 163, 184, 0.7);
   padding: var(--space-2) var(--space-3);
   background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
   font-size: var(--text-sm);
 }
 
@@ -877,7 +878,7 @@ const activeFiltersSummary = computed(() => {
 }
 
 .explorer__header__description {
-  color: var(--color-white) !important;
+  color: #e5e7eb;
 }
 
 @media (max-width: 640px) {

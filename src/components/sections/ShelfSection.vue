@@ -353,6 +353,7 @@ function handleRemove(id: string) {
   color: #e5e7eb;
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
+  margin-bottom: 2rem;
 }
 
 .shelf__filters {
@@ -498,6 +499,7 @@ function handleRemove(id: string) {
   background: rgba(15, 23, 42, 0.9);
   border-radius: 0.9rem;
   padding: 0.6rem 0.75rem;
+  color: var(--color-neutral-100);
 }
 
 .shelf__range input {

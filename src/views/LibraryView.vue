@@ -85,11 +85,13 @@ function goToExplorer() {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
+  margin-bottom: 2rem;
 }
 
 @media (min-width: 768px) {
   .library-sections {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-bottom: 2rem;
   }
 }
 </style>

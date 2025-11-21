@@ -193,7 +193,7 @@ const authorLabel = computed(() => {
 .book-card__cover-wrapper {
   position: relative;
   flex-shrink: 0;
-  background: var(--color-neutral-50);
+  background: rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-xl);
   padding: var(--space-3);
   display: flex;
