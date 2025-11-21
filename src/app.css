@@ -326,6 +326,13 @@ html {
   border-color: rgba(148, 163, 184, 0.9);
 }
 
+.page-header__action.page-header__action--primary:hover {
+  background: #e5e7eb;
+  color: #020617;
+  border: none;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.9);
+}
+
 .page-header__action:disabled,
 .page-header__action[disabled] {
   opacity: 0.6;
