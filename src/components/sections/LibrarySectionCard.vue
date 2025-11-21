@@ -73,7 +73,10 @@ function handleKeydown(event: KeyboardEvent) {
     </div>
 
     <footer class="library-section-card__footer">
-      <span class="library-section-card__cta">Ouvrir la galerie</span>
+      <span class="library-section-card__cta">
+        Ouvrir la galerie
+        <span class="library-section-card__chevron" aria-hidden="true">↗</span>
+      </span>
     </footer>
   </section>
 </template>
@@ -101,6 +104,11 @@ function handleKeydown(event: KeyboardEvent) {
 .library-section-card:hover {
   transform: var(--transform-lift);
   box-shadow: var(--shadow-hover);
+}
+
+.library-section-card:focus-visible {
+  outline: 2px solid var(--accent-tertiary);
+  outline-offset: 3px;
 }
 
 .library-section-card::after {
@@ -204,5 +212,21 @@ function handleKeydown(event: KeyboardEvent) {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #f9fafb;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.7);
+}
+
+.library-section-card__chevron {
+  font-size: 0.85rem;
+  transition: transform var(--transition-snap);
+}
+
+.library-section-card:hover .library-section-card__chevron {
+  transform: translateX(3px) translateY(-1px);
 }
 </style>

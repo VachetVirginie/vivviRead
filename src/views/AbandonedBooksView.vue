@@ -6,6 +6,7 @@ import { useAppContext } from '../composables/useAppContext'
 import type { ReadingStatus } from '../composables/useReadingShelf'
 
 import AbandonedSection from '../components/sections/AbandonedSection.vue'
+import LibrarySubnav from '../components/sections/LibrarySubnav.vue'
 
 const { shelf } = useAppContext()
 const router = useRouter()
@@ -42,6 +43,8 @@ function goToExplorer() {
         </div>
       </div>
     </header>
+    
+    <LibrarySubnav />
 
     <AbandonedSection
       :books="abandonedBooks"

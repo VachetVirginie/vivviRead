@@ -6,6 +6,7 @@ import { useAppContext } from '../composables/useAppContext'
 import type { ReadingStatus } from '../composables/useReadingShelf'
 
 import CompletedSection from '../components/sections/CompletedSection.vue'
+import LibrarySubnav from '../components/sections/LibrarySubnav.vue'
 
 const { shelf } = useAppContext()
 const router = useRouter()
@@ -42,6 +43,8 @@ function goToExplorer() {
         </div>
       </div>
     </header>
+    
+    <LibrarySubnav />
 
     <CompletedSection
       :books="completedBooks"

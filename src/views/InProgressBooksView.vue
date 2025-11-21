@@ -6,6 +6,7 @@ import { useAppContext } from '../composables/useAppContext'
 import type { ReadingStatus } from '../composables/useReadingShelf'
 
 import ShelfSection from '../components/sections/ShelfSection.vue'
+import LibrarySubnav from '../components/sections/LibrarySubnav.vue'
 
 const { shelf } = useAppContext()
 const router = useRouter()
@@ -85,6 +86,8 @@ onMounted(() => {
         </div>
       </div>
     </header>
+    
+    <LibrarySubnav />
 
     <ShelfSection
       :books="inProgressBooks"

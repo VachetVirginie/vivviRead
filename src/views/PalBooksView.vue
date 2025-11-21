@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 
 import { useAppContext } from '../composables/useAppContext'
 import ToReadSection from '../components/sections/ToReadSection.vue'
+import LibrarySubnav from '../components/sections/LibrarySubnav.vue'
 
 const { shelf } = useAppContext()
 const router = useRouter()
@@ -40,6 +41,8 @@ function goToExplorer() {
         </div>
       </div>
     </header>
+
+    <LibrarySubnav />
 
     <ToReadSection
       :books="toReadBooks"
