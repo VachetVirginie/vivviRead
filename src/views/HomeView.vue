@@ -313,6 +313,16 @@ function goToFriendsRecommendations() {
   color: #e5e7eb;
 }
 
+@media (max-width: 768px) {
+  .page {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    max-width: 1200px;
+    margin: 0 auto;
+    color: #e5e7eb;
+  }
+}
+
 @media (min-width: 1024px) {
   .page {
     grid-template-columns: 2fr 1fr;
