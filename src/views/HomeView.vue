@@ -315,8 +315,7 @@ function goToFriendsRecommendations() {
 
 @media (max-width: 768px) {
   .page {
-    grid-template-columns: 1fr;
-    gap: var(--space-8);
+    gap: var(--space-0);
     max-width: 1200px;
     margin: 0 auto;
     color: #e5e7eb;
