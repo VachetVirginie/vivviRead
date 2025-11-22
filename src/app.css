@@ -373,7 +373,7 @@ html {
   text-transform: uppercase;
   letter-spacing: 0.2em;
   font-size: var(--text-xs);
-  color: var(--color-black);
+  color: var(--color-black) !important;
   margin-bottom: var(--space-2);
   font-weight: bold;
   position: relative;

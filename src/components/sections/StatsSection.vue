@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import type { StatCard } from '../../types/dashboard'
+import { useRouter } from 'vue-router'
 
 defineProps<{ stats: StatCard[] }>()
+
+const router = useRouter()
 
 // Fonction pour obtenir l'icône appropriée selon le label
 function getIconForStat(label: string): string {
@@ -16,6 +19,14 @@ function getGradientClass(index: number): string {
   const gradients = ['gradient-warm', 'gradient-cool', 'gradient-purple']
   return gradients[index % gradients.length] || 'gradient-warm'
 }
+
+function handleCardClick(index: number) {
+  const routesByIndex: Array<string | null> = ['libraryPal', 'libraryInProgress', 'insights']
+  const routeName = routesByIndex[index] ?? null
+  if (!routeName) return
+
+  router.push({ name: routeName })
+}
 </script>
 
 <template>
@@ -25,6 +36,7 @@ function getGradientClass(index: number): string {
       :key="stat.label" 
       class="stats__card animate-fade-in-scale"
       :style="{ '--stagger-delay': index }"
+      @click="handleCardClick(index)"
     >
       <div class="stats__icon">
         <div class="stats__icon-circle" :class="`stats__icon-circle--${getGradientClass(index)}`">
@@ -67,6 +79,7 @@ function getGradientClass(index: number): string {
   cursor: pointer;
   animation: var(--animation-fade-in);
   animation-fill-mode: both;
+  overflow: hidden;
 }
 
 .stats__card:nth-child(1) {
@@ -150,14 +163,16 @@ function getGradientClass(index: number): string {
   content: '';
   position: absolute;
   inset: 0;
-  background: transparent;
-  opacity: 0;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.18), transparent 55%),
+    radial-gradient(circle at 90% 120%, rgba(59, 130, 246, 0.4), transparent 60%);
+  opacity: 1;
   transition: var(--transition-snap);
   z-index: 1;
 }
 
 .stats__card:hover::before {
-  opacity: 0;
+  opacity: 1;
 }
 
 .stats__card:hover {

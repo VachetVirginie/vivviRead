@@ -36,21 +36,21 @@ const avgPagesPerBookRead = computed(() =>
 )
 
 const shortBooksCount = computed(() =>
-  books.value.filter((book) => {
+  completedBooks.value.filter((book) => {
     const pages = book.totalPages ?? 0
     return pages > 0 && pages < 200
   }).length
 )
 
 const mediumBooksCount = computed(() =>
-  books.value.filter((book) => {
+  completedBooks.value.filter((book) => {
     const pages = book.totalPages ?? 0
     return pages >= 200 && pages <= 400
   }).length
 )
 
 const longBooksCount = computed(() =>
-  books.value.filter((book) => {
+  completedBooks.value.filter((book) => {
     const pages = book.totalPages ?? 0
     return pages > 400
   }).length
@@ -102,7 +102,7 @@ const genreStats = computed<GenreStat[]>(() => {
   }
   let other = 0
 
-  books.value.forEach((book) => {
+  completedBooks.value.forEach((book) => {
     const text = `${book.title ?? ''} ${book.description ?? ''}`.toLowerCase()
     const bucket = genreBuckets.find((b) => b.keywords.some((kw) => text.includes(kw)))
     if (bucket) {
@@ -139,7 +139,7 @@ const lengthExploreHint = computed(() => {
   const [first, ...rest] = sorted
   if (!first) return ''
   const least = rest.length ? rest[rest.length - 1]! : first
-  return `Tu lis surtout des ${first.label}, mais très peu de ${least.label}.`
+  return `Parmi tes livres terminés, tu lis surtout des ${first.label}, mais très peu de ${least.label}.`
 })
 
 const exploreHint = computed(() => {
@@ -148,7 +148,7 @@ const exploreHint = computed(() => {
   const [first, ...rest] = stats
   if (!first) return ''
   const least = rest.length ? rest[rest.length - 1]! : first
-  return `Tu lis surtout ${first.label.toLowerCase()}, mais très peu de ${least.label.toLowerCase()}.`
+  return `Parmi tes livres terminés, tu lis surtout ${first.label.toLowerCase()}, mais très peu de ${least.label.toLowerCase()}.`
 })
 
 const baseGoals = computed(() => goals.goals.value)
@@ -264,13 +264,13 @@ function handleFindSimilarBooks() {
         <h2 class="insights-card__title">Profil de lecture</h2>
         <ul class="insights-profile">
           <li>
-            <span class="insights-profile__label">Longueur des livres</span>
+            <span class="insights-profile__label">Longueur des livres de ta PAL</span>
             <span class="insights-profile__value">
               {{ shortBooksCount }} courts · {{ mediumBooksCount }} moyens · {{ longBooksCount }} pavés
             </span>
           </li>
           <li>
-            <span class="insights-profile__label">Taux de complétion</span>
+            <span class="insights-profile__label">Taux de complétion des livres en cours</span>
             <span class="insights-profile__value">
               {{ completionRate }} %
             </span>
@@ -403,17 +403,21 @@ function handleFindSimilarBooks() {
 <style scoped>
 .insights-page {
   max-width: 1200px;
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-4) var(--space-12);
+  padding: var(--space-12) var(--space-6) var(--space-16);
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
+  color: #e5e7eb;
 }
 
 .insights-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
   gap: var(--space-6);
+  margin-bottom: 2em;
 }
 
 @media (max-width: 900px) {
@@ -422,23 +426,42 @@ function handleFindSimilarBooks() {
   }
 }
 
+@media (max-width: 640px) {
+  .insights-page {
+    padding: var(--space-10) var(--space-4) var(--space-14);
+    gap: var(--space-6);
+  }
+}
+
 .insights-card {
-  background: var(--color-white);
-  border-radius: 0;
-  border: 3px solid var(--color-black);
-  box-shadow: var(--shadow-brutal);
+  background-color: var(--glass-surface);
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.6);
   padding: var(--space-6);
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
   position: relative;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  overflow: hidden;
+}
+
+.insights-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .insights-card--primary::before {
   content: '';
   position: absolute;
-  inset: 0;
-  border-top: 4px solid var(--color-jaune-dore);
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-jaune-dore);
+  opacity: 0.9;
 }
 
 .insights-card__title {
@@ -454,9 +477,9 @@ function handleFindSimilarBooks() {
 }
 
 .insights-metrics__item {
-  background: var(--color-neutral-50);
-  border-radius: 0;
-  border: 2px solid var(--color-black);
+  background: rgba(15, 23, 42, 0.85);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
   padding: var(--space-3) var(--space-4);
 }
 
@@ -465,13 +488,14 @@ function handleFindSimilarBooks() {
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--color-neutral-600);
+  color: #cbd5f5;
 }
 
 .insights-metrics__value {
   margin: 0;
   font-size: var(--text-xl);
   font-weight: var(--font-bold);
+  color: #f9fafb;
 }
 
 .insights-highlight__title {
@@ -483,7 +507,7 @@ function handleFindSimilarBooks() {
 .insights-highlight__meta {
   margin: 0 0 var(--space-4);
   font-size: var(--text-sm);
-  color: var(--color-neutral-600);
+  color: #cbd5f5;
 }
 
 .insights-statuses {
@@ -499,12 +523,14 @@ function handleFindSimilarBooks() {
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--color-neutral-600);
+  color: #cbd5f5;
+  margin-right: var(--space-1);
 }
 
 .insights-statuses__value {
   font-size: var(--text-lg);
   font-weight: var(--font-semibold);
+  color: #f9fafb;
 }
 
 .insights-profile {
@@ -516,16 +542,26 @@ function handleFindSimilarBooks() {
   gap: var(--space-2);
 }
 
+.insights-profile li {
+  padding: var(--space-3) var(--space-4);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.85);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .insights-profile__label {
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--color-neutral-600);
+  color: #9ca3af;
 }
 
 .insights-profile__value {
   font-size: var(--text-sm);
-  color: var(--color-neutral-900);
+  color: #e5e7eb;
 }
 
 .insights-goals {
@@ -538,10 +574,10 @@ function handleFindSimilarBooks() {
 }
 
 .insights-goals__item {
-  border-radius: 0;
-  border: 2px solid var(--color-black);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
   padding: var(--space-3) var(--space-4);
-  background: var(--color-neutral-50);
+  background: rgba(15, 23, 42, 0.9);
 }
 
 .insights-goals__header {
@@ -560,22 +596,22 @@ function handleFindSimilarBooks() {
 .insights-goals__meta {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--color-neutral-700);
+  color: var(--color-neutral-100);
 }
 
 .insights-goals__progress {
   width: 100%;
   height: 8px;
-  border-radius: 0;
-  border: 2px solid var(--color-black);
-  background: var(--color-white);
+  border-radius: var(--radius-full);
+  border: none;
+  background: rgba(15, 23, 42, 0.7);
   overflow: hidden;
 }
 
 .insights-goals__progress span {
   display: block;
   height: 100%;
-  background: var(--color-neutral-900);
+  background: #f9fafb;
 }
 
 .insights-friends {
@@ -588,10 +624,10 @@ function handleFindSimilarBooks() {
 }
 
 .insights-friends__item {
-  border-radius: 0;
-  border: 2px solid var(--color-black);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
   padding: var(--space-3) var(--space-4);
-  background: var(--color-neutral-50);
+  background: rgba(15, 23, 42, 0.9);
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -608,19 +644,19 @@ function handleFindSimilarBooks() {
 }
 
 .insights-friends__summary {
-  color: var(--color-neutral-800);
+  color: #e5e7eb;
 }
 
 .insights-friends__book {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--color-neutral-700);
+  color: #cbd5f5;
 }
 
 .insights-friends__date {
   margin: 0;
   font-size: var(--text-xs);
-  color: var(--color-neutral-500);
+  color: #9ca3af;
 }
 
 .insights-card--timeline {
@@ -653,13 +689,13 @@ function handleFindSimilarBooks() {
   width: 12px;
   height: 12px;
   border-radius: 999px;
-  border: 2px solid var(--color-black);
-  background: var(--color-jaune-dore);
+  border: 2px solid rgba(248, 250, 252, 0.9);
+  background: var(--accent-tertiary);
   margin-top: 0.25rem;
 }
 
 .insights-timeline__content {
-  border-left: 2px dashed var(--color-neutral-300);
+  border-left: 2px dashed rgba(148, 163, 184, 0.7);
   padding-left: var(--space-3);
 }
 
@@ -671,19 +707,19 @@ function handleFindSimilarBooks() {
 .insights-timeline__subtitle {
   margin: 0 0 0.15rem;
   font-size: var(--text-sm);
-  color: var(--color-neutral-700);
+  color: #cbd5f5;
 }
 
 .insights-timeline__date {
   margin: 0;
   font-size: var(--text-xs);
-  color: var(--color-neutral-500);
+  color: #9ca3af;
 }
 
 .insights-empty {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--color-neutral-600);
+  color: #cbd5f5;
 }
 
 .insights-timeline-filters {
@@ -694,39 +730,40 @@ function handleFindSimilarBooks() {
 }
 
 .insights-timeline-filter {
-  border-radius: 0;
-  border: 2px solid var(--color-black);
-  background: var(--color-white);
-  color: var(--color-black);
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: transparent;
+  color: #cbd5f5;
   padding: 0.3rem 0.8rem;
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.12em;
   cursor: pointer;
-  box-shadow: var(--shadow-subtle);
+  box-shadow: none;
 }
 
 .insights-timeline-filter--active {
-  background: var(--color-jaune-dore);
-  box-shadow: 3px 3px 0 var(--color-black);
+  background: #f9fafb;
+  color: #020617;
+  border-color: transparent;
 }
 
 .insights-similar-btn {
   margin-top: var(--space-3);
-  border-radius: 0;
-  border: 2px solid var(--color-black);
-  background: var(--color-jaune-dore);
-  color: var(--color-black);
+  border-radius: 999px;
+  border: none;
+  background: #f9fafb;
+  color: #020617;
   padding: var(--space-2) var(--space-4);
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.12em;
   cursor: pointer;
-  box-shadow: var(--shadow-brutal);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.85);
 }
 
 .insights-similar-btn:hover {
-  transform: var(--transform-press);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.9);
 }
 </style>
