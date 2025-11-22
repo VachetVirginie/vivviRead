@@ -74,7 +74,7 @@ function handleKeydown(event: KeyboardEvent) {
 
     <footer class="library-section-card__footer">
       <span class="library-section-card__cta">
-        Ouvrir la galerie
+        Ouvrir
         <span class="library-section-card__chevron" aria-hidden="true">↗</span>
       </span>
     </footer>
@@ -207,18 +207,20 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 .library-section-card__cta {
-  font-size: 0.85rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #f9fafb;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.25rem 0.85rem;
+  padding: 0.25rem 0.8rem;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(148, 163, 184, 0.7);
+  border: none;
+  background: #f9fafb;
+  color: #020617;
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.7);
 }
 
 .library-section-card__chevron {

@@ -43,7 +43,11 @@ function handleGoalProgress(payload: { id: string; value: number }) {
     <header class="page-header">
       <div class="page-header__row">
         <div class="page-header__main">
+          <p class="section-eyebrow">Objectifs</p>
           <h1 class="page-header__title">Objectifs de lecture</h1>
+          <p class="page-header__subtitle">
+            Suis ton rythme de lecture et ajuste tes défis au fil du temps.
+          </p>
         </div>
         <div class="page-header__actions">
           <button

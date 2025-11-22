@@ -23,6 +23,7 @@ function goToExplorer() {
     <header class="page-header">
       <div class="page-header__row">
         <div class="page-header__main">
+          <p class="section-eyebrow">Bibliothèque</p>
           <h1 class="page-header__title">Ma bibliothèque</h1>
           <p class="page-header__subtitle">
             Gère ta pile à lire, tes lectures en cours, les livres terminés et ceux que tu as mis de côté.

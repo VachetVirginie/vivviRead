@@ -198,7 +198,7 @@ onMounted(() => {
         <div class="page-header__actions">
           <button
             type="button"
-            class="page-header__action"
+            class="page-header__action page-header__action--primary"
             @click="router.push({ name: 'friendsDiscover' })"
           >
             Trouver des amis
@@ -420,6 +420,7 @@ onMounted(() => {
   width: 100%;
   box-sizing: border-box;
   margin: 0 auto;
+  margin-bottom: 2em;
   padding: var(--space-12) var(--space-6) var(--space-16);
   display: flex;
   flex-direction: column;
@@ -714,6 +715,7 @@ onMounted(() => {
 @media (max-width: 640px) {
   .friends-page {
     padding: var(--space-10) var(--space-4) var(--space-14);
+    margin-bottom: 2em;
   }
 
   .friends-card {
