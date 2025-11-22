@@ -15,6 +15,7 @@ import ForgotPasswordView from '../views/ForgotPasswordView.vue'
 import ResetPasswordView from '../views/ResetPasswordView.vue'
 import FriendsView from '../views/FriendsView.vue'
 import FriendsDiscoverView from '../views/FriendsDiscoverView.vue'
+import FriendsRecommendationsView from '../views/FriendsRecommendationsView.vue'
 import ReaderProfileView from '../views/ReaderProfileView.vue'
 import { supabase } from '../lib/supabaseClient'
 
@@ -75,6 +76,11 @@ const router = createRouter({
       path: '/amis/trouver',
       name: 'friendsDiscover',
       component: FriendsDiscoverView,
+    },
+    {
+      path: '/amis/recommandations',
+      name: 'friendsRecommendations',
+      component: FriendsRecommendationsView,
     },
     {
       path: '/explorer',

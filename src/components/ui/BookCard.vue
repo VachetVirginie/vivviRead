@@ -5,12 +5,14 @@ import type { ReadingBook } from '../../composables/useReadingShelf'
 const props = defineProps<{
   book: ReadingBook
   hideActions?: boolean
+  showRecommendAction?: boolean
 }>()
 
 const emit = defineEmits<{
   (e: 'start', id: string): void
   (e: 'remove', id: string): void
   (e: 'open', id: string): void
+  (e: 'recommend', id: string): void
 }>()
 
 const authorLabel = computed(() => {
@@ -57,6 +59,14 @@ const authorLabel = computed(() => {
         </div>
         <div v-if="!hideActions" class="book-card__actions">
           <button type="button" @click.stop="emit('start', props.book.id)">Commencer</button>
+          <button
+            v-if="props.showRecommendAction"
+            type="button"
+            class="book-card__recommend"
+            @click.stop="emit('recommend', props.book.id)"
+          >
+            Conseiller
+          </button>
           <button type="button" class="book-card__remove" @click.stop="emit('remove', props.book.id)">Supprimer</button>
         </div>
       </div>
@@ -398,6 +408,18 @@ const authorLabel = computed(() => {
 .book-card__actions button:first-child:active {
   transform: translateY(1px);
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.8);
+}
+
+.book-card__recommend {
+  background: var(--color-primary-green);
+  color: #ffffff;
+  border: 1px solid var(--color-primary-green);
+}
+
+.book-card__recommend:hover {
+  background: #16a34a;
+  border-color: #16a34a;
+  transform: translateY(-1px);
 }
 
 .book-card__remove {

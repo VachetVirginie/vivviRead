@@ -8,6 +8,7 @@ const props = defineProps<{ books: ReadingBook[] }>()
 const emit = defineEmits<{
   (e: 'status-change', payload: { id: string; status: ReadingStatus }): void
   (e: 'remove', id: string): void
+  (e: 'recommend', id: string): void
 }>()
 
 const searchQuery = ref('')
@@ -165,6 +166,7 @@ const filteredBooks = computed(() => {
           <div class="completed__actions">
             <button type="button" @click="emit('status-change', { id: book.id, status: 'en_cours' })">Reprendre</button>
             <button type="button" @click="emit('status-change', { id: book.id, status: 'a_lire' })">Reclasser</button>
+	        <button type="button" @click="emit('recommend', book.id)">Conseiller</button>
             <button type="button" class="shelf__remove" @click="emit('remove', book.id)">Supprimer</button>
           </div>
         </article>

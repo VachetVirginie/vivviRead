@@ -1,21 +1,35 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAppContext } from '../composables/useAppContext'
 import { useAuth } from '../composables/useAuth'
 import { useToasts } from '../composables/useToasts'
+import { useBookRecommendations, type BookRecommendation } from '../composables/useBookRecommendations'
 
 const router = useRouter()
+const route = useRoute()
 const { shelf, friendsFeed, friendsRelations } = useAppContext()
 const { user } = useAuth()
 const { showToast } = useToasts()
+
+const {
+  incoming: incomingRecommendations,
+  loading: recommendationsLoading,
+  unreadCount,
+  loadIncoming: loadIncomingRecommendations,
+  markAsSeen,
+  markAsAddedToList,
+  dismiss,
+} = useBookRecommendations()
 
 const activities = computed(() => friendsFeed.activities.value)
 const hasActivities = computed(() => activities.value.length > 0)
 
 const currentUserId = computed(() => user.value?.id ?? null)
 
-const feedFilter = ref<'all' | 'books' | 'goals'>('all')
+const hasRecommendations = computed(() => incomingRecommendations.value.length > 0)
+
+const feedFilter = ref<'all' | 'books' | 'goals' | 'recommendations'>('all')
 
 const filteredActivities = computed(() => {
   if (feedFilter.value === 'books') {
@@ -101,7 +115,7 @@ const groupedActivities = computed(() => {
   return groups
 })
 
-function handleSetFilter(filter: 'all' | 'books' | 'goals') {
+function handleSetFilter(filter: 'all' | 'books' | 'goals' | 'recommendations') {
   feedFilter.value = filter
 }
 
@@ -129,9 +143,44 @@ function handleAddToShelf(activity: (typeof activities.value)[number]) {
   })
 }
 
+async function handleAddRecommendationToShelf(rec: BookRecommendation) {
+  if (!rec.bookTitle || !rec.bookAuthor) return
+
+  if (!shelf.isInShelf(rec.bookTitle, rec.bookAuthor)) {
+    shelf.addFromSearch({
+      title: rec.bookTitle,
+      author: rec.bookAuthor,
+      coverUrl: rec.coverUrl,
+    })
+  }
+
+  await markAsAddedToList(rec.id)
+
+  showToast({
+    message: 'Ajouté à ta bibliothèque',
+    variant: 'success',
+  })
+}
+
+async function handleMarkRecommendationSeen(rec: BookRecommendation) {
+  if (rec.status === 'sent') {
+    await markAsSeen(rec.id)
+  }
+}
+
+async function handleDismissRecommendation(rec: BookRecommendation) {
+  await dismiss(rec.id)
+}
+
 onMounted(() => {
   friendsFeed.loadFriendsActivities()
   friendsRelations.loadRelations()
+  void loadIncomingRecommendations()
+
+  const initialFilter = route.query.filter
+  if (initialFilter === 'recommendations') {
+    feedFilter.value = 'recommendations'
+  }
 })
 </script>
 
@@ -161,20 +210,6 @@ onMounted(() => {
     <section class="friends-layout" aria-label="Flux d'activités des amis">
       <section class="friends-card friends-card--feed" aria-label="Activités détaillées des amis">
         <h2 class="friends-card__title">Activités récentes</h2>
-<!-- 
-        <div class="friends-network-bar">
-          <div class="friends-network-bar__item">
-            <span class="friends-network-bar__label">Tu suis</span>
-            <span class="friends-network-bar__value">{{ friendsRelations.followingCount }}</span>
-          </div>
-          <div class="friends-network-bar__item">
-            <span class="friends-network-bar__label">Te suivent</span>
-            <span class="friends-network-bar__value">{{ friendsRelations.followersCount }}</span>
-          </div>
-          <p v-if="!friendsRelations.hasFollowing" class="friends-network-bar__hint">
-            Commence par suivre des amis depuis "Trouver des amis" pour voir leurs lectures ici.
-          </p>
-        </div> -->
 
         <div class="friends-feed-filters" aria-label="Filtrer les activités">
           <button
@@ -201,87 +236,179 @@ onMounted(() => {
           >
             Objectifs
           </button>
+          <button
+            type="button"
+            class="friends-feed-filter"
+            :class="{ 'friends-feed-filter--active': feedFilter === 'recommendations' }"
+            @click="handleSetFilter('recommendations')"
+          >
+            Recommandations
+            <span v-if="unreadCount" class="friends-feed-filter__badge">
+              {{ unreadCount }}
+            </span>
+          </button>
         </div>
 
-        <p v-if="friendsFeed.loading && !hasActivities" class="friends-empty">
-          Chargement des lectures de tes amis…
-        </p>
+        <template v-if="feedFilter === 'recommendations'">
+          <p v-if="recommendationsLoading && !hasRecommendations" class="friends-empty">
+            Chargement de tes recommandations…
+          </p>
 
-        <div v-if="hasActivities" class="friends-feed-groups">
-          <section
-            v-for="group in groupedActivities"
-            :key="group.label"
-            class="friends-feed-group"
-          >
-            <p class="friends-feed__group-label">
-              {{ group.label }}
-            </p>
-            <ul class="friends-feed">
-              <li
-                v-for="activity in group.items"
-                :key="activity.id"
-                class="friends-feed__item"
-              >
-                <div class="friends-feed__header">
-                  <div class="friends-feed__header-main">
-                    <div
-                      class="friends-feed__avatar"
-                      :style="{ backgroundColor: avatarColorForName(activity.userName) }"
-                      aria-hidden="true"
-                    >
-                      {{ avatarInitialForName(activity.userName) }}
-                    </div>
-                    <button
-                      type="button"
-                      class="friends-feed__name-button"
-                      @click="router.push({ name: 'readerProfile', params: { id: activity.userId } })"
-                    >
-                      <span class="friends-feed__name">{{ activity.userName }}</span>
-                    </button>
-                    <span class="friends-feed__badge">{{ badgeForType(activity.type) }}</span>
+          <ul v-else-if="hasRecommendations" class="friends-feed">
+            <li
+              v-for="rec in incomingRecommendations"
+              :key="rec.id"
+              class="friends-feed__item"
+            >
+              <div class="friends-feed__header">
+                <div class="friends-feed__header-main">
+                  <div
+                    class="friends-feed__avatar"
+                    :style="{ backgroundColor: avatarColorForName(rec.fromUserName) }"
+                    aria-hidden="true"
+                  >
+                    {{ avatarInitialForName(rec.fromUserName) }}
                   </div>
-                  <span class="friends-feed__date">
-                    {{ new Date(activity.createdAt).toLocaleDateString() }}
+                  <span class="friends-feed__name">
+                    {{ rec.fromUserName || 'Un lecteur' }}
                   </span>
+                  <span class="friends-feed__badge">RECOMMANDATION</span>
                 </div>
-                <p class="friends-feed__summary">
-                  {{ activity.summary }}
-                </p>
-                <p v-if="activity.bookTitle" class="friends-feed__detail">
-                  « {{ activity.bookTitle }} »
-                  <span v-if="activity.bookAuthor">· {{ activity.bookAuthor }}</span>
-                </p>
-                <p v-else-if="activity.goalTitle" class="friends-feed__detail">
-                  Objectif : {{ activity.goalTitle }}
-                </p>
-                <span
-                  v-if="activity.bookTitle && activity.bookAuthor && shelf.isInShelf(activity.bookTitle, activity.bookAuthor)"
-                  class="friends-feed__tag"
-                >
-                  Ajouté
+                <span class="friends-feed__date">
+                  {{ new Date(rec.createdAt).toLocaleDateString() }}
                 </span>
+              </div>
+
+              <p class="friends-feed__summary">
+                t’a recommandé :
+              </p>
+              <p class="friends-feed__detail">
+                « {{ rec.bookTitle }} »
+                <span v-if="rec.bookAuthor">· {{ rec.bookAuthor }}</span>
+              </p>
+
+              <p v-if="rec.message" class="friends-feed__detail">
+                « {{ rec.message }} »
+              </p>
+
+              <div class="friends-feed__actions-row">
                 <button
-                  v-if="activity.bookTitle && activity.bookAuthor && activity.userId !== currentUserId"
                   type="button"
                   class="friends-feed__action"
-                  :disabled="shelf.isInShelf(activity.bookTitle, activity.bookAuthor)"
-                  @click="handleAddToShelf(activity)"
+                  :disabled="rec.status === 'added_to_list'"
+                  @click="handleAddRecommendationToShelf(rec)"
                 >
                   {{
-                    shelf.isInShelf(activity.bookTitle, activity.bookAuthor)
-                      ? 'Déjà dans ta bibliothèque'
-                      : 'Ajouter à ma liste'
+                    rec.status === 'added_to_list'
+                      ? 'Déjà ajouté à ta bibliothèque'
+                      : 'Ajouter à ma bibliothèque'
                   }}
                 </button>
-              </li>
-            </ul>
-          </section>
-        </div>
+                <button
+                  v-if="rec.status === 'sent'"
+                  type="button"
+                  class="friends-feed__action friends-feed__action--secondary"
+                  @click="handleMarkRecommendationSeen(rec)"
+                >
+                  Marquer comme vu
+                </button>
+                <button
+                  type="button"
+                  class="friends-feed__link"
+                  @click="handleDismissRecommendation(rec)"
+                >
+                  Ignorer
+                </button>
+              </div>
+            </li>
+          </ul>
 
-        <p v-else-if="!friendsFeed.loading" class="friends-empty">
-          Aucune activité pour le moment. Tes propres lectures et objectifs, ainsi que ceux de tes amis suivis,
-          apparaîtront ici.
-        </p>
+          <p v-else class="friends-empty">
+            Aucun ami ne t’a encore recommandé de livre. Quand ce sera le cas, tout apparaîtra ici.
+          </p>
+        </template>
+
+        <template v-else>
+          <p v-if="friendsFeed.loading && !hasActivities" class="friends-empty">
+            Chargement des lectures de tes amis…
+          </p>
+
+          <div v-else-if="hasActivities" class="friends-feed-groups">
+            <section
+              v-for="group in groupedActivities"
+              :key="group.label"
+              class="friends-feed-group"
+            >
+              <p class="friends-feed__group-label">
+                {{ group.label }}
+              </p>
+              <ul class="friends-feed">
+                <li
+                  v-for="activity in group.items"
+                  :key="activity.id"
+                  class="friends-feed__item"
+                >
+                  <div class="friends-feed__header">
+                    <div class="friends-feed__header-main">
+                      <div
+                        class="friends-feed__avatar"
+                        :style="{ backgroundColor: avatarColorForName(activity.userName) }"
+                        aria-hidden="true"
+                      >
+                        {{ avatarInitialForName(activity.userName) }}
+                      </div>
+                      <button
+                        type="button"
+                        class="friends-feed__name-button"
+                        @click="router.push({ name: 'readerProfile', params: { id: activity.userId } })"
+                      >
+                        <span class="friends-feed__name">{{ activity.userName }}</span>
+                      </button>
+                      <span class="friends-feed__badge">{{ badgeForType(activity.type) }}</span>
+                    </div>
+                    <span class="friends-feed__date">
+                      {{ new Date(activity.createdAt).toLocaleDateString() }}
+                    </span>
+                  </div>
+                  <p class="friends-feed__summary">
+                    {{ activity.summary }}
+                  </p>
+                  <p v-if="activity.bookTitle" class="friends-feed__detail">
+                    « {{ activity.bookTitle }} »
+                    <span v-if="activity.bookAuthor">· {{ activity.bookAuthor }}</span>
+                  </p>
+                  <p v-else-if="activity.goalTitle" class="friends-feed__detail">
+                    Objectif : {{ activity.goalTitle }}
+                  </p>
+                  <span
+                    v-if="activity.bookTitle && activity.bookAuthor && shelf.isInShelf(activity.bookTitle, activity.bookAuthor)"
+                    class="friends-feed__tag"
+                  >
+                    Ajouté
+                  </span>
+                  <button
+                    v-if="activity.bookTitle && activity.bookAuthor && activity.userId !== currentUserId"
+                    type="button"
+                    class="friends-feed__action"
+                    :disabled="shelf.isInShelf(activity.bookTitle, activity.bookAuthor)"
+                    @click="handleAddToShelf(activity)"
+                  >
+                    {{
+                      shelf.isInShelf(activity.bookTitle, activity.bookAuthor)
+                        ? 'Déjà dans ta bibliothèque'
+                        : 'Ajouter à ma liste'
+                    }}
+                  </button>
+                </li>
+              </ul>
+            </section>
+          </div>
+
+          <p v-else class="friends-empty">
+            Aucune activité pour le moment. Tes propres lectures et objectifs, ainsi que ceux de tes amis suivis,
+            apparaîtront ici.
+          </p>
+        </template>
       </section>
     </section>
   </main>
@@ -553,6 +680,13 @@ onMounted(() => {
   background: #e5e7eb;
 }
 
+.friends-feed__actions-row {
+  margin-top: 0.35rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
 .friends-feed__tag {
   align-self: flex-start;
   margin-top: 0.15rem;
@@ -564,6 +698,15 @@ onMounted(() => {
   color: #020617;
   border-radius: 999px;
   border: 1px solid var(--color-black);
+}
+
+.friends-feed__link {
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: var(--text-xs);
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 @media (max-width: 640px) {

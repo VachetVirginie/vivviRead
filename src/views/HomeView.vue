@@ -4,6 +4,7 @@ import { RouterLink, useRouter } from 'vue-router'
 
 import { useAppContext } from '../composables/useAppContext'
 import { useSupabaseTest } from '../composables/useSupabaseTest'
+import { useBookRecommendations } from '../composables/useBookRecommendations'
 import type { GoogleBookVolume } from '../services/googleBooks'
 
 import HeroSection from '../components/sections/HeroSection.vue'
@@ -14,6 +15,8 @@ import ModalAddGoal from '../components/sections/modals/ModalAddGoal.vue'
 const { shelf, goals, explorer, modals } = useAppContext()
 const router = useRouter()
 useSupabaseTest()
+
+const { incoming: incomingRecommendations, unreadCount: unreadRecommendationsCount } = useBookRecommendations()
 
 const goalsList = computed(() => {
   const baseGoals = goals.goals.value
@@ -63,6 +66,9 @@ const explorerLoading = computed(() => explorerRawState.loading)
 const hasExplorerResults = computed(() => explorerState.value.results.length > 0)
 const explorerPreviewResults = computed(() => explorerState.value.results.slice(0, 3))
 
+const hasRecommendations = computed(() => incomingRecommendations.value.length > 0)
+const totalRecommendations = computed(() => incomingRecommendations.value.length)
+
 /* -------- COMPUTED -------- */
 const heroSession = computed(() => shelf.computeHeroSession())
 const stats = computed(() => shelf.computeStats())
@@ -89,6 +95,13 @@ function handleHeroPrimaryAction() {
   }
 
   router.push({ name: 'libraryInProgress' })
+}
+
+function goToFriendsRecommendations() {
+  router.push({
+    name: 'friends',
+    query: { filter: 'recommendations' },
+  })
 }
 </script>
 
@@ -144,6 +157,51 @@ function handleHeroPrimaryAction() {
       </div>
       <p v-else class="state">
         Tes insights apparaîtront ici dès que tu auras ajouté et commencé à lire un livre.
+      </p>
+    </section>
+
+    <section
+      v-if="!isNewUser"
+      id="friends-recommendations"
+      class="home-block recommendations-section animate-fade-in-up"
+      aria-label="Recommandations de mes amis"
+    >
+      <header class="home-block__header">
+        <div class="home-block__header-main">
+          <p class="section-eyebrow">Communauté</p>
+          <h2>Recommandations de tes amis</h2>
+          <p class="home-block__subtitle">
+            Les livres que tes amis te conseillent. Gère-les depuis le flux d'amis.
+          </p>
+        </div>
+        <button
+          type="button"
+          class="home-block__link"
+          @click="goToFriendsRecommendations"
+        >
+          Voir les recommandations
+          <span
+            v-if="unreadRecommendationsCount"
+            class="home-recos-badge"
+          >
+            {{ unreadRecommendationsCount }}
+          </span>
+        </button>
+      </header>
+
+      <div v-if="hasRecommendations" class="home-recos-summary">
+        <p class="home-recos-summary__text">
+          Tes amis t'ont recommandé
+          <strong>{{ totalRecommendations }}</strong>
+          livre<span v-if="totalRecommendations > 1">s</span>.
+        </p>
+        <p v-if="unreadRecommendationsCount" class="home-recos-summary__hint">
+          {{ unreadRecommendationsCount }}
+          recommandation<span v-if="unreadRecommendationsCount > 1">s</span> à découvrir.
+        </p>
+      </div>
+      <p v-else class="state">
+        Dès qu'un ami te recommandera un livre, il apparaîtra ici.
       </p>
     </section>
 
@@ -262,6 +320,7 @@ function handleHeroPrimaryAction() {
       "hero hero"
       "stats stats"
       "insights goals"
+      "friends-recommendations goals"
       "explorer explorer";
     gap: var(--space-10) var(--space-8);
     padding: var(--space-12) var(--space-6) var(--space-16);
@@ -271,6 +330,7 @@ function handleHeroPrimaryAction() {
   .stats-section { grid-area: stats; }
   .insights-section { grid-area: insights; }
   .goals-section { grid-area: goals; }
+  .recommendations-section { grid-area: friends-recommendations; }
   .explorer-section { grid-area: explorer; }
 }
 
@@ -348,6 +408,39 @@ function handleHeroPrimaryAction() {
 .home-block__link:focus-visible {
   outline: 2px solid var(--color-jaune-dore);
   outline-offset: 2px;
+}
+
+.home-recos-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  background: var(--color-rouge-corail);
+  color: #f9fafb;
+  font-size: 0.7rem;
+  font-weight: var(--font-bold);
+  border: 1px solid var(--color-black);
+}
+
+.home-recos-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.home-recos-summary__text {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: #e5e7eb;
+}
+
+.home-recos-summary__hint {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: #f97316;
 }
 
 .home-block__hint {

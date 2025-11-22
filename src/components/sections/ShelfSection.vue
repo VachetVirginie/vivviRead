@@ -20,6 +20,7 @@ const emit = defineEmits<{
   (e: 'status-change', payload: { id: string; status: ReadingStatus }): void
   (e: 'remove', id: string): void
   (e: 'open-modal', id: string): void
+  (e: 'recommend', payload: { id: string }): void
 }>()
 
 const searchQuery = ref('')
@@ -404,6 +405,15 @@ function handleStatusSelectChange(event: Event) {
             })
           "
           ></textarea>
+          <div class="shelf__recommend-row">
+            <button
+              type="button"
+              class="shelf__recommend-button"
+              @click="emit('recommend', { id: activeBook.id })"
+            >
+              Conseiller ce livre à un ami
+            </button>
+          </div>
         </div>
       </div>
 

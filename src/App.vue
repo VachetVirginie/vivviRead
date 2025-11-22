@@ -1,19 +1,31 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { provideAppContext } from './composables/useAppContext'
 import { useAuth } from './composables/useAuth'
 import { useToasts } from './composables/useToasts'
+import { useBookRecommendations } from './composables/useBookRecommendations'
 
 provideAppContext()
 
 const router = useRouter()
 const { user, profile, loadCurrentUser } = useAuth()
 const { toasts, dismiss } = useToasts()
+const { unreadCount, loadIncoming } = useBookRecommendations()
 
 onMounted(() => {
   loadCurrentUser()
 })
+
+watch(
+  () => user.value?.id,
+  (id) => {
+    if (id) {
+      void loadIncoming()
+    }
+  },
+  { immediate: true },
+)
 
 const displayName = computed(() => profile.value?.full_name || user.value?.email || 'Utilisateur')
 
@@ -115,9 +127,17 @@ function handleToastAction(id: string, handler?: () => void) {
 
     <nav v-if="user" class="app-shell__nav" aria-label="Navigation principale">
       <RouterLink to="/home" class="app-shell__nav-link">Accueil</RouterLink>
-      <RouterLink to="/amis" class="app-shell__nav-link">Feed</RouterLink>
+      <RouterLink to="/amis" class="app-shell__nav-link">
+        <span>Actu</span>
+        <span
+          v-if="unreadCount"
+          class="app-shell__nav-badge"
+        >
+          {{ unreadCount }}
+        </span>
+      </RouterLink>
       <RouterLink to="/livres" class="app-shell__nav-link">Livres</RouterLink>
-      <RouterLink to="/objectifs" class="app-shell__nav-link">Objectifs</RouterLink>
+      <RouterLink to="/objectifs" class="app-shell__nav-link">Defis</RouterLink>
       <RouterLink to="/explorer" class="app-shell__nav-link">Explorer</RouterLink>
     </nav>
   </div>
@@ -227,5 +247,21 @@ function handleToastAction(id: string, handler?: () => void) {
   color: var(--color-neutral-600);
   cursor: pointer;
   font-size: 0.9rem;
+}
+
+.app-shell__nav-badge {
+  top: -0.25rem;
+  margin-left: 0.15rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 999px;
+  background: var(--color-rouge-corail);
+  color: #f9fafb;
+  font-size: 0.65rem;
+  font-weight: var(--font-bold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-black);
 }
 </style>
