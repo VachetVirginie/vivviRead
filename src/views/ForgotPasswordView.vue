@@ -2,7 +2,6 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
-import homeIllustration from '../assets/home.svg'
 
 const router = useRouter()
 const { resetEmail, loading, errorMessage, resetPassword } = useAuth()

@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
-import homeIllustration from '../assets/home.svg'
 
 const router = useRouter()
 const route = useRoute()
