@@ -304,7 +304,7 @@ function goToFriendsRecommendations() {
 
 <style scoped>
 .page {
-  display: grid;
+  /* display: grid; */
   grid-template-columns: 1fr;
   gap: var(--space-8);
   max-width: 1200px;

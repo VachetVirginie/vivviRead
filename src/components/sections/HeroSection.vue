@@ -206,7 +206,7 @@ const emit = defineEmits<{
 
 @media (min-width: 1024px) {
   .hero {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
   }
     .hero__panel {
     min-width: 500px;
