@@ -256,6 +256,8 @@ onMounted(() => {
 <style scoped>
 .reader-page {
   max-width: 900px;
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
   padding: var(--space-12) var(--space-6) var(--space-16);
   display: flex;
@@ -404,9 +406,17 @@ onMounted(() => {
 }
 
 @media (max-width: 640px) {
+  .reader-page {
+    padding: var(--space-10) var(--space-4) var(--space-14);
+  }
+
   .reader-card {
     padding: var(--space-5) var(--space-4);
     margin-bottom: 2em;
+  }
+
+  .reader-header {
+    align-items: flex-start;
   }
 }
 </style>

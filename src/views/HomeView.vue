@@ -308,18 +308,11 @@ function goToFriendsRecommendations() {
   grid-template-columns: 1fr;
   gap: var(--space-8);
   max-width: 1200px;
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
   padding: var(--space-12) var(--space-6) var(--space-16);
   color: #e5e7eb;
-}
-
-@media (max-width: 768px) {
-  .page {
-    gap: var(--space-0);
-    max-width: 1200px;
-    margin: 0 auto;
-    color: #e5e7eb;
-  }
 }
 
 @media (min-width: 1024px) {
@@ -669,6 +662,11 @@ function goToFriendsRecommendations() {
 }
 
 @media (max-width: 640px) {
+  .page {
+    padding: var(--space-10) var(--space-4) var(--space-14);
+    gap: var(--space-6);
+  }
+
   .home-block {
     padding: var(--space-6) var(--space-4);
   }

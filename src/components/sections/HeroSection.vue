@@ -199,8 +199,9 @@ const emit = defineEmits<{
   }
 
   .hero__panel {
+    width: 100%;
     max-width: 100%;
-    min-width: 300px;
+    min-width: 0;
   }
 }
 

@@ -417,6 +417,8 @@ onMounted(() => {
 <style scoped>
 .friends-page {
   max-width: 1200px;
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
   padding: var(--space-12) var(--space-6) var(--space-16);
   display: flex;
@@ -710,6 +712,14 @@ onMounted(() => {
 }
 
 @media (max-width: 640px) {
+  .friends-page {
+    padding: var(--space-10) var(--space-4) var(--space-14);
+  }
+
+  .friends-card {
+    padding: var(--space-5) var(--space-4);
+  }
+
   .friends-feed__header-main {
     flex-wrap: wrap;
     gap: 0.35rem;

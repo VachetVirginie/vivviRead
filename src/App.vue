@@ -264,4 +264,16 @@ function handleToastAction(id: string, handler?: () => void) {
   justify-content: center;
   border: 1px solid var(--color-black);
 }
+
+@media (max-width: 480px) {
+  .app-shell__header {
+    padding-inline: 0.75rem;
+    flex-wrap: wrap;
+    row-gap: 0.25rem;
+  }
+
+  .app-shell__back-button {
+    font-size: var(--text-xs);
+  }
+}
 </style>

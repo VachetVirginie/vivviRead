@@ -182,6 +182,8 @@ onMounted(() => {
 <style scoped>
 .friends-page {
   max-width: 1200px;
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
   padding: var(--space-12) var(--space-6) var(--space-16);
   display: flex;
